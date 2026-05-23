@@ -1,0 +1,213 @@
+
+    /* General Styling */
+    body {
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    /* Header Section */
+
+    header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+    }
+
+    header p {
+        font-size: 1.25rem;
+    }
+
+    /* Section Styling */
+    section {
+        padding: 60px 0;
+    }
+
+    h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2d1045;
+    }
+
+    .lead {
+        font-size: 1.25rem;
+        font-weight: 400;
+    }
+
+    .value-card {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .value-card-icon {
+        color: #B8001F;
+        margin-bottom: 20px;
+    }
+
+    h4 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    }
+
+    .team-member {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .team-member img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+    }
+
+    footer {
+        background-color: #2d1045;
+        color: #fff;
+    }
+
+    .card-timeline {
+        background-color: #dd0a35;
+        /* Warna latar belakang kartu */
+        border: none;
+        /* Menghapus border kartu */
+        height: 100%;
+        /* Agar kartu memiliki tinggi yang sama */
+        display: flex;
+        border-radius: 10px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .card-timeline .card-body {
+        flex-grow: 1;
+        /* Membuat card-body fleksibel sehingga kartunya selalu seimbang */
+    }
+
+    .card-timeline .card i {
+        color: #fff;
+        /* Memberikan warna putih untuk ikon */
+    }
+
+    .card-timeline .card h3 {
+        color: #fff;
+        /* Memberikan warna putih untuk judul */
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .card-timeline .card p {
+        color: #fff;
+        /* Memberikan warna putih untuk deskripsi */
+        font-size: 1rem;
+    }
+
+    .team-img {
+        width: 150px;
+        /* Set width */
+        height: 150px;
+        /* Set height */
+        object-fit: cover;
+        /* Ensures image fits within the circle */
+    }
+    /* Footer */
+.footer {
+	background-color: #dd0a35;
+	padding: 20px;
+	font-family: Arial, sans-serif;
+	color: #f4f4f4;
+}
+
+.footer-menu ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	margin-bottom: 20px;
+}
+
+.footer-menu ul li {
+	display: inline;
+	margin: 0 15px;
+}
+
+.footer-menu ul li a {
+	color: #f4f4f4;
+	text-decoration: none;
+	text-transform: uppercase;
+	font-weight: bold;
+	transition: color 0.3s;
+}
+
+.footer-menu ul li a:hover {
+	color: #dcdcdc;
+}
+
+/* Footer Icons */
+.footer-icons {
+	margin-bottom: 20px;
+}
+
+.footer-icons a {
+	margin: 0 10px;
+	display: inline-flex;
+	align-items: center;
+	text-decoration: none;
+	color: #f4f4f4;
+	transition: color 0.3s;
+}
+
+.footer-icons a:hover {
+	color: #dcdcdc;
+}
+
+.footer-icons .fa-instagram {
+	font-size: 30px;
+	margin-right: 8px;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+	margin-top: 5px;
+}
+
+.footer-bottom p {
+	margin: 0;
+	color: #f4f4f4;
+}
+
+/* Media query untuk layar besar (Desktop) */
+@media (min-width: 992px) {
+	.footer-title {
+		font-size: 130px;
+		color: #f4f4f4;
+		font-weight: bold;
+		width: 100%;
+		text-align: center;
+		font-family: "Poppins", sans-serif;
+		letter-spacing: -16px;
+	}
+}
+
+/* Media query untuk layar kecil (Mobile) */
+@media (max-width: 991px) {
+	.footer-title {
+		font-size: 75px;
+		color: #f4f4f4;
+		font-weight: bold;
+		width: 100%;
+		text-align: center;
+		font-family: "Poppins", sans-serif;
+		letter-spacing: -10px;
+	}
+}

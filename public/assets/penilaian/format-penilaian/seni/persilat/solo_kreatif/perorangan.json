@@ -1,0 +1,113 @@
+{
+	"metadata": {
+		"nama": "Solo Kreatif IPSI Remaja dan Dewasa"
+	},
+	"penilaian": {
+		"unsur_nilai": {
+			"teknik_serang_bela": {
+				"metadata": {
+					"label": " Attack and defense technique / teknik serang bela (0.01 - 0.3)",
+                    "step": 0.01
+				},
+				"nilai_minimal": 0.01,
+				"nilai_diperoleh": 0.2,
+				"nilai_maksimal": 0.3
+			},
+			"ketegasan": {
+				"metadata": {
+					"label": "KETEGASAN (0.01 - 0.3)",
+                    "step": 0.01
+				},
+				"nilai_minimal": 0.01,
+				"nilai_diperoleh": 0.2,
+				"nilai_maksimal": 0.3
+			},
+			"penjiwaan": {
+				"metadata": {
+					"label": "PENJIWAAN (0.01 - 0.3)",
+                    "step": 0.01
+				},
+				"nilai_minimal": 0.01,
+				"nilai_diperoleh": 0.2,
+				"nilai_maksimal": 0.3
+			}
+		},
+		"hukuman": {
+			"waktu": {
+				"tipe": "pilihan ganda",
+				"metadata":{
+					"label" : "Time Perfomance / waktu"
+				},
+				"detail_hukuman": {
+					"pilihan": {
+						"> 5 - 10  or  10 - 15 seconds" : 0.5,
+						"> 10 or > 15 seconds  (Disqualify)" : "disk"
+					},
+					"terpilih": "",
+					"nilai_hukuman": 0
+				}
+			},
+			"keluar_gelanggang": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Performance exceeded the 10m  by 10m arena (Setiap kali keluar gelanggang 10m x 10m)"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 0.5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},
+			"senjata_jatuh_tidak_sesuai_deskripsi": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Weapon drop does not meet synopsis (Senjata jatuh tidak sesuai deskripsi)"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 0.5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},  
+			"senjata_jatuh_diluar_gelanggang": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Weapon fall out of arena while athelete is still required to use it (Senjata jatuh diluar gelanggang saat tim harus menggunakannya)"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 0.5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},  
+			"pakaian_tidak_sesuai": {
+				"tipe": "satu kali",
+				"metadata":{
+					"label" : "Uniform / Dress violating rules (Pakaian tidak sesuai aturan)"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 0.5,
+					"nilai_hukuman": 0
+				}
+			},  
+			"menahan_gerakan": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Athlete staying at one move for more than 5 seconds (Setiap kali menahan gerakan lebih dari 5 seconds (detik))"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 0.5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			}
+		},
+		"ringkasan": {
+			"total_nilai": 9.70,
+			"total_hukuman": 0,
+			"nilai_akhir": 9.70,
+            "nilai_minimal" : 9.10,
+            "nilai_maksimal" : 10
+		}
+	}
+}

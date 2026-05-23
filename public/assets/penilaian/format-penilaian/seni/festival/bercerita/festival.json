@@ -1,0 +1,50 @@
+{
+	"metadata": {
+		"nama": "Festival Perorangan",
+        "nilai_maksimal" : 100,
+        "nilai_default" : 65
+	},
+	"penilaian": {
+		"unsur_nilai": {
+            "orisinilitas": {
+				"metadata":{
+					"label" : "ORISINILITAS (0 - 15)"
+				},
+				"nilai_minimal": 0,
+				"nilai_diperoleh": 10,
+				"nilai_maksimal": 15
+			},
+            "kemantapan": {
+				"metadata":{
+					"label" : "KEMANTAPAN (0 - 30)"
+				},
+				"nilai_minimal": 0,
+				"nilai_diperoleh": 20,
+				"nilai_maksimal": 30
+			},
+            "kekayaan": {
+				"metadata":{
+					"label" : "Kekayaan (0 - 30)"
+				},
+				"nilai_minimal": 0,
+				"nilai_diperoleh": 20,
+				"nilai_maksimal": 30
+			},
+            "penampilan": {
+				"metadata":{
+					"label" : "PENAMPILAN (0 - 25)"
+				},
+				"nilai_minimal": 0,
+				"nilai_diperoleh": 15,
+				"nilai_maksimal": 25
+			}
+		},
+		"hukuman": {
+		},
+		"ringkasan": {
+			"total_nilai": 65,
+			"total_hukuman": 0,
+			"nilai_akhir": 65
+		}
+	}
+}

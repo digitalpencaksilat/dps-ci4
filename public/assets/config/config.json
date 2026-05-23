@@ -1,0 +1,13 @@
+{
+    "biaya_pendaftaran_kontingen_dalam_negeri": 0,
+    "biaya_pendaftaran_kontingen_luar_negeri": 0,
+    "akses_edit_nilai_seni_oleh_sekretariat" : true,
+    "arsip_pendaftar" : {},
+    "perbolehkan_acak_bagan": true,
+    "perbolehkan_edit_bagan_oleh_sekretariat": true,
+    "perbolehkan_acak_peserta_tanding_dengan_pool": true,
+    "integrasi_whatsapp": true,
+    "tidio" : false,
+    "tidio_link": "//code.tidio.co/e3tkyrc0k9m8kc5pbwlmnsboca5mo5xh.js",
+    "jumlah_juri": 3
+}

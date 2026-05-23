@@ -1,0 +1,1 @@
+<a href="<?= base_url('kontingen/arsip-pendaftar/'.$id_kontingen)?>" class="btn btn-outline-primary mb-0"><?= lang('lihat_arsip')?></a>

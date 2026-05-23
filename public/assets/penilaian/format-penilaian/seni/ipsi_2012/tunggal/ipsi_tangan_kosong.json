@@ -1,0 +1,142 @@
+{
+	"metadata": {
+		"nama": "Tunggal IPSI Bersenjata (Remaja & Dewasa)",
+		"jumlah_rangkaian_gerak": 14,
+		"jumlah_gerakan": 100
+	},
+	"penilaian": {
+		"unsur_nilai": {
+			"kebenaran": {
+				"metadata":{
+					"step" : 1
+				},
+				"jurus": {
+					"tangan_kosong": {
+						"metadata": {
+							"lebar_kolom" : 100
+						},
+						"rangkaian_gerak": {
+							"1": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 7,
+								"nomor_gerakan_akhir": 7
+							},
+							"2": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 6,
+								"nomor_gerakan_akhir": 13
+							},
+							"3": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 5,
+								"nomor_gerakan_akhir": 18
+							},
+							"4": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 7,
+								"nomor_gerakan_akhir": 25
+							},
+							"5": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 6,
+								"nomor_gerakan_akhir": 31
+							},
+							"6": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 8,
+								"nomor_gerakan_akhir": 39
+							},
+							"7": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 11,
+								"nomor_gerakan_akhir": 50
+							}
+						}
+					}
+				},
+				"nilai_minimal": 0,
+				"total_kesalahan_gerak": 0,
+				"nilai_diperoleh": 50,
+				"nilai_maksimal": 50
+			},
+			"kemantapan": {
+				"metadata":{
+					"label" : "kemantapan / penghayatan / stamina (50 - 60)"
+				},
+				"nilai_minimal": 50,
+				"nilai_diperoleh": 55,
+				"nilai_maksimal": 60
+			}
+		},
+		"hukuman": {
+			"waktu": {
+				"tipe": "pilihan ganda",
+				"metadata":{
+					"label" : "Time Perfomance / waktu"
+				},
+				"detail_hukuman": {
+					"pilihan": {
+						"> 5 - 10  or  10 - 15 seconds" : 10,
+						"> 10 or > 15 seconds  (Disqualify)" : "disk"
+					},
+					"terpilih": "",
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_keluar_garis": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Setiap kali keluar garis"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},
+			"pakaian_atau_senjata_tidak_sempurna": {
+				"tipe": "satu kali",
+				"metadata":{
+					"label" : "Pakaian / senjata tidak sempurna"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"nilai_hukuman": 0
+				}
+			},
+			"suara_berlebihan": {
+				"tipe": "satu kali",
+				"metadata":{
+					"label" : "suara berlebihan"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_senjata_lepas": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Setiap kali senjata lepas"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			}
+		},
+		"ringkasan": {
+			"total_nilai": 105,
+			"total_hukuman": 0,
+			"nilai_akhir": 105
+		}
+	}
+}

@@ -1,0 +1,78 @@
+{
+    "ronde_pertandingan": {
+        "1": {
+            "rincian": [],
+            "kategori_nilai" : {
+                "pukulan" : 0,
+                "tendangan" : 0,
+                "jatuhan" : 0,
+                "pukulan_diawali_tangkisan" : 0,
+                "tendangan_diawali_tangkisan" : 0,
+                "jatuhan_diawali_tangkapan" : 0,
+                "hukuman" : 0
+            },
+            "ringkasan": {
+                "total_nilai": 0,
+                "total_hukuman": 0,
+                "nilai_akhir": 0
+            },
+            "catatan" : {
+                "binaan" : 0
+            }
+        },
+        "2": {
+            "rincian": [],
+            "kategori_nilai" : {
+                "pukulan" : 0,
+                "tendangan" : 0,
+                "jatuhan" : 0,
+                "pukulan_diawali_tangkisan" : 0,
+                "tendangan_diawali_tangkisan" : 0,
+                "jatuhan_diawali_tangkapan" : 0,
+                "hukuman" : 0
+            },
+            "ringkasan": {
+                "total_nilai": 0,
+                "total_hukuman": 0,
+                "nilai_akhir": 0
+            },
+            "catatan" : {
+                "binaan" : 0
+            }
+        },
+        "3": {
+            "rincian": [],
+            "kategori_nilai" : {
+                "pukulan" : 0,
+                "tendangan" : 0,
+                "jatuhan" : 0,
+                "pukulan_diawali_tangkisan" : 0,
+                "tendangan_diawali_tangkisan" : 0,
+                "jatuhan_diawali_tangkapan" : 0,
+                "hukuman" : 0
+            },
+            "ringkasan": {
+                "total_nilai": 0,
+                "total_hukuman": 0,
+                "nilai_akhir": 0
+            },
+            "catatan" : {
+                "binaan" : 0
+            }
+        }
+    },
+    "kategori_nilai" : {
+        "pukulan" : 0,
+        "tendangan" : 0,
+        "jatuhan" : 0,
+        "pukulan_diawali_tangkisan" : 0,
+        "tendangan_diawali_tangkisan" : 0,
+        "jatuhan_diawali_tangkapan" : 0,
+        "hukuman" : 0
+    },
+    "ringkasan": {
+        "total_nilai": 0,
+        "total_hukuman": 0,
+        "nilai_akhir": 0
+    }
+}

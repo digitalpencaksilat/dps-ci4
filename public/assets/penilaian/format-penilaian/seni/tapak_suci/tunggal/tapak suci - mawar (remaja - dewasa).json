@@ -1,0 +1,147 @@
+{
+	"metadata": {
+		"nama": "Tunggal/Beregu Tapak Suci - Mawar (Remaja & Dewasa)",
+		"jumlah_rangkaian_gerak": 14,
+		"jumlah_gerakan": 100
+	},
+	"penilaian": {
+		"unsur_nilai": {
+			"kebenaran": {
+				"metadata":{
+					"step" : 1
+				},
+				"jurus": {
+					"mawar": {
+						"metadata": {
+							"lebar_kolom" : 100
+						},
+						"rangkaian_gerak": {
+							"1": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 5,
+								"nomor_gerakan_akhir": 5
+							},
+							"2": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 4,
+								"nomor_gerakan_akhir": 9
+							},
+							"3": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 5,
+								"nomor_gerakan_akhir": 14
+							},
+							"4": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 3,
+								"nomor_gerakan_akhir": 17
+							},
+							"5": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 4,
+								"nomor_gerakan_akhir": 21
+							},
+							"6": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 3,
+								"nomor_gerakan_akhir": 24
+							},
+							"7": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 4,
+								"nomor_gerakan_akhir": 28
+							},
+							"8": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 5,
+								"nomor_gerakan_akhir": 33
+							},
+							"9": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 7,
+								"nomor_gerakan_akhir": 40
+							},
+							"10": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 7,
+								"nomor_gerakan_akhir": 47
+							},
+							"11": {
+								"jumlah_kesalahan": 0,
+								"nilai_diperoleh": 0,
+								"nilai_maksimal": 6,
+								"nomor_gerakan_akhir": 53
+							}
+						}
+					}
+				},
+				"nilai_minimal": 0,
+				"total_kesalahan_gerak": 0,
+				"nilai_diperoleh": 53,
+				"nilai_maksimal": 53
+			},
+			"kemantapan": {
+				"metadata":{
+					"label" : "kemantapan / penghayatan / stamina (50 - 65)"
+				},
+				"nilai_minimal": 50,
+				"nilai_diperoleh": 55,
+				"nilai_maksimal": 65
+			}
+		},
+		"hukuman": {
+			"waktu": {
+				"tipe": "pilihan ganda",
+				"metadata":{
+					"label" : "Time Perfomance / waktu"
+				},
+				"detail_hukuman": {
+					"pilihan": {
+						"> 3 - 10 seconds (detik)" : 10,
+						"> 10 - 20 seconds (detik)" : 15,
+						"> 20 seconds (detik)" : 20
+					},
+					"terpilih": "",
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_keluar_garis": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Setiap kali keluar garis"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_mengeluarkan_suara": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Setiap kali mengeluarkan suara"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			}
+		},
+		"ringkasan": {
+			"total_nilai": 108,
+			"total_hukuman": 0,
+			"nilai_akhir": 108
+		}
+	}
+}

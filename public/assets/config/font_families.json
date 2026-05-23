@@ -1,0 +1,9 @@
+{
+    "times_new_roman" : "'Times New Roman'",
+    "verdana" : "'Verdana'",
+    "calibri" : "'Calibri'",
+    "arial" : "'Arial'", 
+    "arial_black" : "'Arial Black', sans-serif", 
+    "georgia" : "'Georgia'", 
+    "garamond" : "'Garamond'"
+}

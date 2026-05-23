@@ -1,0 +1,97 @@
+:root {
+  --brand-red: #d90429;
+  --brand-red-dark: #b90422;
+  --soft-gray: #f4f7f6;
+}
+
+/* Latar belakang cerah */
+.page-header {
+  background-color: var(--soft-gray);
+}
+
+.card-login {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border-top: 6px solid var(--brand-red);
+  background: #ffffff;
+}
+
+/* Penyesuaian Logo Brand di Header Card */
+.brand-logo-login {
+  max-width: 120px;
+  height: auto;
+  margin-bottom: 15px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card-header h4 {
+  color: #222;
+  letter-spacing: -0.5px;
+}
+
+/* Input Minimalis tanpa ikon */
+.form-control-custom {
+  border-radius: 12px;
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  background-color: #fcfcfc;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+}
+
+.form-control-custom:focus {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.1);
+  background-color: #fff;
+  outline: none;
+}
+
+/* Tombol dengan ikon */
+.btn-login-brand {
+  background-color: var(--brand-red);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s;
+}
+
+.btn-login-brand:hover {
+  background-color: var(--brand-red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(217, 4, 41, 0.3);
+  color: white;
+}
+
+.alert-custom {
+  border-radius: 10px;
+  font-size: 0.85rem;
+  border: none;
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.login-image-side {
+  border-radius: 25px;
+  margin: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.mask-red {
+  background: linear-gradient(
+    135deg,
+    rgba(217, 4, 41, 0.8) 0%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}

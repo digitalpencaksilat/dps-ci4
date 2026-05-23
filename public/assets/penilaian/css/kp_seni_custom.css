@@ -1,0 +1,108 @@
+/* Sidebar & Main Layout Adjustment */
+.bg-gray-900 {
+    background-color: #1e2125 !important;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.total_hukuman {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -2px;
+}
+
+.btn-diskualifikasi, .btn-success {
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+/* Penalty Rows */
+.penalty-row {
+    background-color: #25282c;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.penalty-row:hover {
+    background-color: #2c3035;
+}
+
+.penalty-label {
+    flex: 1;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.penalty-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-reset-single {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0 20px;
+    height: 48px !important;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    margin: 0 !important;
+    border: none !important;
+}
+
+.btn-penalty-value {
+    border: none;
+    border-radius: 10px;
+    padding: 0 20px;
+    height: 48px !important;
+    font-size: 1.1rem;
+    font-weight: 800;
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff !important;
+    box-sizing: border-box;
+    margin: 0 !important;
+    border: none !important;
+}
+
+.penalty-current-value {
+    background-color: #ffffff;
+    color: #000000 !important;
+    border-radius: 10px;
+    padding: 0 16px;
+    height: 48px !important;
+    min-width: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.4rem;
+    border: 2px solid #e9ecef;
+    box-sizing: border-box;
+    margin: 0 !important;
+}
+
+/* Header Adjustments */
+.bg-gradient-180-gray-dark {
+    background: linear-gradient(180deg, #333 0%, #1a1a1a 100%);
+}
+
+.button_gerakan_benar, .button_gerakan_salah {
+    font-size: 2.5rem !important;
+    font-weight: 800 !important;
+}

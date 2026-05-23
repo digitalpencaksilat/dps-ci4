@@ -1,0 +1,111 @@
+{
+	"metadata": {
+		"nama": "Berkelompok Tapak Suci (Remaja & Dewasa)"
+	},
+	"penilaian": {
+		"unsur_nilai": {
+			"kualitas_teknik": {
+				"metadata":{
+					"label" : "KUALITAS TEKNIK ( Teknik serang bela ) (40 - 100)"
+				},
+				"nilai_minimal": 40,
+				"nilai_diperoleh": 70,
+				"nilai_maksimal": 100
+			},
+			"kuantitas_teknik": {
+				"metadata":{
+					"label" : "KUANTITAS TEKNIK ( Kekayaan Teknik ) (20 - 80)"
+				},
+				"nilai_minimal": 20,
+				"nilai_diperoleh": 50,
+				"nilai_maksimal": 80
+			},
+			"ketangkasan_dan_kecepatan": {
+				"metadata":{
+					"label" : "KETANGKASAN DAN KECEPATAN (20 - 80)"
+				},
+				"nilai_minimal": 20,
+				"nilai_diperoleh": 50,
+				"nilai_maksimal": 80
+			},
+			"stamina_dan_pernafasan": {
+				"metadata":{
+					"label" : "STAMINA DAN PERNAFASAN (10 - 70)"
+				},
+				"nilai_minimal": 10,
+				"nilai_diperoleh": 30,
+				"nilai_maksimal": 70
+			},
+			"kemantapan_sikap": {
+				"metadata":{
+					"label" : "KEMANTAPAN SIKAP (10 - 70)"
+				},
+				"nilai_minimal": 10,
+				"nilai_diperoleh": 30,
+				"nilai_maksimal": 70
+			},
+			"irama_dan_musik_pengiring": {
+				"metadata":{
+					"label" : "IRAMA / MUSIK PENGIRING (10 - 70)"
+				},
+				"nilai_minimal": 10,
+				"nilai_diperoleh": 30,
+				"nilai_maksimal": 70
+			}
+		},
+		"hukuman": {
+			"waktu": {
+				"tipe": "pilihan ganda",
+				"metadata":{
+					"label" : "Time Perfomance / waktu"
+				},
+				"detail_hukuman": {
+					"pilihan": {
+						"> 6 - 15 seconds (detik)" : 10,
+						"> 16 - 30 seconds (detik)" : 15,
+						"> 30 seconds (detik)" : 20
+					},
+					"terpilih": "",
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_senjata_lepas": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Setiap kali senjata lepas"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 10,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},
+			"senjata_tidak_lepas_sesuai_deskripsi": {
+				"tipe": "satu kali",
+				"metadata":{
+					"label" : "Senjata tidak lepas sesuai (menurut) diskripsi"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 10,
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_keluar_arena": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Setiap kali keluar arena"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			}
+		},
+		"ringkasan": {
+			"total_nilai": 260,
+			"total_hukuman": 0,
+			"nilai_akhir": 260
+		}
+	}
+}

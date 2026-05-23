@@ -1,0 +1,15 @@
+{
+    "nowui": {
+        "orange":"orange",
+        "blue":"blue",
+        "red":"red",
+        "green":"green"
+    },
+    "virtual": {
+        "blue":"blue",
+        "red":"red"
+    },
+    "nove-hybrid": {
+        "hybrid":"hybrid"
+    }
+}

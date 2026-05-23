@@ -1,0 +1,10 @@
+@@ -737,7 +737,8 @@
+       "json",
+     ).fail(function() {
+-      console.error("Failed to refresh jury status - network or server error");
++      console.log("koneksi polling terputus, switch ke offline");
++      juri.set_online_status(false);
+     });
+ 
+ 
+ 

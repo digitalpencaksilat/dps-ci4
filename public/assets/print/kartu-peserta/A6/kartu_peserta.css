@@ -1,0 +1,146 @@
+
+	*{
+		box-sizing: border-box;
+		-webkit-print-color-adjust: exact;
+		color-adjust: exact;
+	}
+	body{
+		margin: 0mm; 
+		font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+		font-weight: 400;
+		overflow-x: hidden;
+		overflow-y: auto;
+	} 
+	html, body {
+		height: 100%;
+	}
+	.kartu-peserta{
+		border: 0;
+		float: left;
+		padding:0px;
+		width: 105mm;
+		height: 148mm;
+		margin: 0;
+		position: relative;
+		-webkit-print-color-adjust: exact;
+		background-size: cover;
+		background-repeat: no-repeat;
+		page-break-inside: avoid;
+	}
+
+	.atlet-img {
+		width: 30mm;
+		height: 40mm;
+		top: 17mm;
+		right: 0;
+		left: 8mm;
+		position: absolute;
+		overflow: hidden;
+	}
+  
+	.atlet-img img{
+		object-fit:cover;
+		max-width: 100%;
+	}
+
+  	.nama-atlet {
+		width: 50%;
+		position: absolute;
+		font-size: 12pt;
+		color: #2d2d2d;
+		margin: 0;	
+		top: 21.5mm;
+		left: 44mm;
+		text-align: left;
+		font-weight: bolder;
+		text-transform: uppercase;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: clip;
+	}	
+
+  	.kontingen-atlet{
+		width: 50%;
+		position: absolute;
+		font-size: 12pt;
+		white-space: nowrap;
+		overflow: hidden;
+		top: 34mm;
+		left: 44mm;
+		text-overflow: clip;
+		margin: 0;
+		color: #222;
+		text-transform: uppercase;
+		font-weight: bolder;
+		text-align: left;
+  	}
+	.barcode {
+		position: absolute;
+		top: 45mm;
+		left: 47mm;
+		padding: 0;
+		overflow: visible;
+		margin: 0;
+		width: 4cm;
+	}
+
+	.barcode img{
+		width: 100%;
+	}
+
+	.kategori-lomba {
+		width: 80%;
+		position: absolute;
+		border-collapse: collapse;
+		font-weight: bolder;
+		text-align: center;
+		text-overflow: clip;
+		white-space: nowrap;
+		overflow: hidden;
+		top: 70mm;
+		left: 12mm;
+		font-size: 12pt;
+	}
+	
+	.tabel-pertandingan {
+		width: 80%;
+		position: absolute;
+		border-collapse: collapse;
+		top: 78mm;
+		left: 12mm;
+		font-size: 14px;
+	}
+	
+	.tabel-pertandingan thead tr{
+		color: #fff;
+		text-align: center;
+		background-color: #313131;
+		background: #313131;
+		background: linear-gradient(rgb(37, 37, 37) 50%, #313131 50%);
+	}
+
+	.tabel-pertandingan thead th{
+		padding: 2mm 1mm;
+	}
+	.tabel-pertandingan tr{
+		text-align: center;
+		background-color: #fff;
+		background: #fff;
+		background: linear-gradient(#fff 50%, rgb(243, 243, 243) 50%);
+	}
+	.tabel-pertandingan td{
+		padding: 2mm 1mm;
+	}
+
+	.tabel-pertandingan td.merah{
+		color: #fff;
+		background-color: #ff0000;
+		background: #ff0000;
+		background: linear-gradient(#ff0000 30%, #db0101 30%);
+	}
+	.tabel-pertandingan td.biru{
+		color: #fff;
+		background-color: #0000ff;
+		background: #0000ff;
+		background: linear-gradient(#0000ff 30%, #0000db 30%);
+	}

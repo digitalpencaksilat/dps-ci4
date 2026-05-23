@@ -1,0 +1,107 @@
+{
+	"metadata": {
+		"nama": "Ganda IPSI Remaja dan Dewasa"
+	},
+	"penilaian": {
+		"unsur_nilai": {
+			"teknik_serang_bela": {
+				"metadata": {
+					"label": " TEKNIK  SERANG BELA (60 -80)"
+				},
+				"nilai_minimal": 60,
+				"nilai_diperoleh": 70,
+				"nilai_maksimal": 80
+			},
+			"kemantapan_dan_kekompakan": {
+				"metadata": {
+					"label": "KEMANTAPAN & KEKOMPAKAN (50 - 60)"
+				},
+				"nilai_minimal": 50,
+				"nilai_diperoleh": 55,
+				"nilai_maksimal": 60
+			},
+			"keserasian_penghayatan": {
+				"metadata": {
+					"label": "KESERASIAN PEMGHAYATAN (50 - 60)"
+				},
+				"nilai_minimal": 50,
+				"nilai_diperoleh": 55,
+				"nilai_maksimal": 60
+			}
+		},
+		"hukuman": {
+			"waktu": {
+				"tipe": "pilihan ganda",
+				"metadata": {
+					"label": "waktu"
+				},
+				"detail_hukuman": {
+					"pilihan": {
+						"> 5 - 10  or  10 - 15 seconds": 10,
+						"> 10 or > 15 seconds  (Disqualify)": "disk"
+					},
+					"terpilih": "",
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_keluar_garis": {
+				"tipe": "repetisi",
+				"metadata": {
+					"label": "Setiap kali keluar garis"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_senjata_jatuh_tidak_sesuai_deskripsi": {
+				"tipe": "repetisi",
+				"metadata": {
+					"label": "Setiap kali senjata jatuh tidak sesuai deskripsi"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},
+			"setiap_kali_senjata_tidak_jatuh_sesuai_deskripsi": {
+				"tipe": "repetisi",
+				"metadata": {
+					"label": "Setiap kali senjata tidak jatuh sesuai deskripsi"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},
+			"suara_berlebihan": {
+				"tipe": "satu kali",
+				"metadata": {
+					"label": "Suara Berlebihan"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"nilai_hukuman": 0
+				}
+			},
+			"senjata_tidak_sesuai": {
+				"tipe": "satu kali",
+				"metadata": {
+					"label": "Suara Berlebihan"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 5,
+					"nilai_hukuman": 0
+				}
+			}
+		},
+		"ringkasan": {
+			"total_nilai": 180,
+			"total_hukuman": 0,
+			"nilai_akhir": 180
+		}
+	}
+}

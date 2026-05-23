@@ -1,0 +1,316 @@
+:root {
+  --brand-red: #d90429;
+  /* Merah yang lebih solid dan tegas */
+  --brand-red-dark: #b90422;
+  --bg-light: #f8f9fa;
+}
+
+.custom-container {
+  max-width: 950px;
+  margin: auto;
+}
+
+/* Tab Navigation */
+.nav-pills-custom {
+  background: #eeeeee;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.nav-pills-custom .nav-link {
+  border-radius: 8px;
+  font-weight: 700;
+  color: #555;
+  padding: 10px 20px;
+  transition: all 0.2s ease;
+}
+
+.nav-pills-custom .nav-link.active {
+  background-color: var(--brand-red) !important;
+  color: #ffffff !important;
+}
+
+/* Card Styling */
+.card-custom {
+  border: none;
+  border-top: 5px solid var(--brand-red);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.card-custom:hover {
+  transform: translateY(-3px);
+}
+
+.card-header-custom {
+  background: transparent;
+  padding: 1.5rem 1rem 0;
+  text-align: center;
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  background: var(--bg-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  color: var(--brand-red);
+  font-size: 1.5rem;
+  border: 1px solid #eee;
+}
+
+.card-title-text {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #222;
+  margin-bottom: 0;
+}
+
+.header-line {
+  width: 30px;
+  height: 3px;
+  background: var(--brand-red);
+  margin: 8px auto 15px;
+}
+
+/* Button Styling (Tanpa Glow) */
+.btn-brand-red {
+  background-color: var(--brand-red);
+  color: white;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-brand-red:hover {
+  background-color: var(--brand-red-dark);
+  color: white;
+}
+
+.btn-brand-outline {
+  background-color: transparent;
+  color: var(--brand-red);
+  border: 2px solid var(--brand-red);
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  transition: all 0.2s;
+}
+
+.btn-brand-outline:hover {
+  background-color: var(--brand-red);
+  color: white;
+}
+
+.tab-pane {
+  padding-top: 20px;
+}
+
+/* Khusus Penalty Button (Gaya Hitam Tegas) */
+.btn-penalty {
+  background-color: transparent;
+  color: #000 !important;
+  border: 2px solid #000;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+
+.btn-penalty:hover {
+  background-color: #000;
+  color: #fff !important;
+}
+
+/* Navbar Custom Style */
+.navbar-custom {
+  background-color: #1a1a1a !important;
+  /* Hitam lebih pekat */
+  border-bottom: 3px solid var(--brand-red);
+  /* Garis identitas merah */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-custom .nav-link {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  transition: color 0.3s;
+  padding: 0.5rem 1rem !important;
+}
+
+.navbar-custom .nav-link:hover {
+  color: var(--brand-red) !important;
+}
+
+/* Indikator Active Page */
+.navbar-custom .nav-item.active .nav-link {
+  color: var(--brand-red) !important;
+}
+
+/* Logout Button Style */
+.btn-logout {
+  background-color: var(--brand-red);
+  color: white !important;
+  border-radius: 8px;
+  padding: 8px 18px !important;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: 10px;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background-color: var(--brand-red-dark);
+  transform: scale(1.05);
+}
+
+/* Logo Styling */
+.navbar-brand img {
+  transition: transform 0.3s;
+}
+
+.navbar-brand:hover img {
+  transform: scale(1.05);
+}
+/* Styling Khusus Toggler di Mobile */
+@media (max-width: 991px) {
+  /* 1. Reset tombol pembungkusnya agar rapi */
+  /* Reset Button Toggler agar terlihat rapi */
+    .navbar-toggler {
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        padding: 0.5rem 0.75rem;
+        outline: none;
+        box-shadow: none !important;
+    }
+
+    /* Matikan icon SVG bawaan Bootstrap karena kita pakai span custom */
+    .navbar-toggler-icon {
+        background-image: none !important;
+        width: auto !important;
+        height: auto !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* INI KUNCINYA: Memberi bentuk dan warna pada garis-garis tersebut */
+    .navbar-toggler .navbar-toggler-bar {
+        display: block;      /* Wajib block agar bisa diatur tinggi/lebar */
+        width: 22px;         /* Lebar garis */
+        height: 2px;         /* Ketebalan garis */
+        background-color: #ffffff !important; /* Warna PUTIH Wajib */
+        border-radius: 1px;
+        margin: 3px 0;       /* Jarak antar garis atas-bawah */
+        transition: all 0.2s;
+    }
+
+    /* Efek Hover (Opsional: garis jadi merah saat disentuh) */
+    .navbar-toggler:hover .navbar-toggler-bar {
+        background-color: var(--brand-red, #d90429) !important;
+    }
+}
+
+/* Comprehensive Tablet Optimization (up to 1366px) */
+/* This handles high-res tablets like iPad Pro, iPad Air, and Android Tablets */
+@media (max-width: 1366px) {
+  /* 1. Main Container & Vertical Spacing */
+  .container-fluid.min-vh-100 {
+    padding-top: 0.2rem !important;
+  }
+  
+  /* Extremely tight vertical gaps to allow LARGER content */
+  .mb-5, .my-5 { margin-bottom: 0.4rem !important; margin-top: 0.4rem !important; }
+  .mb-3, .my-3 { margin-bottom: 0.3rem !important; margin-top: 0.3rem !important; }
+  .mb-2, .my-2 { margin-bottom: 0.2rem !important; margin-top: 0.2rem !important; }
+  .pt-5 { padding-top: 0.4rem !important; }
+  .mt-3 { margin-top: 0.3rem !important; }
+  .py-3 { padding-top: 0.4rem !important; padding-bottom: 0.4rem !important; }
+  
+  /* 2. Navbar Overrides (Stay compact but readable) */
+  .navbar-custom .container {
+    max-width: 100% !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  .navbar-custom .nav-link {
+    font-size: 0.72rem !important;
+    padding-left: 0.45rem !important;
+    padding-right: 0.45rem !important;
+    white-space: nowrap !important;
+  }
+  .navbar-brand-img {
+    width: 65px !important;
+  }
+  .btn-logout-brand {
+    padding: 5px 8px !important;
+    font-size: 0.65rem !important;
+  }
+
+  /* 3. Timer & Score Displays (LARGER per user request) */
+  .timer-tanding {
+    font-size: min(8rem, 26vh) !important;
+    margin-bottom: 0 !important;
+    line-height: 0.9 !important;
+  }
+  .timer-seni {
+    font-size: 8rem !important;
+  }
+  #skor_biru, #skor_merah {
+    font-size: 3.5rem !important;
+  }
+
+  /* 4. Information Blocks & Cards (Larger Fonts) */
+  .block-informasi .px-4, .block-informasi .py-3 {
+    padding: 0.8rem 1rem !important;
+  }
+  .block-informasi .fs-4, .block-informasi .fs-md-3 {
+    font-size: 1.3rem !important;
+  }
+  .block-informasi .fs-5 {
+    font-size: 1.1rem !important;
+  }
+  .card-body.pb-0.pt-4 {
+    padding-top: 0.5rem !important;
+  }
+  .display-1 { 
+    font-size: 2.8rem !important; 
+    margin-top: 0.2rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  /* 5. Control Buttons (Larger & Thicker) */
+  .btn-timer, .btn-change-round, .btn_selesai, .btn-warning, .btn-danger, .btn-light, .btn-secondary {
+    padding-top: 0.7rem !important;
+    padding-bottom: 0.7rem !important;
+    font-size: 1.2rem !important;
+    font-weight: 800 !important;
+  }
+
+  /* Athlete font sizes */
+  .block-atlet .fs-4 { font-size: 1.5rem !important; }
+  .block-atlet .fs-5 { font-size: 1.2rem !important; }
+  .block-atlet .p-2, .block-atlet .p-md-3 { padding: 0.4rem !important; }
+}

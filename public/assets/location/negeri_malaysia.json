@@ -1,0 +1,70 @@
+[
+    {
+      "name": "Brunei",
+      "code": "BRU"
+    },
+    {
+      "name": "Johor",
+      "code": "JHR"
+    },
+    {
+      "name": "Kedah",
+      "code": "KDH"
+    },
+    {
+      "name": "Kelantan",
+      "code": "KEL"
+    },
+    {
+      "name": "Kuala Lumpur",
+      "code": "KL"
+    },
+    {
+      "name": "Labuan",
+      "code": "LBN"
+    },
+    {
+      "name": "Wilayah Persekutuan",
+      "code": "WPE"
+    },
+    {
+      "name": "Melaka",
+      "code": "MLK"
+    },
+    {
+      "name": "Negeri Sembilan",
+      "code": "NSN"
+    },
+    {
+      "name": "Pahang",
+      "code": "PHG"
+    },
+    {
+      "name": "Penang",
+      "code": "PNG"
+    },
+    {
+      "name": "Perak",
+      "code": "PRK"
+    },
+    {
+      "name": "Perlis",
+      "code": "PER"
+    },
+    {
+      "name": "Sabah",
+      "code": "SBH"
+    },
+    {
+      "name": "Sarawak",
+      "code": "SWK"
+    },
+    {
+      "name": "Selangor",
+      "code": "SGR"
+    },
+    {
+      "name": "Terengganu",
+      "code": "TRG"
+    }
+  ]

@@ -9,11 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="<?= online_asset('bootstrap_5_css') ?>" rel="stylesheet">
+    <link rel="stylesheet" href="<?= online_asset('datatables_bs5_css') ?>">
+    <link rel="stylesheet" href="<?= online_asset('datatables_responsive_css') ?>">
+    <link rel="stylesheet" href="<?= online_asset('toastr_css') ?>">
+    <link rel="stylesheet" href="<?= online_asset('fontawesome_6_css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/kontingen-theme.css') ?>">
 </head>
 
@@ -98,14 +98,14 @@
         </main>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="<?= online_asset('jquery_3_js') ?>"></script>
+    <script src="<?= online_asset('bootstrap_5_bundle_js') ?>"></script>
+    <script src="<?= online_asset('datatables_jquery_js') ?>"></script>
+    <script src="<?= online_asset('datatables_bs5_js') ?>"></script>
+    <script src="<?= online_asset('datatables_responsive_js') ?>"></script>
+    <script src="<?= online_asset('datatables_responsive_bs5_js') ?>"></script>
+    <script src="<?= online_asset('sweetalert2_js') ?>"></script>
+    <script src="<?= online_asset('toastr_js') ?>"></script>
     <script>
         toastr.options = {
             closeButton: true,

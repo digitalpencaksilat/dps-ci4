@@ -190,6 +190,39 @@ class Database extends Config
         ],
     ];
 
+    /**
+     * Dedicated SQLite connection for location hierarchy data.
+     *
+     * @var array<string, mixed>
+     */
+    public array $location = [
+        'DSN'          => '',
+        'hostname'     => '',
+        'username'     => '',
+        'password'     => '',
+        'database'     => WRITEPATH . 'database/location.db',
+        'DBDriver'     => 'SQLite3',
+        'DBPrefix'     => '',
+        'pConnect'     => false,
+        'DBDebug'      => true,
+        'charset'      => 'utf8',
+        'DBCollat'     => '',
+        'swapPre'      => '',
+        'encrypt'      => false,
+        'compress'     => false,
+        'strictOn'     => false,
+        'failover'     => [],
+        'port'         => 3306,
+        'foreignKeys'  => false,
+        'busyTimeout'  => 1000,
+        'synchronous'  => null,
+        'dateFormat'   => [
+            'date'     => 'Y-m-d',
+            'datetime' => 'Y-m-d H:i:s',
+            'time'     => 'H:i:s',
+        ],
+    ];
+
     public function __construct()
     {
         parent::__construct();

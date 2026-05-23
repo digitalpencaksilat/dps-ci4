@@ -2,84 +2,74 @@
 
 namespace App\Controllers;
 
+use CodeIgniter\Database\BaseConnection;
+use Throwable;
+
 class LocationController extends BaseController
 {
     public function countries()
     {
-        $data = $this->readJsonFile(FCPATH . 'assets/location/negara.json');
-        $result = [];
-
-        foreach ($data as $row) {
-            if (isset($row['name'])) {
-                $result[$row['name']] = $row['name'];
-            }
-        }
-
-        ksort($result);
-
-        return $this->response->setJSON($result);
+        return $this->response->setJSON($this->loadNamedMapFromTable('countries', null, 'name', 'id', true));
     }
 
     public function provinces()
     {
-        $data = $this->readJsonFile(FCPATH . 'assets/location/provinsi.json');
-        $result = [];
-
-        foreach ($data as $row) {
-            if (isset($row['nama'], $row['id'])) {
-                $result[$row['nama']] = $row['id'];
-            }
-        }
-
-        ksort($result);
-
-        return $this->response->setJSON($result);
+        return $this->response->setJSON($this->loadNamedMapFromTable('provinces'));
     }
 
     public function regencies(string $provinceId)
     {
-        return $this->response->setJSON($this->loadNamedMap(FCPATH . 'assets/location/kabupaten/' . $provinceId . '.json'));
+        return $this->response->setJSON($this->loadNamedMapFromTable('regencies', ['province_id' => $provinceId]));
     }
 
     public function districts(string $regencyId)
     {
-        return $this->response->setJSON($this->loadNamedMap(FCPATH . 'assets/location/kecamatan/' . $regencyId . '.json'));
+        return $this->response->setJSON($this->loadNamedMapFromTable('districts', ['regency_id' => $regencyId]));
     }
 
     public function villages(string $districtId)
     {
-        return $this->response->setJSON($this->loadNamedMap(FCPATH . 'assets/location/kelurahan/' . $districtId . '.json'));
+        return $this->response->setJSON($this->loadNamedMapFromTable('villages', ['district_id' => $districtId]));
     }
 
-    private function loadNamedMap(string $path): array
+    private function loadNamedMapFromTable(
+        string $table,
+        ?array $where = null,
+        string $nameColumn = 'name',
+        string $idColumn = 'id',
+        bool $returnNameAsValue = false,
+    ): array
     {
-        $data = $this->readJsonFile($path);
-        $result = [];
+        try {
+            $builder = $this->locationDb()->table($table)->select($idColumn . ', ' . $nameColumn)->orderBy($nameColumn, 'ASC');
 
-        foreach ($data as $row) {
-            if (isset($row['nama'], $row['id'])) {
-                $result[$row['nama']] = $row['id'];
+            foreach ($where ?? [] as $column => $value) {
+                $builder->where($column, $value);
             }
+
+            $rows = $builder->get()->getResultArray();
+        } catch (Throwable) {
+            return ['status' => false];
         }
 
-        ksort($result);
+        $result = [];
+
+        foreach ($rows as $row) {
+            $name = trim((string) ($row[$nameColumn] ?? ''));
+            $id = trim((string) ($row[$idColumn] ?? ''));
+
+            if ($name === '' || $id === '') {
+                continue;
+            }
+
+            $result[$name] = $returnNameAsValue ? $name : $id;
+        }
 
         return $result === [] ? ['status' => false] : $result;
     }
 
-    private function readJsonFile(string $path): array
+    private function locationDb(): BaseConnection
     {
-        if (! is_file($path)) {
-            return [];
-        }
-
-        $raw = file_get_contents($path);
-        if ($raw === false) {
-            return [];
-        }
-
-        $decoded = json_decode($raw, true);
-
-        return is_array($decoded) ? $decoded : [];
+        return db_connect('location');
     }
 }

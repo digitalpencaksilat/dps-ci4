@@ -59,6 +59,37 @@ if (! function_exists('phpb_theme_asset')) {
     }
 }
 
+if (! function_exists('online_asset')) {
+    /**
+     * Centralized CDN URLs for third-party libraries.
+     * Keep project-specific/custom files local. Only use this for public CDN-safe libraries.
+     */
+    function online_asset(string $key): string
+    {
+        $assets = [
+            'bootstrap_5_css'              => 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+            'bootstrap_5_bundle_js'        => 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
+            'jquery_3_js'                  => 'https://code.jquery.com/jquery-3.7.1.min.js',
+            'datatables_bs5_css'           => 'https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css',
+            'datatables_jquery_js'         => 'https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js',
+            'datatables_bs5_js'            => 'https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js',
+            'datatables_responsive_css'    => 'https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css',
+            'datatables_responsive_js'     => 'https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js',
+            'datatables_responsive_bs5_js' => 'https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js',
+            'fontawesome_6_css'            => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
+            'fontawesome_4_css'            => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+            'select2_css'                  => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+            'select2_bs5_css'              => 'https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css',
+            'select2_js'                   => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+            'toastr_css'                   => 'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css',
+            'toastr_js'                    => 'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js',
+            'sweetalert2_js'               => 'https://cdn.jsdelivr.net/npm/sweetalert2@11',
+        ];
+
+        return $assets[$key] ?? '';
+    }
+}
+
 // Some legacy views call get_instance()->get_setting(...). Provide a tiny shim.
 if (! function_exists('ci3_config_item')) {
     /**

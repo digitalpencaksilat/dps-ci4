@@ -99,6 +99,12 @@
                                 </div>
 
                                 <div class="col-12 d-flex flex-wrap gap-3 pt-2">
+                                    <?php if (!empty($recaptchaEnabled) && !empty($recaptchaSiteKey)) : ?>
+                                        <div class="w-100 mb-2">
+                                            <div class="g-recaptcha" data-sitekey="<?= esc($recaptchaSiteKey) ?>"></div>
+                                        </div>
+                                    <?php endif; ?>
+
                                     <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">Daftarkan Kontingen</button>
                                     <a href="<?= base_url('pendaftaran/login') ?>" class="btn btn-outline-dark btn-lg rounded-pill px-4">Sudah Punya Akun</a>
                                 </div>
@@ -114,6 +120,10 @@
         </div>
     </div>
 </section>
+
+<?php if (!empty($recaptchaEnabled) && !empty($recaptchaSiteKey)) : ?>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<?php endif; ?>
 
 <script>
     document.addEventListener('DOMContentLoaded', async () => {

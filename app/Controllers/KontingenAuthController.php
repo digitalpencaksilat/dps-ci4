@@ -37,10 +37,14 @@ class KontingenAuthController extends BaseController
         }
 
         $auth = new KontingenAuthService();
-        $success = $auth->attempt(
-            (string) $this->request->getPost('email_kontingen'),
-            (string) $this->request->getPost('password')
-        );
+        try {
+            $success = $auth->attempt(
+                (string) $this->request->getPost('email_kontingen'),
+                (string) $this->request->getPost('password')
+            );
+        } catch (\RuntimeException $e) {
+            return redirect()->to(base_url('pendaftaran/login'))->withInput()->with('status', false)->with('message', $e->getMessage());
+        }
 
         if (! $success) {
             return redirect()->to(base_url('pendaftaran/login'))->withInput()->with('status', false)->with('message', 'Username atau password salah.');

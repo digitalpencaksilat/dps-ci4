@@ -221,9 +221,29 @@ class UploadedFilePayload
             throw new \RuntimeException('Bukti pembayaran tidak valid.');
         }
 
+        $extension = strtolower((string) $this->file->getExtension());
+        $allowedExt = ['jpg', 'jpeg', 'png'];
+        if (! in_array($extension, $allowedExt, true)) {
+            throw new \RuntimeException('Bukti pembayaran hanya boleh berupa JPG, JPEG, atau PNG.');
+        }
+
+        $mime = strtolower((string) $this->file->getMimeType());
+        if (! in_array($mime, ['image/jpeg', 'image/png'], true)) {
+            throw new \RuntimeException('MIME type bukti pembayaran tidak sesuai.');
+        }
+
+        if ($this->file->getSizeByUnit('kb') > 10240) {
+            throw new \RuntimeException('Ukuran bukti pembayaran melebihi batas 10 MB.');
+        }
+
         $targetDir = FCPATH . 'uploads/bukti-pembayaran';
         if (! is_dir($targetDir)) {
             mkdir($targetDir, 0777, true);
+        }
+
+        $targetIndex = $targetDir . '/index.html';
+        if (! is_file($targetIndex)) {
+            file_put_contents($targetIndex, '');
         }
 
         $name = $this->file->getRandomName();

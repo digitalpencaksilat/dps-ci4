@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\SiteBuilderMenusModel;
 use App\Services\KontingenRegistrationService;
+use App\Services\RecaptchaService;
 
 class PendaftaranController extends BaseController
 {
@@ -20,6 +21,8 @@ class PendaftaranController extends BaseController
         $data = $this->baseViewData();
         $data['main_view'] = 'pendaftaran/pages/registrasi';
         $data['perbolehkan_kontingen_mendaftar'] = (bool) ci3_config_item('perbolehkan_kontingen_mendaftar', 'pendaftaran/akses_pendaftaran');
+        $data['recaptchaSiteKey'] = (new RecaptchaService())->siteKey();
+        $data['recaptchaEnabled'] = (new RecaptchaService())->isConfigured();
 
         return view('pendaftaran/template', $data);
     }
@@ -46,6 +49,16 @@ class PendaftaranController extends BaseController
 
         if (! $this->validate($rules)) {
             return redirect()->to(base_url('registrasi'))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
+        }
+
+        $recaptcha = new RecaptchaService();
+        if ($recaptcha->isConfigured()) {
+            $token = (string) $this->request->getPost('g-recaptcha-response');
+            $valid = $recaptcha->verify($token, $this->request->getIPAddress());
+
+            if (! $valid) {
+                return redirect()->to(base_url('registrasi'))->withInput()->with('status', false)->with('message', 'Verifikasi reCAPTCHA gagal. Silakan coba lagi.');
+            }
         }
 
         try {

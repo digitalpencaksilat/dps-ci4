@@ -49,10 +49,31 @@ class ArsipPendaftarService
 
     private function validateUpload($uploaded, array $slot, string $jenisArsip): void
     {
+        if (! $uploaded->isValid()) {
+            throw new \RuntimeException('Upload arsip ' . $jenisArsip . ' tidak valid.');
+        }
+
         $allowed = array_map('strtolower', explode('|', (string) ($slot['allowed_types'] ?? '')));
         $ext = strtolower((string) $uploaded->getExtension());
         if ($allowed !== [''] && ! in_array($ext, $allowed, true)) {
             throw new \RuntimeException('Tipe file untuk arsip ' . $jenisArsip . ' tidak diizinkan.');
+        }
+
+        $mime = strtolower((string) $uploaded->getMimeType());
+        $allowedMimeMap = [
+            'jpg' => ['image/jpeg'],
+            'jpeg' => ['image/jpeg'],
+            'png' => ['image/png'],
+            'pdf' => ['application/pdf'],
+            'doc' => ['application/msword', 'application/octet-stream'],
+            'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip', 'application/octet-stream'],
+        ];
+
+        if (isset($allowedMimeMap[$ext])) {
+            $allowedMimes = $allowedMimeMap[$ext];
+            if (! in_array($mime, $allowedMimes, true)) {
+                throw new \RuntimeException('MIME type file untuk arsip ' . $jenisArsip . ' tidak sesuai.');
+            }
         }
 
         $maxKb = (int) ($slot['max_size'] ?? 0);
@@ -66,6 +87,11 @@ class ArsipPendaftarService
         $targetDir = FCPATH . 'uploads/peserta/arsip';
         if (! is_dir($targetDir)) {
             mkdir($targetDir, 0777, true);
+        }
+
+        $targetIndex = $targetDir . '/index.html';
+        if (! is_file($targetIndex)) {
+            file_put_contents($targetIndex, '');
         }
 
         $name = $uploaded->getRandomName();

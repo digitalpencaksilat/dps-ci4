@@ -77,7 +77,7 @@ class Filters extends BaseFilters
         'before' => [
             'ci3globals',
             // 'honeypot',
-            // 'csrf',
+            'csrf',
             // 'invalidchars',
         ],
         'after' => [

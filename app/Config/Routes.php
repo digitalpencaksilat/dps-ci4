@@ -38,6 +38,14 @@ $routes->setAutoRoute(false);
 // Public landing
 $routes->get('/', 'PendaftaranController::index');
 $routes->get('pendaftaran', 'PendaftaranController::index');
+$routes->get('maintenance', static fn() => service('response')->setStatusCode(503)->setHeader('Retry-After', '3600')->setBody(view('shared_sections/dps_error_panel', [
+    'code' => '503',
+    'title' => 'Sedang Maintenance',
+    'message' => 'Sistem sedang dalam pemeliharaan. Silakan coba kembali dalam beberapa saat.',
+    'actionUrl' => base_url('maintenance'),
+    'actionLabel' => 'Muat Ulang',
+    'showHome' => true,
+])));
 
 // Public pages kept for phase awal
 $routes->get('registrasi', 'PendaftaranController::registrasi');

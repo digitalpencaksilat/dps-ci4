@@ -36,6 +36,7 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'ci3globals'    => \App\Filters\Ci3Globals::class,
         'kontingenauth' => \App\Filters\KontingenAuthFilter::class,
+        'maintenance'   => \App\Filters\MaintenanceFilter::class,
     ];
 
     /**
@@ -76,6 +77,7 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             'ci3globals',
+            'maintenance',
             // 'honeypot',
             'csrf',
             // 'invalidchars',

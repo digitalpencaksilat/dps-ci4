@@ -47,7 +47,7 @@ class PembayaranKontingenController extends BaseController
                 (int) session()->get('id_kontingen'),
                 $tandingIds,
                 $seniIds,
-                new UploadedFilePayload($file)
+                new UploadedFilePayload($file, (int) session()->get('id_kontingen'))
             );
         } catch (\RuntimeException $e) {
             return redirect()->to(base_url('kontingen/pembayaran'))->with('status', false)->with('message', $e->getMessage());

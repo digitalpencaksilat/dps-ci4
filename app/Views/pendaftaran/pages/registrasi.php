@@ -143,17 +143,22 @@
 
         const setOptions = (select, options, selected, placeholder) => {
             select.innerHTML = '';
-            const first = document.createElement('option');
-            first.value = '';
-            first.textContent = placeholder;
-            select.appendChild(first);
 
-            Object.entries(options).forEach(([label, value]) => {
+            const entries = Object.entries(options);
+            if (entries.length === 0) {
+                const first = document.createElement('option');
+                first.value = '';
+                first.textContent = placeholder;
+                select.appendChild(first);
+                return;
+            }
+
+            entries.forEach(([label, value], index) => {
                 const option = document.createElement('option');
                 option.value = label;
                 option.dataset.id = value;
                 option.textContent = label;
-                if (selected && selected === label) {
+                if ((selected && selected === label) || (! selected && index === 0)) {
                     option.selected = true;
                 }
                 select.appendChild(option);
@@ -190,6 +195,8 @@
             const id = selectedOption?.dataset.id;
             if (!id) {
                 setOptions(kabupaten, {}, null, 'Pilih kabupaten / kota');
+                setOptions(kecamatan, {}, null, 'Pilih kecamatan');
+                setOptions(kelurahan, {}, null, 'Pilih kelurahan');
                 return;
             }
             const items = await fetchJson(`<?= base_url('location/regencies') ?>/` + id);
@@ -201,6 +208,7 @@
             const id = selectedOption?.dataset.id;
             if (!id) {
                 setOptions(kecamatan, {}, null, 'Pilih kecamatan');
+                setOptions(kelurahan, {}, null, 'Pilih kelurahan');
                 return;
             }
             const items = await fetchJson(`<?= base_url('location/districts') ?>/` + id);
@@ -226,12 +234,12 @@
         jenisKontingen.addEventListener('change', updateJenisKontingen);
         provinsi.addEventListener('change', async () => {
             await loadRegencies();
-            setOptions(kecamatan, {}, null, 'Pilih kecamatan');
-            setOptions(kelurahan, {}, null, 'Pilih kelurahan');
+            await loadDistricts();
+            await loadVillages();
         });
         kabupaten.addEventListener('change', async () => {
             await loadDistricts();
-            setOptions(kelurahan, {}, null, 'Pilih kelurahan');
+            await loadVillages();
         });
         kecamatan.addEventListener('change', async () => {
             await loadVillages();

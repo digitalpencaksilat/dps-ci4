@@ -211,7 +211,10 @@ class PembayaranKontingenService
 
 class UploadedFilePayload
 {
-    public function __construct(private readonly \CodeIgniter\HTTP\Files\UploadedFile $file)
+    public function __construct(
+        private readonly \CodeIgniter\HTTP\Files\UploadedFile $file,
+        private readonly int $idKontingen
+    )
     {
     }
 
@@ -219,12 +222,6 @@ class UploadedFilePayload
     {
         if (! $this->file->isValid()) {
             throw new \RuntimeException('Bukti pembayaran tidak valid.');
-        }
-
-        $extension = strtolower((string) $this->file->getExtension());
-        $allowedExt = ['jpg', 'jpeg', 'png'];
-        if (! in_array($extension, $allowedExt, true)) {
-            throw new \RuntimeException('Bukti pembayaran hanya boleh berupa JPG, JPEG, atau PNG.');
         }
 
         $mime = strtolower((string) $this->file->getMimeType());
@@ -237,18 +234,17 @@ class UploadedFilePayload
         }
 
         $targetDir = FCPATH . 'uploads/bukti-pembayaran';
-        if (! is_dir($targetDir)) {
-            mkdir($targetDir, 0777, true);
+        $name = 'bukti-pembayaran-kontingen-' . $this->idKontingen . '-' . date('YmdHis') . '-' . $this->randomSuffix();
+
+        return (new ImageOptimizerService())->optimizeAndStore($this->file, $targetDir, $name, 1600, 82, 6);
+    }
+
+    private function randomSuffix(): string
+    {
+        try {
+            return bin2hex(random_bytes(2));
+        } catch (\Throwable) {
+            return substr((string) mt_rand(1000, 9999), 0, 4);
         }
-
-        $targetIndex = $targetDir . '/index.html';
-        if (! is_file($targetIndex)) {
-            file_put_contents($targetIndex, '');
-        }
-
-        $name = $this->file->getRandomName();
-        $this->file->move($targetDir, $name, true);
-
-        return $name;
     }
 }

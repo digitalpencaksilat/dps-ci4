@@ -192,7 +192,7 @@
                                                 <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
                                                     <div>
                                                         <h4 class="h6 fw-bold mb-1"><?= esc($slot['nama_arsip'] ?? $slotName) ?></h4>
-                                                        <div class="small text-muted">Tipe: <?= esc($slot['allowed_types'] ?? '-') ?> | Max: <?= esc((string) ($slot['max_size'] ?? 0)) ?> KB</div>
+                                                        <div class="small text-muted">Tipe: JPG, JPEG, PNG | Max: <?= esc((string) ($slot['max_size'] ?? 0)) ?> KB</div>
                                                     </div>
                                                     <?php if (!empty($slot['required'])) : ?>
                                                         <span class="badge text-bg-danger rounded-pill">Wajib</span>
@@ -200,7 +200,8 @@
                                                         <span class="badge text-bg-secondary rounded-pill">Opsional</span>
                                                     <?php endif; ?>
                                                 </div>
-                                                <input type="file" name="<?= esc($fieldName) ?>" class="form-control rounded-4" accept="<?= esc(str_replace('|', ',', $slot['allowed_types'] ?? '')) ?>">
+                                                <input type="file" name="<?= esc($fieldName) ?>" class="form-control rounded-4" accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-max-kb="<?= esc((string) ((int) ($slot['max_size'] ?? 0))) ?>">
+                                                <div class="small text-muted mt-2">Gambar akan dioptimasi otomatis agar ukuran lebih ringan dengan kualitas tetap mudah dibaca.</div>
                                                 <div class="arsip-preview small text-muted mt-2" data-slot-preview="<?= esc($fieldName) ?>"></div>
                                                 <div class="arsip-existing small mt-2" data-slot-existing="<?= esc($fieldName) ?>"></div>
                                             </div>
@@ -232,6 +233,17 @@
         const eyebrowEl = document.getElementById('pesertaModalEyebrow');
         const submitEl = document.getElementById('pesertaModalSubmit');
         const baseAction = <?= json_encode(base_url('kontingen/peserta')) ?>;
+        const allowedImageMimes = ['image/jpeg', 'image/png'];
+        const allowedImageName = /\.(jpe?g|png)$/i;
+
+        const notifyFileError = (message) => {
+            if (window.toastr && typeof window.toastr.error === 'function') {
+                window.toastr.error(message);
+                return;
+            }
+
+            window.alert(message);
+        };
 
         const slotPreview = (fieldName, text) => {
             const el = modalEl.querySelector(`[data-slot-preview="${fieldName}"]`);
@@ -253,7 +265,29 @@
             form.querySelectorAll('input[type="file"]').forEach((input) => {
                 input.addEventListener('change', () => {
                     const file = input.files?.[0];
-                    slotPreview(input.name, file ? `File dipilih: ${file.name}` : '');
+                    if (!file) {
+                        slotPreview(input.name, '');
+                        return;
+                    }
+
+                    const maxKb = Number(input.dataset.maxKb || 0);
+                    const validType = allowedImageMimes.includes(String(file.type || '').toLowerCase()) || allowedImageName.test(file.name || '');
+                    if (!validType) {
+                        input.value = '';
+                        slotPreview(input.name, '');
+                        notifyFileError('File arsip hanya boleh berupa gambar JPG, JPEG, atau PNG.');
+                        return;
+                    }
+
+                    if (maxKb > 0 && file.size > (maxKb * 1024)) {
+                        input.value = '';
+                        slotPreview(input.name, '');
+                        notifyFileError(`Ukuran file ${file.name} melebihi batas ${maxKb} KB.`);
+                        return;
+                    }
+
+                    const sizeKb = Math.max(1, Math.round(file.size / 1024));
+                    slotPreview(input.name, `File dipilih: ${file.name} (${sizeKb} KB)`);
                 });
             });
         };

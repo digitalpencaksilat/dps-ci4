@@ -73,7 +73,8 @@
                         <?php if ($allowPayment) : ?>
                             <div>
                                 <label class="form-label fw-semibold">Upload Bukti Pembayaran</label>
-                                <input type="file" name="foto" class="form-control rounded-4" accept="image/*" required>
+                                <input type="file" name="foto" class="form-control rounded-4" accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-max-kb="10240" required>
+                                <div class="small text-muted mt-2">Hanya JPG, JPEG, atau PNG. Maksimal 10 MB. Gambar akan dioptimasi otomatis agar ukuran lebih ringan.</div>
                             </div>
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-top pt-3">
                                 <div>
@@ -123,10 +124,20 @@
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('formPembayaranKontingen');
         const totalEl = document.getElementById('totalPembayaranKontingen');
+        const uploadInput = form?.querySelector('input[type="file"][name="foto"]');
 
         if (!form || !totalEl) {
             return;
         }
+
+        const notifyFileError = (message) => {
+            if (window.toastr && typeof window.toastr.error === 'function') {
+                window.toastr.error(message);
+                return;
+            }
+
+            window.alert(message);
+        };
 
         const updateTotal = () => {
             let total = 0;
@@ -138,6 +149,26 @@
 
         form.querySelectorAll('input[type="checkbox"]').forEach((input) => {
             input.addEventListener('change', updateTotal);
+        });
+
+        uploadInput?.addEventListener('change', () => {
+            const file = uploadInput.files?.[0];
+            if (!file) {
+                return;
+            }
+
+            const validType = ['image/jpeg', 'image/png'].includes(String(file.type || '').toLowerCase()) || /\.(jpe?g|png)$/i.test(file.name || '');
+            if (!validType) {
+                uploadInput.value = '';
+                notifyFileError('Bukti pembayaran hanya boleh berupa gambar JPG, JPEG, atau PNG.');
+                return;
+            }
+
+            const maxKb = Number(uploadInput.dataset.maxKb || 0);
+            if (maxKb > 0 && file.size > (maxKb * 1024)) {
+                uploadInput.value = '';
+                notifyFileError(`Ukuran file ${file.name} melebihi batas ${maxKb} KB.`);
+            }
         });
     });
 </script>

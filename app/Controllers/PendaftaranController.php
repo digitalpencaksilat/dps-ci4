@@ -47,6 +47,15 @@ class PendaftaranController extends BaseController
             'alamat_lengkap'                => 'required|min_length[8]',
         ];
 
+        if (($this->request->getPost('jenis_kontingen') ?? 'dalam_negeri') === 'dalam_negeri') {
+            $rules['provinsi'] = 'required|max_length[150]';
+            $rules['kabupaten_kota'] = 'required|max_length[150]';
+            $rules['kecamatan'] = 'required|max_length[150]';
+            $rules['kelurahan'] = 'required|max_length[150]';
+        } else {
+            $rules['negara'] = 'required|max_length[150]';
+        }
+
         if (! $this->validate($rules)) {
             return redirect()->to(base_url('registrasi'))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
         }

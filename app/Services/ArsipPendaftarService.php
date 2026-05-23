@@ -31,7 +31,7 @@ class ArsipPendaftarService
             }
 
             $this->validateUpload($uploaded, $slot, $jenisArsip);
-            $savedName = $this->storeFile($uploaded);
+            $savedName = $this->storeFile($uploaded, $idPendaftar, $jenisArsip);
 
             $existing = $this->findByJenisArsip($idPendaftar, $jenisArsip);
             if ($existing !== null) {
@@ -53,51 +53,31 @@ class ArsipPendaftarService
             throw new \RuntimeException('Upload arsip ' . $jenisArsip . ' tidak valid.');
         }
 
-        $allowed = array_map('strtolower', explode('|', (string) ($slot['allowed_types'] ?? '')));
         $ext = strtolower((string) $uploaded->getExtension());
-        if ($allowed !== [''] && ! in_array($ext, $allowed, true)) {
-            throw new \RuntimeException('Tipe file untuk arsip ' . $jenisArsip . ' tidak diizinkan.');
+        if (! in_array($ext, ['jpg', 'jpeg', 'png'], true)) {
+            throw new \RuntimeException('Arsip ' . $jenisArsip . ' hanya boleh berupa file JPG, JPEG, atau PNG.');
         }
 
         $mime = strtolower((string) $uploaded->getMimeType());
-        $allowedMimeMap = [
-            'jpg' => ['image/jpeg'],
-            'jpeg' => ['image/jpeg'],
-            'png' => ['image/png'],
-            'pdf' => ['application/pdf'],
-            'doc' => ['application/msword', 'application/octet-stream'],
-            'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip', 'application/octet-stream'],
-        ];
-
-        if (isset($allowedMimeMap[$ext])) {
-            $allowedMimes = $allowedMimeMap[$ext];
-            if (! in_array($mime, $allowedMimes, true)) {
-                throw new \RuntimeException('MIME type file untuk arsip ' . $jenisArsip . ' tidak sesuai.');
-            }
+        if (! in_array($mime, ['image/jpeg', 'image/png'], true)) {
+            throw new \RuntimeException('MIME type file untuk arsip ' . $jenisArsip . ' tidak sesuai.');
         }
 
         $maxKb = (int) ($slot['max_size'] ?? 0);
         if ($maxKb > 0 && ($uploaded->getSizeByUnit('kb') > $maxKb)) {
             throw new \RuntimeException('Ukuran file untuk arsip ' . $jenisArsip . ' melebihi batas ' . $maxKb . ' KB.');
         }
+
+        (new ImageOptimizerService())->detectImageMeta($uploaded);
     }
 
-    private function storeFile($uploaded): string
+    private function storeFile($uploaded, int $idPendaftar, string $jenisArsip): string
     {
         $targetDir = FCPATH . 'uploads/peserta/arsip';
-        if (! is_dir($targetDir)) {
-            mkdir($targetDir, 0777, true);
-        }
+        $slug = $this->slugify($jenisArsip, 'arsip');
+        $name = 'arsip-peserta-' . $idPendaftar . '-' . $slug . '-' . date('YmdHis') . '-' . $this->randomSuffix();
 
-        $targetIndex = $targetDir . '/index.html';
-        if (! is_file($targetIndex)) {
-            file_put_contents($targetIndex, '');
-        }
-
-        $name = $uploaded->getRandomName();
-        $uploaded->move($targetDir, $name, true);
-
-        return $name;
+        return (new ImageOptimizerService())->optimizeAndStore($uploaded, $targetDir, $name, 1600, 82, 6);
     }
 
     private function deletePhysicalFile(string $fileName): void
@@ -111,6 +91,22 @@ class ArsipPendaftarService
     private function fieldName(string $namaArsip): string
     {
         return strtolower(preg_replace('/[^a-z0-9]+/i', '_', trim($namaArsip)) ?? 'arsip');
+    }
+
+    private function slugify(string $value, string $fallback): string
+    {
+        $slug = strtolower(trim((string) preg_replace('/[^a-z0-9]+/i', '-', $value), '-'));
+
+        return $slug !== '' ? $slug : $fallback;
+    }
+
+    private function randomSuffix(): string
+    {
+        try {
+            return bin2hex(random_bytes(2));
+        } catch (\Throwable) {
+            return substr((string) mt_rand(1000, 9999), 0, 4);
+        }
     }
 
     private function findByJenisArsip(int $idPendaftar, string $jenisArsip): ?object

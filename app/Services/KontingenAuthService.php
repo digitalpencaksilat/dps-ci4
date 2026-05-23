@@ -10,7 +10,7 @@ class KontingenAuthService
     public function attempt(string $email, string $password): bool
     {
         $throttler = Services::throttler();
-        $throttleKey = 'kontingen-login:' . sha1(strtolower(trim($email)) . '|' . service('request')->getIPAddress());
+        $throttleKey = 'kontingen_login_' . sha1(strtolower(trim($email)) . '|' . service('request')->getIPAddress());
 
         if (! $throttler->check($throttleKey, 5, MINUTE)) {
             throw new \RuntimeException('Terlalu banyak percobaan login. Coba lagi dalam beberapa menit.');

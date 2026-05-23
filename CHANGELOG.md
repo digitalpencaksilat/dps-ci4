@@ -37,3 +37,23 @@ Format changelog ini mengikuti gaya sederhana berbasis versi.
 - Error dashboard yang memakai asumsi kolom pembayaran lama yang tidak sesuai schema
 - Inkonistensi flash message dan konfirmasi hapus dengan mengganti ke Toastr dan SweetAlert2
 - Layout responsive dasar untuk area kontingen di desktop, tablet, dan mobile
+
+## v0.1.1 - 2026-05-23
+
+### Added
+
+- Integrasi reCAPTCHA opsional pada halaman registrasi
+- Throttling percobaan login kontingen berbasis IP dan email
+
+### Changed
+
+- CSRF diaktifkan untuk request web
+
+### Fixed
+
+- Pesan error login kontingen lebih informatif saat throttling aktif
+
+### Security
+
+- Validasi upload diperketat (extension, MIME type, dan size) untuk arsip peserta dan bukti pembayaran
+- Proteksi direktori upload dengan menambahkan file `index.html`

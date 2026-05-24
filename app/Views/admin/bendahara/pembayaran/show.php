@@ -154,7 +154,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <div class="modal-body text-center">
-                <img src="<?= base_url('uploads/bukti-pembayaran/' . $detail['pembayaran']->foto) ?>" alt="Bukti pembayaran transaksi #<?= esc((string) $detail['pembayaran']->id_pembayaran) ?>" class="img-fluid rounded-4 border" style="max-height: 70vh; max-width: min(100%, 720px); object-fit: contain;">
+                <img src="<?= base_url('uploads/bukti-pembayaran/' . $detail['pembayaran']->foto) ?>" alt="Bukti pembayaran transaksi #<?= esc((string) $detail['pembayaran']->id_pembayaran) ?>" class="admin-proof-image img-fluid rounded-4 border">
             </div>
             <div class="modal-footer border-0 pt-0">
                 <a href="<?= base_url('uploads/bukti-pembayaran/' . $detail['pembayaran']->foto) ?>" target="_blank" rel="noopener" class="btn btn-soft rounded-pill px-4">Buka File Asli</a>

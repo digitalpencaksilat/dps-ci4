@@ -9,14 +9,14 @@
             <p class="mb-0 text-white-50">Fokus cepat ke nominal yang sudah masuk dan nominal yang masih perlu ditagih atau diverifikasi.</p>
         </div>
         <div class="col-lg-4">
-            <div class="placeholder-stat h-100" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.16);">
+            <div class="placeholder-stat h-100">
                 <div class="small text-white-50 mb-2">Total Pembayaran Lunas</div>
                 <div class="section-title h2 mb-2">Rp <?= number_format((int) ($summary['total_lunas'] ?? 0), 0, ',', '.') ?></div>
                 <div class="small text-white-50"><?= esc((string) ($summary['jumlah_lunas'] ?? 0)) ?> transaksi sudah terkonfirmasi.</div>
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="placeholder-stat h-100" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.16);">
+            <div class="placeholder-stat h-100">
                 <div class="small text-white-50 mb-2">Total Pembayaran Belum Lunas</div>
                 <div class="section-title h2 mb-2">Rp <?= number_format((int) (((int) ($summary['detail_pembayaran_atlet']['tanding']['jumlah_uang_belum_diterima'] ?? 0)) + ((int) ($summary['detail_pembayaran_atlet']['tunggal']['jumlah_uang_belum_diterima'] ?? 0)) + ((int) ($summary['detail_pembayaran_atlet']['ganda']['jumlah_uang_belum_diterima'] ?? 0)) + ((int) ($summary['detail_pembayaran_atlet']['beregu']['jumlah_uang_belum_diterima'] ?? 0)) + ((int) ($summary['detail_pembayaran_atlet']['solo_kreatif']['jumlah_uang_belum_diterima'] ?? 0))), 0, ',', '.') ?></div>
                 <div class="small text-white-50">Mencakup item menunggu dan item yang belum masuk transaksi.</div>

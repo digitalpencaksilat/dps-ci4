@@ -79,6 +79,15 @@ class SekretariatKategoriTandingService
             ->get()->getResult();
     }
 
+    public function listPertandinganByPool(int $idKompetisi): array
+    {
+        return $this->pertandinganBaseQuery()
+            ->where('p.id_kompetisi_tanding', $idKompetisi)
+            ->where('p.jenis_kemenangan !=', 'BYE')
+            ->orderBy('p.nomor_pertandingan', 'ASC')
+            ->get()->getResult();
+    }
+
     public function getPertandingan(int $id): ?object
     {
         return $this->pertandinganBaseQuery()->where('p.id_pertandingan', $id)->get()->getRow();
@@ -143,7 +152,7 @@ class SekretariatKategoriTandingService
     private function poolBaseQuery()
     {
         return db_connect()->table('kompetisi_tanding kom')
-            ->select('kom.*, kom.keterangan AS keterangan, kt.label, kt.berat_minimal, kt.berat_maksimal, kt.juara_tiga_bersama, kl.jenis_perlombaan, kl.kuota_peserta, ku.nama_kategori_usia, ku.jenis_kelamin')
+            ->select('kom.*, kom.keterangan AS keterangan, kt.label, kt.berat_minimal, kt.berat_maksimal, kt.juara_tiga_bersama, kt.jumlah_ronde, kt.waktu_per_ronde, kt.waktu_istirahat, kl.jenis_perlombaan, kl.kuota_peserta, kl.peraturan_pertandingan, ku.nama_kategori_usia, ku.jenis_kelamin')
             ->select('(SELECT COUNT(*) FROM peserta_tanding pt WHERE pt.id_kompetisi_tanding = kom.id_kompetisi_tanding) AS jumlah_peserta_tanding', false)
             ->select('(SELECT COUNT(*) FROM peserta_tanding pt JOIN pembayaran pb ON pb.id_pembayaran = pt.id_pembayaran WHERE pt.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pb.status_pembayaran = "lunas") AS jumlah_peserta_tanding_lunas', false)
             ->select('((SELECT COUNT(*) FROM peserta_tanding pt WHERE pt.id_kompetisi_tanding = kom.id_kompetisi_tanding) - kt.juara_tiga_bersama) AS prediksi_jumlah_partai', false)

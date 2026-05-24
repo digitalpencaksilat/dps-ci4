@@ -140,6 +140,7 @@
 		padding-left: 10px;
 		font-style: italic;
 	}
+
 </style>
 
 <div class="row h-100">
@@ -153,21 +154,24 @@
 		</div>
 	<?php endif; ?>
 	<div class="col-12 overflow-scroll">
-		<?php if ($kompetisi_tanding->peraturan_pertandingan == 'Tapak Suci'): ?>
-			<div id="baganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding ?>" class="Tapak_Suci"></div>
-		<?php elseif ($kompetisi_tanding->peraturan_pertandingan == 'IPSI 2012'): ?>
-			<div id="baganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding ?>" class="IPSI_2012"></div>
-		<?php elseif ($kompetisi_tanding->peraturan_pertandingan == 'PERSILAT' || $kompetisi_tanding->peraturan_pertandingan == 'IPSI 2022'): ?>
-			<div id="baganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding ?>" class="PERSILAT"></div>
-		<?php endif; ?>
+		<?php
+		$peraturanClass = match ($kompetisi_tanding->peraturan_pertandingan ?? '') {
+			'Tapak Suci' => 'Tapak_Suci',
+			'IPSI 2012' => 'IPSI_2012',
+			'PERSILAT', 'IPSI 2022' => 'PERSILAT',
+			default => 'PERSILAT',
+		};
+		?>
+		<div id="baganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding ?>" class="<?= esc($peraturanClass) ?>"></div>
 	</div>
 </div>
 
 <script>
+	(function() {
 	// INISIALISASI BAGAN AGAR DAPAT DITAMPILKAN + BEBERAPA METHOD
-	$matchData<?= $kompetisi_tanding->id_kompetisi_tanding; ?> = <?php echo $kompetisi_tanding->bagan_pertandingan; ?>;
-	$id_kompetisi_tanding<?= $kompetisi_tanding->id_kompetisi_tanding; ?> = <?php echo $kompetisi_tanding->id_kompetisi_tanding ?>;
-	$juara_tiga_bersama<?= $kompetisi_tanding->id_kompetisi_tanding; ?> = <?php echo $kompetisi_tanding->juara_tiga_bersama ?>;
+	let matchData<?= $kompetisi_tanding->id_kompetisi_tanding; ?> = <?php echo $kompetisi_tanding->bagan_pertandingan; ?>;
+	let idKompetisiTanding<?= $kompetisi_tanding->id_kompetisi_tanding; ?> = <?php echo $kompetisi_tanding->id_kompetisi_tanding ?>;
+	let juaraTigaBersama<?= $kompetisi_tanding->id_kompetisi_tanding; ?> = <?php echo (int) ($kompetisi_tanding->juara_tiga_bersama ?? 0) ?>;
 
 	let baganParameters<?= $kompetisi_tanding->id_kompetisi_tanding; ?> = {
 		teamWidth: 260,
@@ -176,7 +180,7 @@
 		matchMargin: 60,
 		/* Margin diperbesar agar bayangan (shadow) tidak terpotong */
 		roundMargin: 60,
-		init: $matchData<?= $kompetisi_tanding->id_kompetisi_tanding; ?>,
+		init: matchData<?= $kompetisi_tanding->id_kompetisi_tanding; ?>,
 		save: saveFn,
 		disableToolbar: true,
 		decorator: {
@@ -185,37 +189,48 @@
 		}
 	};
 
-	$(document).ready(function() {
-		if ($juara_tiga_bersama<?= $kompetisi_tanding->id_kompetisi_tanding; ?> == 1) {
+	function initBaganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding; ?>() {
+		if (!window.jQuery || !jQuery.fn.bracket) {
+			window.setTimeout(initBaganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding; ?>, 50);
+			return;
+		}
+
+		if (juaraTigaBersama<?= $kompetisi_tanding->id_kompetisi_tanding; ?> == 1) {
 			baganParameters<?= $kompetisi_tanding->id_kompetisi_tanding; ?>.skipConsolationRound = true;
 		} else {
 			baganParameters<?= $kompetisi_tanding->id_kompetisi_tanding; ?>.skipConsolationRound = false;
 		}
 
-		$bracket<?= $kompetisi_tanding->id_kompetisi_tanding; ?> = $('#baganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding ?>').bracket(baganParameters<?= $kompetisi_tanding->id_kompetisi_tanding; ?>);
+		jQuery('#baganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding ?>').bracket(baganParameters<?= $kompetisi_tanding->id_kompetisi_tanding; ?>);
 		toggle_early_match<?= $kompetisi_tanding->id_kompetisi_tanding; ?>();
 
-		$('#toggleEarlyMatchButton<?= $kompetisi_tanding->id_kompetisi_tanding; ?>').on('click', function() {
+		jQuery('#toggleEarlyMatchButton<?= $kompetisi_tanding->id_kompetisi_tanding; ?>').on('click', function() {
 			toggle_early_match<?= $kompetisi_tanding->id_kompetisi_tanding; ?>();
 		});
-	});
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initBaganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding; ?>);
+	} else {
+		initBaganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding; ?>();
+	}
 
 	function toggle_early_match<?= $kompetisi_tanding->id_kompetisi_tanding; ?>() {
-		$.each($('#baganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding ?>' + ' .bracket'), function(i_bracket, bracket) {
-			$.each($(bracket).find('.round').first().find('.teamContainer'), function(i, e) {
-				if ($(e).find('.na').length == 1) {
-					$(e).toggle();
+		jQuery.each(jQuery('#baganPertandingan<?= $kompetisi_tanding->id_kompetisi_tanding ?>' + ' .bracket'), function(i_bracket, bracket) {
+			jQuery.each(jQuery(bracket).find('.round').first().find('.teamContainer'), function(i, e) {
+				if (jQuery(e).find('.na').length == 1) {
+					jQuery(e).toggle();
 				}
 			});
 		});
 	}
 
 	function onhover(data, hover) {
-		$('#matchCallback').text(data)
+		jQuery('#matchCallback').text(data)
 	}
 
 	function saveFn(data, userData) {
-		$.post('<?= base_url('kompetisi-tanding/update-bagan-pertandingan/' . $kompetisi_tanding->id_kompetisi_tanding) ?>', {
+		jQuery.post('<?= base_url('kompetisi-tanding/update-bagan-pertandingan/' . $kompetisi_tanding->id_kompetisi_tanding) ?>', {
 				bagan_pertandingan: JSON.stringify(data)
 			},
 			function(data, textStatus, jqXHR) {
@@ -260,4 +275,5 @@
 				return;
 		}
 	}
+	})();
 </script>

@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="<?= online_asset('datatables_responsive_css') ?>">
     <link rel="stylesheet" href="<?= online_asset('toastr_css') ?>">
     <link rel="stylesheet" href="<?= online_asset('fontawesome_6_css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/bracket-pertandingan/jquery.bracket.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/bracket-pertandingan/bracket.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin.css') ?>">
 </head>
 
@@ -140,8 +142,6 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
-                    <?php endif; ?>
-                </nav>
                     <?php $isMedalMenu = ($activeMenu ?? '') === 'medal_tally'; ?>
                     <div>
                         <a class="admin-nav-link <?= $isMedalMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminMedalSubmenu" role="button" aria-expanded="<?= $isMedalMenu ? 'true' : 'false' ?>" aria-controls="adminMedalSubmenu">
@@ -160,6 +160,8 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
+                </nav>
             </div>
 
             <div class="mt-auto admin-card">
@@ -204,6 +206,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
     <script src="<?= online_asset('datatables_responsive_bs5_js') ?>"></script>
     <script src="<?= online_asset('sweetalert2_js') ?>"></script>
     <script src="<?= online_asset('toastr_js') ?>"></script>
+    <script src="<?= base_url('assets/bracket-pertandingan/jquery.bracket.min.js') ?>"></script>
     <script>
         toastr.options = {
             closeButton: true,

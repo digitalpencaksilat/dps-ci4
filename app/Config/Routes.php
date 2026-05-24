@@ -147,7 +147,9 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('kelas-tanding/(:num)', 'Admin\\Sekretariat\\KelasTandingController::show/$1');
     $routes->get('pool-tanding', 'Admin\\Sekretariat\\PoolTandingController::index');
     $routes->get('pool-tanding/(:num)', 'Admin\\Sekretariat\\PoolTandingController::show/$1');
+    $routes->get('pool-tanding/(:num)/bagan.pdf', 'Admin\\Sekretariat\\PoolTandingController::printBagan/$1');
     $routes->post('pool-tanding/(:num)/update', 'Admin\\Sekretariat\\PoolTandingController::update/$1');
+    $routes->post('pool-tanding/(:num)/acak-bagan', 'Admin\\Sekretariat\\PoolTandingController::acakBagan/$1');
     $routes->get('pertandingan-tanding', 'Admin\\Sekretariat\\PertandinganTandingController::index');
     $routes->get('pertandingan-tanding/(:num)', 'Admin\\Sekretariat\\PertandinganTandingController::show/$1');
     $routes->post('pertandingan-tanding', 'Admin\\Sekretariat\\PertandinganTandingController::store');
@@ -158,17 +160,15 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('kategori-seni/(:num)', 'Admin\\Sekretariat\\KategoriSeniAdminController::show/$1');
     $routes->get('pool-seni', 'Admin\\Sekretariat\\PoolSeniController::index');
     $routes->get('pool-seni/(:num)', 'Admin\\Sekretariat\\PoolSeniController::show/$1');
+    $routes->get('pool-seni/(:num)/bagan.pdf', 'Admin\\Sekretariat\\PoolSeniController::printBagan/$1');
     $routes->post('pool-seni/(:num)/update', 'Admin\\Sekretariat\\PoolSeniController::update/$1');
+    $routes->post('pool-seni/(:num)/acak-bagan-battle', 'Admin\\Sekretariat\\PoolSeniController::acakBaganBattle/$1');
     $routes->post('pool-seni/(:num)/beri-nomor-undi', 'Admin\\Sekretariat\\PoolSeniController::beriNomorUndi/$1');
     $routes->get('sistem-pool-seni', 'Admin\\Sekretariat\\SistemPoolSeniController::index');
     $routes->post('sistem-pool-seni/(:num)/update', 'Admin\\Sekretariat\\SistemPoolSeniController::update/$1');
     $routes->get('battle-seni', 'Admin\\Sekretariat\\BattleSeniController::index');
     $routes->get('battle-seni/(:num)', 'Admin\\Sekretariat\\BattleSeniController::show/$1');
     $routes->get('kuota-prestasi-seni', 'Admin\\Sekretariat\\KuotaPrestasiSeniController::index');
-});
-
-$routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
-    $routes->get('/', 'Admin\\Super\\DashboardController::index');
     $routes->get('perolehan-medali/akumulasi', 'Admin\\Sekretariat\\MedalTallyController::aggregate');
     $routes->get('perolehan-medali/kategori-usia', 'Admin\\Sekretariat\\MedalTallyController::byAgeCategory');
     $routes->get('perolehan-medali/sekolah', 'Admin\\Sekretariat\\MedalTallyController::bySchool');
@@ -176,6 +176,10 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->get('perolehan-medali/kategori-usia-eksklusif', 'Admin\\Sekretariat\\MedalTallyController::byAgeCategoryExclusive');
     $routes->get('perolehan-medali/tanding', 'Admin\\Sekretariat\\MedalTallyController::tanding');
     $routes->get('perolehan-medali/seni', 'Admin\\Sekretariat\\MedalTallyController::seni');
+});
+
+$routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
+    $routes->get('/', 'Admin\\Super\\DashboardController::index');
     $routes->get('dashboard', 'Admin\\Super\\DashboardController::index');
 });
 

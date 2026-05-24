@@ -105,6 +105,34 @@ class SekretariatKategoriSeniService
         return $this->battleBaseQuery()->orderBy('ku.min_umur', 'ASC')->orderBy('sks.nama_seni', 'ASC')->orderBy('ks.nomor_pool', 'ASC')->orderBy('bs.nomor_battle', 'ASC')->get()->getResult();
     }
 
+    public function listBattleByPool(int $idKompetisi): array
+    {
+        return $this->battleBaseQuery()
+            ->where('bs.id_kompetisi_seni', $idKompetisi)
+            ->where('bs.jenis_kemenangan !=', 'BYE')
+            ->orderBy('bs.nomor_battle', 'ASC')
+            ->get()->getResult();
+    }
+
+    public function listPenampilanByPool(int $idKompetisi, string $babak): array
+    {
+        return db_connect()->table('detail_jadwal_seni djs')
+            ->select('djs.*, ps.id_penampilan_seni, ps.id_kelompok_peserta_seni, ps.nilai_akhir, ps.waktu_tampil, ps.status_penampilan, ps.catatan_nilai_sama, ps.babak AS babak_pool, kps.nomor_undi, k.nama_kontingen, ks.nomor_pool, sks.nama_seni, sks.jenis_seni, ku.nama_kategori_usia, ku.jenis_kelamin')
+            ->select('(SELECT GROUP_CONCAT(p.nama_pendaftar SEPARATOR ", ") FROM peserta_seni psn JOIN pendaftar p ON p.id_pendaftar = psn.id_pendaftar WHERE psn.id_kelompok_peserta_seni = kps.id_kelompok_peserta_seni) AS anggota_kelompok_peserta_seni', false)
+            ->select('(SELECT g.nama_gelanggang FROM gelanggang g JOIN jadwal_seni js ON js.id_gelanggang = g.id_gelanggang WHERE js.id_jadwal_seni = djs.id_jadwal_seni) AS nama_gelanggang', false)
+            ->join('penampilan_seni ps', 'ps.id_penampilan_seni = djs.id_penampilan_seni')
+            ->join('kelompok_peserta_seni kps', 'kps.id_kelompok_peserta_seni = ps.id_kelompok_peserta_seni')
+            ->join('kontingen k', 'k.id_kontingen = kps.id_kontingen', 'left')
+            ->join('kompetisi_seni ks', 'ks.id_kompetisi_seni = kps.id_kompetisi_seni')
+            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = ks.id_sub_kategori_seni')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
+            ->where('ks.id_kompetisi_seni', $idKompetisi)
+            ->where('ps.babak', $babak)
+            ->orderBy('djs.nomor_partai', 'ASC')
+            ->get()->getResult();
+    }
+
     public function getBattle(int $id): ?object
     {
         return $this->battleBaseQuery()->where('bs.id_battle_seni', $id)->get()->getRow();
@@ -144,7 +172,7 @@ class SekretariatKategoriSeniService
     private function poolBaseQuery()
     {
         return db_connect()->table('kompetisi_seni ks')
-            ->select('ks.*, ks.keterangan AS keterangan_kompetisi_seni, sks.nama_seni, sks.jenis_seni, sks.jumlah_peserta, sks.sistem_penampilan, kl.jenis_perlombaan, kl.kuota_peserta, ku.nama_kategori_usia, ku.jenis_kelamin')
+            ->select('ks.*, ks.keterangan AS keterangan_kompetisi_seni, sks.nama_seni, sks.jenis_seni, sks.jumlah_peserta, sks.sistem_penampilan, kl.jenis_perlombaan, kl.kuota_peserta, kl.peraturan_pertandingan, ku.nama_kategori_usia, ku.jenis_kelamin')
             ->select('(SELECT COUNT(*) FROM kelompok_peserta_seni kps WHERE kps.id_kompetisi_seni = ks.id_kompetisi_seni) AS jumlah_kelompok_peserta_seni', false)
             ->select('(SELECT COUNT(*) FROM kelompok_peserta_seni kps JOIN pembayaran pb ON pb.id_pembayaran = kps.id_pembayaran WHERE kps.id_kompetisi_seni = ks.id_kompetisi_seni AND pb.status_pembayaran = "lunas") AS jumlah_kelompok_peserta_seni_lunas', false)
             ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = ks.id_sub_kategori_seni')

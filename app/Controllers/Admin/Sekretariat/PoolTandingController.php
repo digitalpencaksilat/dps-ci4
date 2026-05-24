@@ -4,6 +4,7 @@ namespace App\Controllers\Admin\Sekretariat;
 
 use App\Controllers\BaseController;
 use App\Services\SekretariatKategoriTandingService;
+use App\Services\SistemGugurTunggalService;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
 class PoolTandingController extends BaseController
@@ -21,7 +22,11 @@ class PoolTandingController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
-        return view('admin/sekretariat/pool_tanding/show', $this->viewData(['row' => $row, 'peserta' => $service->listPesertaByPool($id)], 'Detail Pool Tanding'));
+        return view('admin/sekretariat/pool_tanding/show', $this->viewData([
+            'row' => $row,
+            'peserta' => $service->listPesertaByPool($id),
+            'pertandinganRows' => $service->listPertandinganByPool($id),
+        ], 'Detail Pool Tanding'));
     }
 
     public function update(int $id)
@@ -32,6 +37,27 @@ class PoolTandingController extends BaseController
 
         (new SekretariatKategoriTandingService())->updatePool($id, $this->request->getPost());
         return redirect()->to(base_url('admin/sekretariat/pool-tanding/' . $id))->with('status', true)->with('message', 'Pool tanding berhasil diperbarui.');
+    }
+
+    public function acakBagan(int $id)
+    {
+        try {
+            $mode = (string) ($this->request->getPost('mode') ?? 'full_random_persilat');
+            $result = (new SistemGugurTunggalService())->acakBaganTanding($id, $mode);
+            return redirect()->to(base_url('admin/sekretariat/pool-tanding/' . $id))->with('status', true)->with('message', 'Bagan tanding berhasil dibuat: ' . $result['jumlah_pertandingan'] . ' pertandingan.');
+        } catch (\Throwable $e) {
+            return redirect()->to(base_url('admin/sekretariat/pool-tanding/' . $id))->with('status', false)->with('message', $e->getMessage());
+        }
+    }
+
+    public function printBagan(int $id): string
+    {
+        $row = (new SekretariatKategoriTandingService())->getPool($id);
+        if ($row === null) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        return view('admin/sekretariat/pool_tanding/print_bagan', ['row' => $row]);
     }
 
     private function viewData(array $data, string $title = 'Daftar Pool Tanding'): array

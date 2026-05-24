@@ -4,6 +4,7 @@ namespace App\Controllers\Admin\Sekretariat;
 
 use App\Controllers\BaseController;
 use App\Services\SekretariatKategoriSeniService;
+use App\Services\SistemGugurTunggalService;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
 class PoolSeniController extends BaseController
@@ -21,7 +22,13 @@ class PoolSeniController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
-        return view('admin/sekretariat/pool_seni/show', $this->viewData(['row' => $row, 'kelompok' => $service->listKelompokByPool($id)], 'Detail Pool Seni'));
+        return view('admin/sekretariat/pool_seni/show', $this->viewData([
+            'row' => $row,
+            'kelompok' => $service->listKelompokByPool($id),
+            'battleRows' => $service->listBattleByPool($id),
+            'penampilanPenyisihanRows' => $service->listPenampilanByPool($id, 'penyisihan'),
+            'penampilanFinalRows' => $service->listPenampilanByPool($id, 'final'),
+        ], 'Detail Pool Seni'));
     }
 
     public function update(int $id)
@@ -38,6 +45,27 @@ class PoolSeniController extends BaseController
     {
         (new SekretariatKategoriSeniService())->beriNomorUndi($id);
         return redirect()->to(base_url('admin/sekretariat/pool-seni/' . $id))->with('status', true)->with('message', 'Nomor undi berhasil diisi ulang.');
+    }
+
+    public function acakBaganBattle(int $id)
+    {
+        try {
+            $mode = (string) ($this->request->getPost('mode') ?? 'full_random_persilat');
+            $result = (new SistemGugurTunggalService())->acakBaganBattleSeni($id, $mode);
+            return redirect()->to(base_url('admin/sekretariat/pool-seni/' . $id))->with('status', true)->with('message', 'Bagan battle seni berhasil dibuat: ' . $result['jumlah_battle'] . ' battle.');
+        } catch (\Throwable $e) {
+            return redirect()->to(base_url('admin/sekretariat/pool-seni/' . $id))->with('status', false)->with('message', $e->getMessage());
+        }
+    }
+
+    public function printBagan(int $id): string
+    {
+        $row = (new SekretariatKategoriSeniService())->getPool($id);
+        if ($row === null) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        return view('admin/sekretariat/pool_seni/print_bagan', ['row' => $row]);
     }
 
     private function viewData(array $data, string $title = 'Daftar Pool Seni'): array

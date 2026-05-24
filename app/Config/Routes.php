@@ -61,6 +61,13 @@ $routes->get('location/districts/(:segment)', 'LocationController::districts/$1'
 $routes->get('location/villages/(:segment)', 'LocationController::villages/$1');
 
 // Kontingen auth
+$routes->get('admin', 'AdminAuthController::login');
+$routes->post('admin', 'AdminAuthController::attemptLogin');
+$routes->get('admin/login', static fn() => redirect()->to(base_url('admin')));
+$routes->post('admin/login', static fn() => redirect()->to(base_url('admin')));
+$routes->get('admin/logout', 'AdminAuthController::logout');
+
+// Kontingen auth
 $routes->get('pendaftaran/login', 'KontingenAuthController::login');
 $routes->post('kontingen/login', 'KontingenAuthController::attemptLogin');
 $routes->get('kontingen/logout', 'KontingenAuthController::logout');
@@ -87,6 +94,35 @@ $routes->post('kontingen/seni', 'KategoriSeniController::store', ['filter' => 'k
 $routes->post('kontingen/seni/(:num)/update', 'KategoriSeniController::update/$1', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/seni/(:num)/delete', 'KategoriSeniController::delete/$1', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/pembayaran', 'PembayaranKontingenController::store', ['filter' => 'kontingenauth']);
+
+$routes->group('admin/bendahara', ['filter' => 'adminrole:bendahara'], static function ($routes): void {
+    $routes->get('/', 'Admin\\Bendahara\\DashboardController::index');
+    $routes->get('dashboard', 'Admin\\Bendahara\\DashboardController::index');
+    $routes->get('pembayaran', 'Admin\\Bendahara\\PembayaranController::index');
+    $routes->get('pembayaran/menunggu-konfirmasi', 'Admin\\Bendahara\\PembayaranController::waiting');
+    $routes->get('pembayaran/lunas', 'Admin\\Bendahara\\PembayaranController::paid');
+    $routes->get('pembayaran/belum-dibayar', 'Admin\\Bendahara\\PembayaranController::unpaid');
+    $routes->get('pembayaran/tanding', 'Admin\\Bendahara\\PembayaranController::tanding');
+    $routes->get('pembayaran/seni', 'Admin\\Bendahara\\PembayaranController::seni');
+    $routes->get('pembayaran/(:num)', 'Admin\\Bendahara\\PembayaranController::show/$1');
+    $routes->post('pembayaran/(:num)/konfirmasi', 'Admin\\Bendahara\\PembayaranController::confirm/$1');
+    $routes->post('pembayaran/(:num)/tolak', 'Admin\\Bendahara\\PembayaranController::reject/$1');
+    $routes->get('pembayaran/(:num)/nota', 'Admin\\Bendahara\\PembayaranController::nota/$1');
+    $routes->get('pembayaran/(:num)/nota.pdf', 'Admin\\Bendahara\\PembayaranController::notaPdf/$1');
+    $routes->get('kontingen', 'Admin\\Bendahara\\KontingenController::index');
+    $routes->get('kontingen/(:num)', 'Admin\\Bendahara\\KontingenController::show/$1');
+    $routes->post('kontingen/(:num)/buat-transaksi', 'Admin\\Bendahara\\PembayaranController::createForKontingen/$1');
+});
+
+$routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], static function ($routes): void {
+    $routes->get('/', 'Admin\\Sekretariat\\DashboardController::index');
+    $routes->get('dashboard', 'Admin\\Sekretariat\\DashboardController::index');
+});
+
+$routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
+    $routes->get('/', 'Admin\\Super\\DashboardController::index');
+    $routes->get('dashboard', 'Admin\\Super\\DashboardController::index');
+});
 
 /*
  * --------------------------------------------------------------------

@@ -19,6 +19,8 @@ class MaintenanceFilter implements FilterInterface
         $path = trim($request->getUri()->getPath(), '/');
         $allowedPaths = [
             'maintenance',
+            'admin',
+            'admin/login',
             'pendaftaran/login',
         ];
 

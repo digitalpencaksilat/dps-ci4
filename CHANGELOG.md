@@ -4,6 +4,36 @@ Semua perubahan penting pada project ini akan dicatat di file ini.
 
 Format changelog ini mengikuti gaya sederhana berbasis versi.
 
+## v0.2.0 - 2026-05-24
+
+### Added
+
+- Login admin native CodeIgniter 4 untuk role bendahara, sekretariat, dan super admin.
+- Filter role admin dan routing dashboard admin per role.
+- Dashboard bendahara berisi ringkasan pembayaran, antrian verifikasi, dan metrik transaksi.
+- Modul pembayaran bendahara untuk daftar transaksi, status menunggu, lunas, belum dibayar, riwayat tanding, dan riwayat seni.
+- Modul rekap kontingen bendahara dengan detail kontingen, item belum dibayar, dan pembuatan transaksi dari item terpilih.
+- Nota pembayaran HTML dan PDF untuk arsip bendahara.
+- Layout admin baru dengan sidebar, topbar, DataTables, Toastr, SweetAlert2, dan footer versi aplikasi.
+- Popup/modal preview bukti pembayaran pada rincian transaksi dan nota.
+
+### Changed
+
+- Area admin bendahara dibuat lebih responsif dengan sidebar fixed dan scrollable.
+- Tabel admin dibuat scroll horizontal di area tabel, bukan membuat halaman melebar.
+- Card antrian verifikasi pada dashboard bendahara dibuat full width.
+- Tabel item tanding dan seni pada rincian transaksi menggunakan DataTables agar tersedia pagination.
+- Preview bukti pembayaran dibatasi ukurannya agar tidak terlalu besar di layar.
+- Proses bayar item terpilih di detail kontingen menyimpan pilihan secara aman walau tabel memakai DataTables.
+
+### Fixed
+
+- Halaman kontingen bendahara gagal diakses karena query memakai kolom `pt.id_kontingen` yang tidak ada pada schema.
+- Total rekap kontingen berpotensi dobel akibat join banyak tabel sekaligus.
+- Sidebar admin meninggalkan area kosong putih saat halaman panjang discroll.
+- Tombol `Bayar Item Terpilih` salah menampilkan toast seolah belum ada item dipilih.
+- Tombol `Lihat Bukti` sebelumnya membuka tab baru, sekarang tampil di popup.
+
 ## v0.1.0 - 2026-05-23
 
 ### Added

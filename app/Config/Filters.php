@@ -37,6 +37,7 @@ class Filters extends BaseFilters
         'ci3globals'    => \App\Filters\Ci3Globals::class,
         'kontingenauth' => \App\Filters\KontingenAuthFilter::class,
         'maintenance'   => \App\Filters\MaintenanceFilter::class,
+        'adminrole'     => \App\Filters\AdminRoleFilter::class,
     ];
 
     /**

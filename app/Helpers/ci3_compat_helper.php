@@ -155,3 +155,38 @@ if (! function_exists('get_sponsor')) {
         return $all->$name ?? null;
     }
 }
+
+if (! function_exists('convert_to_indonesian_phone_number')) {
+    function convert_to_indonesian_phone_number(?string $phone): string
+    {
+        $phone = preg_replace('/[^0-9]/', '', (string) $phone);
+        if ($phone === '') {
+            return '';
+        }
+
+        if (str_starts_with($phone, '62')) {
+            return $phone;
+        }
+
+        if (str_starts_with($phone, '0')) {
+            return '62' . substr($phone, 1);
+        }
+
+        return $phone;
+    }
+}
+
+if (! function_exists('wa_me')) {
+    function wa_me(?string $phone, string $message = ''): string
+    {
+        $phone = convert_to_indonesian_phone_number($phone);
+        $url = 'https://wa.me/' . rawurlencode($phone);
+
+        $message = trim($message);
+        if ($message !== '') {
+            $url .= '?text=' . rawurlencode($message);
+        }
+
+        return $url;
+    }
+}

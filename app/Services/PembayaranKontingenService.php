@@ -6,6 +6,42 @@ use App\Models\PembayaranModel;
 
 class PembayaranKontingenService
 {
+    public function recap(int $idKontingen): array
+    {
+        $pending = $this->pendingItems($idKontingen);
+        $transactions = db_connect()->table('pembayaran')
+            ->where('id_kontingen', $idKontingen)
+            ->orderBy('tanggal_pembayaran', 'DESC')
+            ->orderBy('id_pembayaran', 'DESC')
+            ->get()
+            ->getResult();
+
+        $summary = [
+            'total_pending_items' => count($pending['tanding']) + count($pending['seni']),
+            'total_pending_amount' => 0,
+        ];
+
+        foreach ($pending['tanding'] as $row) {
+            $summary['total_pending_amount'] += (string) ($row->jenis_kontingen ?? '') === 'luar_negeri'
+                ? (int) ($row->biaya_pendaftaran_ln ?? 0)
+                : (int) ($row->biaya_pendaftaran_dn ?? 0);
+        }
+
+        foreach ($pending['seni'] as $row) {
+            $summary['total_pending_amount'] += (string) ($row->jenis_kontingen ?? '') === 'luar_negeri'
+                ? (int) ($row->biaya_pendaftaran_ln ?? 0)
+                : (int) ($row->biaya_pendaftaran_dn ?? 0);
+        }
+
+        return [
+            'kontingen' => $pending['kontingen'],
+            'pending' => $pending,
+            'transactions' => $transactions,
+            'summary' => $summary,
+            'accounts' => $this->accounts(),
+        ];
+    }
+
     public function pendingItems(int $idKontingen): array
     {
         $kontingen = db_connect()->table('kontingen')->where('id_kontingen', $idKontingen)->get()->getRow();
@@ -140,6 +176,11 @@ class PembayaranKontingenService
         $db->transComplete();
 
         return $db->transStatus();
+    }
+
+    public function createForAdmin(int $idKontingen, array $tandingIds, array $seniIds, \CodeIgniter\HTTP\Files\UploadedFile $file): bool
+    {
+        return $this->create($idKontingen, $tandingIds, $seniIds, new UploadedFilePayload($file, $idKontingen));
     }
 
     public function transactionsByStatus(int $idKontingen, string $status): array

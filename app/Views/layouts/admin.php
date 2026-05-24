@@ -142,6 +142,24 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     </div>
                     <?php endif; ?>
                 </nav>
+                    <?php $isMedalMenu = ($activeMenu ?? '') === 'medal_tally'; ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isMedalMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminMedalSubmenu" role="button" aria-expanded="<?= $isMedalMenu ? 'true' : 'false' ?>" aria-controls="adminMedalSubmenu">
+                            <span class="label-block"><i class="fas fa-trophy"></i><span>Perolehan Medali</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isMedalMenu ? 'show' : '' ?>" id="adminMedalSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/akumulasi') ?>">Akumulasi</a>
+                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/kategori-usia') ?>">Per Kategori Usia</a>
+                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/sekolah') ?>">Berdasarkan Sekolah</a>
+                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/akumulasi-eksklusif') ?>">Akumulasi Eksklusif</a>
+                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/kategori-usia-eksklusif') ?>">Kategori Eksklusif</a>
+                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/tanding') ?>">Raw Tanding</a>
+                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/seni') ?>">Raw Seni</a>
+                            </div>
+                        </div>
+                    </div>
             </div>
 
             <div class="mt-auto admin-card">

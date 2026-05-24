@@ -169,6 +169,13 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
 
 $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
     $routes->get('/', 'Admin\\Super\\DashboardController::index');
+    $routes->get('perolehan-medali/akumulasi', 'Admin\\Sekretariat\\MedalTallyController::aggregate');
+    $routes->get('perolehan-medali/kategori-usia', 'Admin\\Sekretariat\\MedalTallyController::byAgeCategory');
+    $routes->get('perolehan-medali/sekolah', 'Admin\\Sekretariat\\MedalTallyController::bySchool');
+    $routes->get('perolehan-medali/akumulasi-eksklusif', 'Admin\\Sekretariat\\MedalTallyController::aggregateExclusive');
+    $routes->get('perolehan-medali/kategori-usia-eksklusif', 'Admin\\Sekretariat\\MedalTallyController::byAgeCategoryExclusive');
+    $routes->get('perolehan-medali/tanding', 'Admin\\Sekretariat\\MedalTallyController::tanding');
+    $routes->get('perolehan-medali/seni', 'Admin\\Sekretariat\\MedalTallyController::seni');
     $routes->get('dashboard', 'Admin\\Super\\DashboardController::index');
 });
 

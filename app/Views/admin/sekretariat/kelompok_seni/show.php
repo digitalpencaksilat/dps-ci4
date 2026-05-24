@@ -9,6 +9,7 @@
         </div>
         <div class="d-flex flex-wrap gap-2 align-items-start">
             <button type="button" class="btn btn-admin-brand rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editKelompokSeniModal">Edit Kelompok</button>
+            <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#pindahPoolSeniModal">Pindah Pool</button>
             <form method="post" action="<?= base_url('admin/sekretariat/kelompok-seni/' . $row->id_kelompok_peserta_seni . '/delete') ?>" onsubmit="return confirmAdminAction(this, 'Hapus kelompok seni?', 'Semua anggota kelompok ini akan ikut keluar dari kategori seni.', 'Hapus')">
                 <?= csrf_field() ?>
                 <button type="submit" class="btn btn-outline-danger rounded-pill px-4">Hapus</button>
@@ -66,6 +67,36 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-admin-brand rounded-pill">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="pindahPoolSeniModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" action="<?= base_url('admin/sekretariat/kelompok-seni/' . $row->id_kelompok_peserta_seni . '/update') ?>" class="modal-content">
+            <?= csrf_field() ?>
+            <div class="modal-header">
+                <h5 class="modal-title">Pindah Pool Seni</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <p class="muted-copy small">Hanya menampilkan pool dari kategori <?= esc(trim(($row->jenis_seni ?? '') . ' ' . ($row->nama_seni ?? ''))) ?>.</p>
+                <label class="form-label fw-semibold">Pool Tujuan</label>
+                <select name="id_kompetisi_seni" class="form-select rounded-4" required>
+                    <?php foreach (($poolOptions ?? []) as $item) : ?>
+                        <?php $label = 'Pool ' . ($item->nomor_pool ?? '-') . ' - ' . ($item->jumlah_kelompok_peserta_seni ?? 0) . '/' . ($item->max_peserta ?? 0) . ' kelompok'; ?>
+                        <option value="<?= esc((string) $item->id_kompetisi_seni) ?>" <?= (int) $row->id_kompetisi_seni === (int) $item->id_kompetisi_seni ? 'selected' : '' ?>><?= esc($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <label class="form-label fw-semibold mt-3">Nomor Undi</label>
+                <input type="number" name="nomor_undi" class="form-control rounded-4" value="<?= esc((string) ($row->nomor_undi ?? 0)) ?>">
+                <label class="form-label fw-semibold mt-3">Keterangan</label>
+                <textarea name="keterangan" class="form-control rounded-4" rows="2"><?= esc($row->keterangan ?? '') ?></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-admin-brand rounded-pill">Pindahkan</button>
             </div>
         </form>
     </div>

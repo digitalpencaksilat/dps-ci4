@@ -43,6 +43,7 @@ class KelompokPesertaSeniController extends BaseController
             'row'        => $row,
             'anggotaRows' => $service->listPesertaSeniByKelompok($id),
             'kompetisiOptions' => $service->listKompetisiSeni(),
+            'poolOptions' => $service->listPoolSeniForKelompok($id),
             'pendaftarOptions' => $service->availablePendaftarForSeni((int) $row->id_kontingen),
         ]);
     }

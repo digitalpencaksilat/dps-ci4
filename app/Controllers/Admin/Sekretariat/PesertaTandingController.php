@@ -39,6 +39,7 @@ class PesertaTandingController extends BaseController
             'adminName'  => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat'),
             'row'        => $row,
             'kompetisiOptions' => (new SekretariatPesertaKontingenService())->listKompetisiTanding(),
+            'poolOptions' => (new SekretariatPesertaKontingenService())->listPoolTandingForPeserta($id),
         ]);
     }
 

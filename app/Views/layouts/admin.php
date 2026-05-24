@@ -109,6 +109,37 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
+                    <?php $isTandingMenu = in_array(($activeMenu ?? ''), ['kelas_tanding', 'pool_tanding', 'pertandingan_tanding', 'kuota_prestasi_tanding'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isTandingMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminTandingSubmenu" role="button" aria-expanded="<?= $isTandingMenu ? 'true' : 'false' ?>" aria-controls="adminTandingSubmenu">
+                            <span class="label-block"><i class="fas fa-hand-fist"></i><span>Kategori Tanding</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isTandingMenu ? 'show' : '' ?>" id="adminTandingSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kelas_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kelas-tanding') ?>">Daftar Kelas Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pool_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pool-tanding') ?>">Daftar Pool</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pertandingan_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pertandingan-tanding') ?>">Daftar Pertandingan</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kuota_prestasi_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kuota-prestasi-tanding') ?>">Kuota Kelas Prestasi</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php $isSeniMenu = in_array(($activeMenu ?? ''), ['kategori_seni_admin', 'pool_seni', 'sistem_pool_seni', 'battle_seni', 'kuota_prestasi_seni'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isSeniMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminSeniSubmenu" role="button" aria-expanded="<?= $isSeniMenu ? 'true' : 'false' ?>" aria-controls="adminSeniSubmenu">
+                            <span class="label-block"><i class="fas fa-medal"></i><span>Kategori Seni</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isSeniMenu ? 'show' : '' ?>" id="adminSeniSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kategori_seni_admin' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kategori-seni') ?>">Daftar Kategori Seni</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pool_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pool-seni') ?>">Daftar Pool Seni</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'sistem_pool_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/sistem-pool-seni') ?>">Sistem Penampilan Pool</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'battle_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/battle-seni') ?>">Daftar Battle Seni</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kuota_prestasi_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kuota-prestasi-seni') ?>">Kuota Kelas Prestasi Seni</a>
+                            </div>
+                        </div>
+                    </div>
                     <?php endif; ?>
                 </nav>
             </div>

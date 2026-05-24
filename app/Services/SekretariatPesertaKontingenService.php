@@ -105,6 +105,35 @@ class SekretariatPesertaKontingenService
         return (new PesertaTandingModel())->findDetailed($idPesertaTanding);
     }
 
+    public function listPoolTandingForPeserta(int $idPesertaTanding): array
+    {
+        $record = $this->getPesertaTandingDetail($idPesertaTanding);
+        if ($record === null || empty($record->id_kelas_tanding)) {
+            return [];
+        }
+
+        return db_connect()->table('kompetisi_tanding kom')
+            ->select([
+                'kom.id_kompetisi_tanding',
+                'kom.nomor_pool',
+                'kom.max_peserta',
+                'kt.label',
+                'kt.berat_minimal',
+                'kt.berat_maksimal',
+                'ku.nama_kategori_usia',
+                'ku.jenis_kelamin',
+                'kl.jenis_perlombaan',
+                '(SELECT COUNT(*) FROM peserta_tanding pt WHERE pt.id_kompetisi_tanding = kom.id_kompetisi_tanding) AS jumlah_peserta_tanding',
+            ])
+            ->join('kelas_tanding kt', 'kt.id_kelas_tanding = kom.id_kelas_tanding')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = kt.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
+            ->where('kom.id_kelas_tanding', (int) $record->id_kelas_tanding)
+            ->orderBy('kom.nomor_pool', 'ASC')
+            ->get()
+            ->getResult();
+    }
+
     public function availablePendaftarForTanding(?int $idKontingen = null): array
     {
         $query = db_connect()->table('pendaftar p')
@@ -303,7 +332,7 @@ class SekretariatPesertaKontingenService
             'id_kompetisi_tanding' => $idKompetisi,
             'nomor_bagan' => ($payload['nomor_bagan'] ?? '') !== '' ? $payload['nomor_bagan'] : null,
             'keterangan' => trim((string) ($payload['keterangan'] ?? '')),
-            'status' => (string) ($payload['status'] ?? 'OK'),
+            'status' => (string) ($payload['status'] ?? $record->status ?? 'OK'),
         ]);
 
         if ($newKompetisi !== null && strtolower((string) $newKompetisi->jenis_perlombaan) === 'pemasalan') {
@@ -394,6 +423,44 @@ class SekretariatPesertaKontingenService
     public function getKelompokSeniDetail(int $idKelompok): ?object
     {
         return (new KelompokPesertaSeniModel())->findDetailed($idKelompok);
+    }
+
+    public function listPoolSeniForKelompok(int $idKelompok): array
+    {
+        $record = $this->getKelompokSeniDetail($idKelompok);
+        if ($record === null) {
+            return [];
+        }
+
+        $kompetisi = $this->getKompetisiSeni((int) $record->id_kompetisi_seni);
+        if ($kompetisi === null || empty($kompetisi->id_sub_kategori_seni)) {
+            return [];
+        }
+
+        return db_connect()->table('kompetisi_seni kom')
+            ->select([
+                'kom.id_kompetisi_seni',
+                'kom.id_sub_kategori_seni',
+                'kom.nomor_pool',
+                'kom.max_peserta',
+                'sks.nama_seni',
+                'sks.jenis_seni',
+                'sks.jumlah_peserta',
+                'sks.sistem_penampilan',
+                'ku.nama_kategori_usia',
+                'ku.jenis_kelamin',
+                'ku.min_umur',
+                'ku.max_umur',
+                'kl.kuota_peserta',
+                '(SELECT COUNT(*) FROM kelompok_peserta_seni kps WHERE kps.id_kompetisi_seni = kom.id_kompetisi_seni) AS jumlah_kelompok_peserta_seni',
+            ])
+            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = kom.id_sub_kategori_seni')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
+            ->where('kom.id_sub_kategori_seni', (int) $kompetisi->id_sub_kategori_seni)
+            ->orderBy('kom.nomor_pool', 'ASC')
+            ->get()
+            ->getResult();
     }
 
     public function listKompetisiSeni(): array
@@ -595,9 +662,9 @@ class SekretariatPesertaKontingenService
 
         $updated = $model->update($idKelompok, [
             'id_kompetisi_seni' => $idKompetisi,
-            'status' => (string) ($payload['status'] ?? 'ok'),
+            'status' => (string) ($payload['status'] ?? $record->status ?? 'ok'),
             'keterangan' => trim((string) ($payload['keterangan'] ?? '')),
-            'nomor_undi' => (int) ($payload['nomor_undi'] ?? 0),
+            'nomor_undi' => (int) ($payload['nomor_undi'] ?? $record->nomor_undi ?? 0),
         ]);
 
         if ($newKompetisi !== null) {

@@ -4,6 +4,27 @@ Semua perubahan penting pada project ini akan dicatat di file ini.
 
 Format changelog ini mengikuti gaya sederhana berbasis versi.
 
+## v0.3.0 - 2026-05-24
+
+### Added
+
+- Modul sekretariat untuk kelola kontingen, data atlet, peserta tanding, dan kelompok seni.
+- Dashboard sekretariat dengan ringkasan kontingen, pendaftar, peserta tanding, dan kelompok seni.
+- Service bersama `SekretariatPesertaKontingenService` untuk alur peserta dan kontingen lintas modul.
+- Route dan menu admin sekretariat untuk kontingen, atlet, peserta tanding, dan peserta seni.
+- Migration fallback untuk tabel resource sekretariat pada instalasi CI4 baru.
+- Dokumen rencana dan status migrasi modul sekretariat.
+
+### Changed
+
+- Query kategori tanding dan seni memakai service bersama agar validasi kontingen dan sekretariat konsisten.
+- Model kontingen, pendaftar, peserta tanding, peserta seni, dan arsip pendaftar diperketat dengan `allowedFields`.
+- Tampilan tabel admin dan tab detail kontingen disesuaikan agar lebih nyaman di data lebar.
+
+### Fixed
+
+- File upload bukti pembayaran baru tidak lagi muncul sebagai kandidat commit karena rule ignore diperketat.
+
 ## v0.2.0 - 2026-05-24
 
 ### Added

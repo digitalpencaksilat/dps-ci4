@@ -352,7 +352,8 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .admin-table-scroller table.dataTable,
 .admin-table-wrap table.admin-table {
     min-width: 100%;
-    width: 100% !important;
+    width: max-content !important;
+    table-layout: auto;
 }
 
 .table.admin-table {
@@ -379,6 +380,11 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     padding: 0.95rem 1rem;
     border-color: rgba(198, 0, 0, 0.08);
     vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table.admin-table .text-wrap {
+    white-space: nowrap !important;
 }
 
 .admin-table-wrap .admin-table-toolbar,
@@ -563,6 +569,32 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     color: var(--admin-accent-dark);
 }
 
+.text-admin-brand {
+    color: var(--admin-accent) !important;
+}
+
+.btn-admin-brand {
+    background: linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-dark) 100%);
+    border-color: var(--admin-accent);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(198, 0, 0, 0.18);
+}
+
+.btn-admin-brand:hover,
+.btn-admin-brand:focus {
+    background: linear-gradient(135deg, var(--admin-accent-dark) 0%, var(--admin-surface-strong) 100%);
+    border-color: var(--admin-accent-dark);
+    color: #fff;
+    box-shadow: 0 12px 26px rgba(143, 11, 20, 0.24);
+}
+
+.btn-admin-brand:active {
+    background: var(--admin-surface-strong) !important;
+    border-color: var(--admin-surface-strong) !important;
+    color: #fff !important;
+}
+
 .info-grid {
     display: grid;
     gap: 14px;
@@ -598,6 +630,26 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .status-badge.neutral {
     color: #6b7280;
     background: rgba(107, 114, 128, 0.14);
+}
+
+#kontingenTabs .nav-link {
+    color: var(--admin-accent-dark);
+    background: var(--admin-accent-soft);
+    border: 1px solid var(--admin-border);
+    font-weight: 700;
+}
+
+#kontingenTabs .nav-link:hover,
+#kontingenTabs .nav-link:focus {
+    color: var(--admin-accent);
+    background: var(--admin-surface-soft);
+}
+
+#kontingenTabs .nav-link.active {
+    color: #fff;
+    background: linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-dark) 100%);
+    border-color: transparent;
+    box-shadow: 0 10px 22px rgba(198, 0, 0, 0.18);
 }
 
 .section-stack {

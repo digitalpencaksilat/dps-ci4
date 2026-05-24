@@ -1,0 +1,118 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    ".opencode/instructions/INSTRUCTIONS.md"
+  ],
+  "agent": {
+    "planner": {
+      "description": "Plans CodeIgniter/PHP implementation work with minimal, testable changes.",
+      "mode": "subagent",
+      "prompt": "{file:.opencode/prompts/agents/planner.txt}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "code-reviewer": {
+      "description": "Reviews PHP/CodeIgniter changes for correctness, security, maintainability, and missing tests.",
+      "mode": "subagent",
+      "prompt": "{file:.opencode/prompts/agents/code-reviewer.txt}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "security-reviewer": {
+      "description": "Reviews authentication, authorization, validation, file handling, and database changes for security risks.",
+      "mode": "subagent",
+      "prompt": "{file:.opencode/prompts/agents/security-reviewer.txt}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "build-error-resolver": {
+      "description": "Diagnoses and fixes Composer, PHPUnit, PHP syntax, and CodeIgniter runtime errors with minimal diffs.",
+      "mode": "subagent",
+      "prompt": "{file:.opencode/prompts/agents/build-error-resolver.txt}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": true,
+        "edit": true
+      }
+    },
+    "migration-reviewer": {
+      "description": "Reviews and plans CI3-to-CI4 migration work across routes, controllers, models, views, database, and verification.",
+      "mode": "subagent",
+      "prompt": "{file:.opencode/prompts/agents/migration-reviewer.txt}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    }
+  },
+  "command": {
+    "plan": {
+      "description": "Create an implementation plan for CodeIgniter/PHP work.",
+      "agent": "planner",
+      "template": "Create a concise implementation plan for this CodeIgniter 4 project: $ARGUMENTS"
+    },
+    "code-review": {
+      "description": "Review current changes for bugs, regressions, and missing tests.",
+      "agent": "code-reviewer",
+      "template": "Review the current worktree changes in this CodeIgniter 4 project. Focus on bugs, regressions, security, and missing tests. Scope: $ARGUMENTS"
+    },
+    "security": {
+      "description": "Review security-sensitive code paths.",
+      "agent": "security-reviewer",
+      "template": "Security review this CodeIgniter 4 project area. Check auth, roles, CSRF, validation, uploads, SQL/query safety, secrets, and output escaping. Scope: $ARGUMENTS"
+    },
+    "build-fix": {
+      "description": "Fix PHP, Composer, PHPUnit, or CodeIgniter errors.",
+      "agent": "build-error-resolver",
+      "template": "Diagnose and fix this build/test/runtime issue with minimal CodeIgniter/PHP changes: $ARGUMENTS"
+    },
+    "verify": {
+      "description": "Run a project verification checklist.",
+      "template": "Verify the recent changes in this CodeIgniter 4 project. Prefer composer test or vendor/bin/phpunit when available, php -l for touched PHP files, and targeted manual checks. Report commands run and results. Scope: $ARGUMENTS"
+    },
+    "tdd": {
+      "description": "Guide test-first implementation for a bug fix or feature.",
+      "template": "Use a test-first workflow for this CodeIgniter 4 change. Identify the smallest failing PHPUnit test, implement the minimal fix, then verify. Task: $ARGUMENTS"
+    },
+    "migration-scan": {
+      "description": "Map CI4 migration status across modules and identify gaps.",
+      "agent": "migration-reviewer",
+      "template": "Scan this CodeIgniter 4 migration state. Compare routes, controllers, models, services, views, migrations, tests, and docs. Produce module status, gaps, risks, and next actions. Scope: $ARGUMENTS"
+    },
+    "migration-plan": {
+      "description": "Plan a focused CI3-to-CI4 module migration.",
+      "agent": "migration-reviewer",
+      "template": "Create a focused CI3-to-CI4 migration plan for this module or feature. Include source/target files, data model impact, route/filter impact, validation, tests, rollback notes, and acceptance checks. Scope: $ARGUMENTS"
+    },
+    "migration-verify": {
+      "description": "Verify a migrated CI4 module before marking it complete.",
+      "agent": "migration-reviewer",
+      "template": "Verify this migrated CodeIgniter 4 module. Check route coverage, controller behavior, models/services, views, validation, auth filters, database changes, tests, and manual QA. Report blockers before status can become complete. Scope: $ARGUMENTS"
+    },
+    "db-review": {
+      "description": "Review database migrations, models, queries, indexes, and data safety.",
+      "agent": "migration-reviewer",
+      "template": "Review database-related CodeIgniter 4 migration work. Check migrations, model allowedFields/return types, transactions, indexes, query builder usage, destructive changes, rollback, seed/backfill needs, and data safety. Scope: $ARGUMENTS"
+    },
+    "release-audit": {
+      "description": "Audit migration readiness before release or handoff.",
+      "agent": "migration-reviewer",
+      "template": "Audit release readiness for this CodeIgniter 4 migration. Check open migration gaps, docs, tests, auth/security, database migration safety, environment assumptions, rollback plan, and manual QA. Scope: $ARGUMENTS"
+    }
+  }
+}

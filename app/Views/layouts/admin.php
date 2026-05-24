@@ -90,6 +90,26 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         <span class="label-block"><i class="fas fa-people-group"></i><span>Kontingen</span></span>
                     </a>
                     <?php endif; ?>
+
+                    <?php if ($adminRole === 'sekretariat') : ?>
+                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'kontingen' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kontingen') ?>">
+                        <span class="label-block"><i class="fas fa-people-group"></i><span>Kontingen</span></span>
+                    </a>
+                    <?php $isAtletMenu = in_array(($activeMenu ?? ''), ['data_atlet', 'peserta_tanding', 'kelompok_seni'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isAtletMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminAtletSubmenu" role="button" aria-expanded="<?= $isAtletMenu ? 'true' : 'false' ?>" aria-controls="adminAtletSubmenu">
+                            <span class="label-block"><i class="fas fa-users"></i><span>Atlet</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isAtletMenu ? 'show' : '' ?>" id="adminAtletSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'data_atlet' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/data-atlet') ?>">Data Atlet</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'peserta_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/peserta-tanding') ?>">Peserta Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kelompok_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kelompok-seni') ?>">Peserta Seni</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </nav>
             </div>
 

@@ -42,131 +42,33 @@ class KategoriSeniService
 
     public function availableKompetisi(int $idKontingen): array
     {
-        $items = db_connect()->table('kompetisi_seni kom')
-            ->select([
-                'kom.id_kompetisi_seni',
-                'kom.max_peserta',
-                'kom.nomor_pool',
-                'sks.id_sub_kategori_seni',
-                'sks.nama_seni',
-                'sks.jenis_seni',
-                'sks.jumlah_peserta',
-                'sks.sistem_penampilan',
-                'ku.nama_kategori_usia',
-                'ku.jenis_kelamin',
-                'kl.kuota_peserta',
-                'kl.jenis_perlombaan',
-                '(SELECT COUNT(*) FROM kelompok_peserta_seni k2 WHERE k2.id_kompetisi_seni = kom.id_kompetisi_seni) AS jumlah_kelompok_peserta_seni',
-                '(SELECT COUNT(*) FROM kelompok_peserta_seni k2 JOIN kompetisi_seni ko2 ON ko2.id_kompetisi_seni = k2.id_kompetisi_seni WHERE ko2.id_sub_kategori_seni = sks.id_sub_kategori_seni) AS jumlah_per_sub_kategori',
-            ])
-            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = kom.id_sub_kategori_seni')
-            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba')
-            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
-            ->orderBy('ku.min_umur', 'ASC')
-            ->orderBy('sks.jenis_seni', 'ASC')
-            ->orderBy('sks.nama_seni', 'ASC')
-            ->get()
-            ->getResult();
-
-        foreach ($items as $item) {
-            $item->disabled = false;
-            $item->message = null;
-
-            if ((int) $item->jumlah_kelompok_peserta_seni >= (int) $item->max_peserta) {
-                $item->disabled = true;
-                $item->message = 'Kuota penuh';
-            }
-        }
-
-        return $items;
+        return (new SekretariatPesertaKontingenService())->listKompetisiSeniPendaftaran(false);
     }
 
     public function availablePendaftarByKompetisi(int $idKompetisi, int $idKontingen): array
     {
-        $kompetisi = db_connect()->table('kompetisi_seni kom')
-            ->select([
-                'kom.id_kompetisi_seni',
-                'sks.jenis_seni',
-                'sks.jumlah_peserta',
-                'ku.jenis_kelamin',
-            ])
-            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = kom.id_sub_kategori_seni')
-            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba')
-            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
-            ->where('kom.id_kompetisi_seni', $idKompetisi)
-            ->get()
-            ->getRow();
-
-        if ($kompetisi === null) {
+        if ($idKontingen !== (int) session()->get('id_kontingen')) {
             return [];
         }
 
-        return db_connect()->table('pendaftar p')
-            ->select('p.*')
-            ->join('peserta_seni ps', 'ps.id_pendaftar = p.id_pendaftar', 'left')
-            ->where('p.id_kontingen', $idKontingen)
-            ->where('p.jenis_kelamin', $kompetisi->jenis_kelamin)
-            ->where('ps.id_peserta_seni IS NULL', null, false)
-            ->orderBy('p.nama_pendaftar', 'ASC')
-            ->get()
-            ->getResult();
+        return (new SekretariatPesertaKontingenService())->getPendaftarByKompetisiSeni($idKompetisi, $idKontingen);
     }
 
     public function create(int $idKontingen, int $idKompetisi, array $idPendaftar, ?string $keterangan): bool
     {
-        $kompetisi = db_connect()->table('kompetisi_seni kom')
-            ->select('kom.id_kompetisi_seni, sks.jenis_seni, sks.jumlah_peserta')
-            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = kom.id_sub_kategori_seni')
-            ->where('kom.id_kompetisi_seni', $idKompetisi)
-            ->get()
-            ->getRow();
-
-        if ($kompetisi === null) {
-            throw new \RuntimeException('Kategori seni tidak ditemukan.');
-        }
-
-        $count = count($idPendaftar);
-        $strictTypes = ['tunggal', 'ganda', 'beregu', 'solo kreatif', 'perorangan', 'berpasangan', 'berkelompok'];
-        $strictMatch = in_array(strtolower($kompetisi->jenis_seni), $strictTypes, true);
-
-        if (($strictMatch && $count !== (int) $kompetisi->jumlah_peserta) || (! $strictMatch && $count < (int) $kompetisi->jumlah_peserta)) {
-            throw new \RuntimeException('Jumlah atlet yang dipilih tidak sesuai kebutuhan kategori seni.');
-        }
-
-        $db = db_connect();
-        $db->transStart();
-
-        $model = new KelompokPesertaSeniModel();
-        $model->insert([
+        (new SekretariatPesertaKontingenService())->createKelompokSeni([
             'id_kompetisi_seni' => $idKompetisi,
-            'id_kontingen'      => $idKontingen,
-            'id_pembayaran'     => null,
-            'status'            => 'ok',
-            'keterangan'        => $keterangan ?? '',
-            'nomor_undi'        => 0,
+            'id_kontingen' => $idKontingen,
+            'id_pendaftar' => $idPendaftar,
+            'keterangan' => $keterangan ?? '',
         ]);
 
-        $idKelompok = (int) $model->getInsertID();
-
-        foreach ($idPendaftar as $id) {
-            $db->table('peserta_seni')->insert([
-                'id_pendaftar' => (int) $id,
-                'id_kelompok_peserta_seni' => $idKelompok,
-                'status_sertifikat' => 'belum_dicetak',
-                'nomor_sertifikat' => null,
-            ]);
-        }
-
-        $db->transComplete();
-
-        return $db->transStatus();
+        return true;
     }
 
     public function update(object $record, int $idKompetisi): bool
     {
-        return (new KelompokPesertaSeniModel())->update($record->id_kelompok_peserta_seni, [
-            'id_kompetisi_seni' => $idKompetisi,
-        ]);
+        return (new SekretariatPesertaKontingenService())->updateKelompokSeni((int) $record->id_kelompok_peserta_seni, ['id_kompetisi_seni' => $idKompetisi]);
     }
 
     public function delete(object $record): bool

@@ -60,68 +60,11 @@ class KategoriTandingService
             return [];
         }
 
-        $umur = $this->calculateAge($pendaftar->tanggal_lahir);
-
-        $items = db_connect()->table('kompetisi_tanding kom')
-            ->select([
-                'kom.id_kompetisi_tanding',
-                'kom.max_peserta',
-                'kom.nomor_pool',
-                'kt.id_kelas_tanding',
-                'kt.label',
-                'kt.berat_minimal',
-                'kt.berat_maksimal',
-                'kt.biaya_pendaftaran_dn',
-                'kt.biaya_pendaftaran_ln',
-                'kl.kuota_peserta',
-                'kl.jenis_perlombaan',
-                'ku.nama_kategori_usia',
-                'ku.jenis_kelamin',
-                'ku.min_umur',
-                'ku.max_umur',
-                '(SELECT COUNT(*) FROM peserta_tanding pt WHERE pt.id_kompetisi_tanding = kom.id_kompetisi_tanding) AS jumlah_peserta_tanding',
-                '(SELECT COUNT(*) FROM peserta_tanding pt JOIN kompetisi_tanding k2 ON k2.id_kompetisi_tanding = pt.id_kompetisi_tanding WHERE k2.id_kelas_tanding = kt.id_kelas_tanding) AS jumlah_peserta_tanding_per_kelas',
-                '(SELECT COUNT(*) FROM peserta_tanding pt JOIN pendaftar p2 ON p2.id_pendaftar = pt.id_pendaftar WHERE pt.id_kompetisi_tanding = kom.id_kompetisi_tanding AND p2.id_kontingen = ' . (int) $pendaftar->id_kontingen . ') AS jumlah_satu_kontingen',
-            ])
-            ->join('kelas_tanding kt', 'kt.id_kelas_tanding = kom.id_kelas_tanding')
-            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = kt.id_kategori_lomba')
-            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
-            ->where('ku.jenis_kelamin', $pendaftar->jenis_kelamin)
-            ->where('kt.label !=', 'sisipan')
-            ->orderBy('ku.min_umur', 'ASC')
-            ->orderBy('kt.label', 'ASC')
-            ->get()
-            ->getResult();
-
-        $filtered = [];
-        foreach ($items as $item) {
-            if ($umur !== null && ($umur < (int) $item->min_umur || $umur > (int) $item->max_umur)) {
-                continue;
-            }
-
-            if ((float) $pendaftar->berat_badan < (float) $item->berat_minimal || (float) $pendaftar->berat_badan > (float) $item->berat_maksimal) {
-                continue;
-            }
-
-            $disabled = false;
-            $message = null;
-
-            if ((int) $item->jumlah_peserta_tanding >= (int) $item->max_peserta) {
-                $disabled = true;
-                $message = 'Kuota penuh';
-            }
-
-            if (! $disabled && (int) $item->jumlah_satu_kontingen > 0 && $item->jenis_perlombaan === 'prestasi') {
-                $disabled = true;
-                $message = 'Atlet kontingen ini sudah ada di kelas ini';
-            }
-
-            $item->disabled = $disabled;
-            $item->message = $message;
-            $filtered[] = $item;
+        if ((int) $pendaftar->id_kontingen !== (int) session()->get('id_kontingen')) {
+            return [];
         }
 
-        return $filtered;
+        return (new SekretariatPesertaKontingenService())->getKompetisiTandingByPendaftar($idPendaftar);
     }
 
     public function create(int $idKontingen, int $idPendaftar, int $idKompetisi): bool
@@ -139,23 +82,17 @@ class KategoriTandingService
             throw new \RuntimeException('Peserta sudah terdaftar pada kategori tanding.');
         }
 
-        return (new PesertaTandingModel())->insert([
+        (new SekretariatPesertaKontingenService())->createPesertaTanding([
             'id_pendaftar' => $idPendaftar,
             'id_kompetisi_tanding' => $idKompetisi,
-            'id_pembayaran' => null,
-            'nomor_bagan' => null,
-            'keterangan' => '',
-            'status' => 'OK',
-            'status_sertifikat' => 'belum_dicetak',
-            'nomor_sertifikat' => null,
-        ]) !== false;
+        ]);
+
+        return true;
     }
 
     public function update(object $record, int $idKompetisi): bool
     {
-        return (new PesertaTandingModel())->update($record->id_peserta_tanding, [
-            'id_kompetisi_tanding' => $idKompetisi,
-        ]);
+        return (new SekretariatPesertaKontingenService())->updatePesertaTanding((int) $record->id_peserta_tanding, ['id_kompetisi_tanding' => $idKompetisi]);
     }
 
     public function delete(object $record): bool

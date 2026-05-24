@@ -4,7 +4,7 @@
 [![PHP](https://img.shields.io/badge/PHP-8.2+-777bb4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952b3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
 [![Status](https://img.shields.io/badge/status-active_development-c60000?style=for-the-badge)](#status)
-[![Version](https://img.shields.io/badge/version-v0.1.0-1a1a1a?style=for-the-badge)](./VERSION)
+[![Version](https://img.shields.io/badge/version-v0.3.0-1a1a1a?style=for-the-badge)](./VERSION)
 
 Migrasi bertahap platform Digital Pencak Silat dari CodeIgniter 3 ke CodeIgniter 4 dengan pendekatan modern, lebih terstruktur, dan lebih siap dikembangkan untuk kebutuhan production berikutnya.
 

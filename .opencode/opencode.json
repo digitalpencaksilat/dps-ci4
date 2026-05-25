@@ -58,6 +58,28 @@
         "write": false,
         "edit": false
       }
+    },
+    "github-flow-operator": {
+      "description": "Prepares GitHub-ready summaries, PR notes, issue drafts, and release handoff details from local changes.",
+      "mode": "subagent",
+      "prompt": "{file:.opencode/prompts/agents/github-flow-operator.txt}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "ui-ux-reviewer": {
+      "description": "Reviews CodeIgniter 4 views, layouts, frontend interactions, and responsive UX for this project.",
+      "mode": "subagent",
+      "prompt": "{file:.opencode/prompts/agents/ui-ux-reviewer.txt}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
     }
   },
   "command": {
@@ -113,6 +135,26 @@
       "description": "Audit migration readiness before release or handoff.",
       "agent": "migration-reviewer",
       "template": "Audit release readiness for this CodeIgniter 4 migration. Check open migration gaps, docs, tests, auth/security, database migration safety, environment assumptions, rollback plan, and manual QA. Scope: $ARGUMENTS"
+    },
+    "ui-review": {
+      "description": "Review UI consistency, responsive behavior, and frontend UX risks.",
+      "agent": "ui-ux-reviewer",
+      "template": "Review the UI/UX of this CodeIgniter 4 project area. Focus on layout consistency, table/modal/form quality, responsive behavior, accessibility basics, misleading labels, and unfinished UI. Scope: $ARGUMENTS"
+    },
+    "ux-flow": {
+      "description": "Review end-to-end UX flow and user friction points.",
+      "agent": "ui-ux-reviewer",
+      "template": "Review the end-to-end UX flow for this CodeIgniter 4 project area or user journey. Focus on validation, redirects, feedback, failure states, edge cases, and user friction. Scope: $ARGUMENTS"
+    },
+    "github-pr": {
+      "description": "Prepare a GitHub-ready pull request summary for current changes.",
+      "agent": "github-flow-operator",
+      "template": "Prepare a GitHub pull request draft for the current worktree changes in this CodeIgniter 4 project. Include title, summary, affected modules, risks, tests, manual QA, and follow-up notes. Scope: $ARGUMENTS"
+    },
+    "github-issue": {
+      "description": "Prepare a GitHub issue draft for a bug, UX gap, or follow-up task.",
+      "agent": "github-flow-operator",
+      "template": "Prepare a GitHub issue draft for this CodeIgniter 4 project. Include summary, affected area, current problem, expected behavior, impact, and verification notes. Scope: $ARGUMENTS"
     }
   }
 }

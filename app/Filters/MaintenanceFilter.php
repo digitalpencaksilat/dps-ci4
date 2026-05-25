@@ -24,6 +24,10 @@ class MaintenanceFilter implements FilterInterface
             'pendaftaran/login',
         ];
 
+        if (str_starts_with($path, 'development')) {
+            return null;
+        }
+
         if (in_array($path, $allowedPaths, true) || str_starts_with($path, 'assets/') || str_starts_with($path, 'uploads/')) {
             return null;
         }

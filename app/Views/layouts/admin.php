@@ -142,7 +142,21 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
+                    <?php $isJadwalMenu = in_array(($activeMenu ?? ''), ['jadwal_tanding', 'jadwal_seni'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isJadwalMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminJadwalSubmenu" role="button" aria-expanded="<?= $isJadwalMenu ? 'true' : 'false' ?>" aria-controls="adminJadwalSubmenu">
+                            <span class="label-block"><i class="fas fa-calendar-alt"></i><span>Jadwal Pertandingan</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isJadwalMenu ? 'show' : '' ?>" id="adminJadwalSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'jadwal_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/jadwal-tanding') ?>">Jadwal Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'jadwal_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/jadwal-seni') ?>">Jadwal Seni</a>
+                            </div>
+                        </div>
+                    </div>
                     <?php $isMedalMenu = ($activeMenu ?? '') === 'medal_tally'; ?>
+                    <?php $medalSlug = uri_string() ?? ''; ?>
                     <div>
                         <a class="admin-nav-link <?= $isMedalMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminMedalSubmenu" role="button" aria-expanded="<?= $isMedalMenu ? 'true' : 'false' ?>" aria-controls="adminMedalSubmenu">
                             <span class="label-block"><i class="fas fa-trophy"></i><span>Perolehan Medali</span></span>
@@ -150,13 +164,25 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         </a>
                         <div class="admin-submenu collapse <?= $isMedalMenu ? 'show' : '' ?>" id="adminMedalSubmenu">
                             <div class="admin-submenu-inner">
-                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/akumulasi') ?>">Akumulasi</a>
-                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/kategori-usia') ?>">Per Kategori Usia</a>
-                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/sekolah') ?>">Berdasarkan Sekolah</a>
-                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/akumulasi-eksklusif') ?>">Akumulasi Eksklusif</a>
-                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/kategori-usia-eksklusif') ?>">Kategori Eksklusif</a>
-                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/tanding') ?>">Raw Tanding</a>
-                                <a class="admin-submenu-link" href="<?= base_url('admin/sekretariat/perolehan-medali/seni') ?>">Raw Seni</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'akumulasi') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/akumulasi') ?>">Akumulasi</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'kategori-usia') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/kategori-usia') ?>">Per Kategori Usia</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'sekolah') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/sekolah') ?>">Berdasarkan Sekolah</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'akumulasi-eksklusif') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/akumulasi-eksklusif') ?>">Akumulasi Eksklusif</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'kategori-usia-eksklusif') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/kategori-usia-eksklusif') ?>">Kategori Eksklusif</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'tanding') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/tanding') ?>">Raw Tanding</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'seni') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/seni') ?>">Raw Seni</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php $isToolsMenu = in_array(($activeMenu ?? ''), ['pengadaan_medali'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isToolsMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminToolsSubmenu" role="button" aria-expanded="<?= $isToolsMenu ? 'true' : 'false' ?>" aria-controls="adminToolsSubmenu">
+                            <span class="label-block"><i class="fas fa-screwdriver-wrench"></i><span>Tools</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isToolsMenu ? 'show' : '' ?>" id="adminToolsSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pengadaan_medali' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pengadaan-medali') ?>">Pengadaan Medali</a>
                             </div>
                         </div>
                     </div>

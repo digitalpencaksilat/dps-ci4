@@ -134,6 +134,7 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('peserta-tanding/(:num)', 'Admin\\Sekretariat\\PesertaTandingController::show/$1');
     $routes->post('peserta-tanding', 'Admin\\Sekretariat\\PesertaTandingController::store');
     $routes->post('peserta-tanding/(:num)/update', 'Admin\\Sekretariat\\PesertaTandingController::update/$1');
+    $routes->get('pengadaan-medali', 'Admin\\Sekretariat\\PengadaanMedaliController::index');
     $routes->post('peserta-tanding/(:num)/delete', 'Admin\\Sekretariat\\PesertaTandingController::delete/$1');
     $routes->get('kelompok-seni', 'Admin\\Sekretariat\\KelompokPesertaSeniController::index');
     $routes->get('pendaftar/by-kompetisi-seni/(:num)/(:num)', 'Admin\\Sekretariat\\KelompokPesertaSeniController::pendaftarByKompetisi/$1/$2');
@@ -176,6 +177,62 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('perolehan-medali/kategori-usia-eksklusif', 'Admin\\Sekretariat\\MedalTallyController::byAgeCategoryExclusive');
     $routes->get('perolehan-medali/tanding', 'Admin\\Sekretariat\\MedalTallyController::tanding');
     $routes->get('perolehan-medali/seni', 'Admin\\Sekretariat\\MedalTallyController::seni');
+    $routes->get('pengadaan-medali', 'Admin\\Sekretariat\\PengadaanMedaliController::index');
+    $routes->get('jadwal-tanding', 'Admin\\Sekretariat\\JadwalTandingController::index');
+    $routes->get('jadwal-tanding/(:num)', 'Admin\\Sekretariat\\JadwalTandingController::show/$1');
+    $routes->post('jadwal-tanding/create', 'Admin\\Sekretariat\\JadwalTandingController::create');
+    $routes->post('jadwal-tanding/create-ajax', 'Admin\\Sekretariat\\JadwalTandingController::createFromModal');
+    $routes->post('jadwal-tanding/(:num)/update-keterangan', 'Admin\\Sekretariat\\JadwalTandingController::updateKeterangan/$1');
+    $routes->post('jadwal-tanding/(:num)/delete', 'Admin\\Sekretariat\\JadwalTandingController::delete/$1');
+    $routes->post('jadwal-tanding/create-pdf-ajax/(:num)/(:num)', 'Admin\\Sekretariat\\JadwalTandingController::createPdfAjax/$1/$2');
+    $routes->get('jadwal-tanding/get-all-ids-ajax', 'Admin\\Sekretariat\\JadwalTandingController::getAllIdsAjax');
+    $routes->post('jadwal-tanding/tukar-atlet', 'Admin\\Sekretariat\\JadwalTandingController::tukarAtlet');
+    $routes->post('jadwal-tanding/sortir-ulang/(:num)', 'Admin\\Sekretariat\\JadwalTandingController::sortirUlang/$1');
+    $routes->post('jadwal-tanding/pola-penjadwalan/(:num)', 'Admin\\Sekretariat\\JadwalTandingController::polaPenjadwalan/$1');
+    $routes->get('jadwal-seni', 'Admin\\Sekretariat\\JadwalSeniController::index');
+    $routes->get('jadwal-seni/(:num)', 'Admin\\Sekretariat\\JadwalSeniController::show/$1');
+    $routes->post('jadwal-seni/create', 'Admin\\Sekretariat\\JadwalSeniController::create');
+    $routes->post('jadwal-seni/create-ajax', 'Admin\\Sekretariat\\JadwalSeniController::createFromModal');
+    $routes->post('jadwal-seni/(:num)/update-keterangan', 'Admin\\Sekretariat\\JadwalSeniController::updateKeterangan/$1');
+    $routes->post('jadwal-seni/(:num)/delete', 'Admin\\Sekretariat\\JadwalSeniController::delete/$1');
+    $routes->post('jadwal-seni/create-pdf-ajax/(:num)/(:num)', 'Admin\\Sekretariat\\JadwalSeniController::createPdfAjax/$1/$2');
+    $routes->get('jadwal-seni/get-all-ids-ajax', 'Admin\\Sekretariat\\JadwalSeniController::getAllIdsAjax');
+});
+
+$routes->group('development', ['filter' => 'developmentgate'], static function ($routes): void {
+    $routes->get('/', 'Development\DashboardController::index');
+
+    // System Health
+    $routes->get('system-health', 'Development\SystemHealthController::index');
+
+    // Log Viewer
+    $routes->get('log-viewer', 'Development\LogViewerController::index');
+    $routes->get('log-viewer/clear', 'Development\LogViewerController::clear');
+    $routes->get('log-viewer/(:any)', 'Development\LogViewerController::index/$1');
+
+    // Admin Utility
+    $routes->get('admin-utility', 'Development\AdminUtilityController::index');
+    $routes->post('admin-utility/update-password', 'Development\AdminUtilityController::updatePassword');
+
+    // Database Manager
+    $routes->get('database-manager', 'Development\DatabaseManagerController::index');
+    $routes->get('database-manager/export', 'Development\DatabaseManagerController::export');
+    $routes->post('database-manager/import', 'Development\DatabaseManagerController::import');
+    $routes->post('database-manager/switch', 'Development\DatabaseManagerController::switchDatabase');
+    $routes->post('database-manager/empty-tables', 'Development\DatabaseManagerController::emptyTables');
+    $routes->post('database-manager/drop-tables', 'Development\DatabaseManagerController::dropTables');
+
+    // Database Setup
+    $routes->get('database-setup', 'Development\DatabaseSetupController::index');
+    $routes->post('database-setup/process', 'Development\DatabaseSetupController::process');
+
+    // Purger
+    $routes->get('purger', 'Development\PurgerController::index');
+    $routes->get('purger/clean/(:segment)', 'Development\PurgerController::clean/$1');
+
+    // Data Pusher
+    $routes->get('data-pusher', 'Development\DataPusherController::index');
+    $routes->post('data-pusher/push', 'Development\DataPusherController::push');
 });
 
 $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static function ($routes): void {

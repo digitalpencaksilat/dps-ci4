@@ -129,6 +129,7 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->post('kontingen/(:num)/peserta-tanding', 'Admin\\Sekretariat\\KontingenController::storePesertaTanding/$1');
     $routes->post('kontingen/(:num)/kelompok-seni', 'Admin\\Sekretariat\\KontingenController::storeKelompokSeni/$1');
     $routes->get('data-atlet', 'Admin\\Sekretariat\\PendaftarController::index');
+    $routes->get('data-bpjs', 'Admin\\Sekretariat\\DataBpjsController::index');
     $routes->get('peserta-tanding', 'Admin\\Sekretariat\\PesertaTandingController::index');
     $routes->get('kompetisi-tanding/by-pendaftar/(:num)', 'Admin\\Sekretariat\\PesertaTandingController::byPendaftar/$1');
     $routes->get('peserta-tanding/(:num)', 'Admin\\Sekretariat\\PesertaTandingController::show/$1');
@@ -177,6 +178,7 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('perolehan-medali/kategori-usia-eksklusif', 'Admin\\Sekretariat\\MedalTallyController::byAgeCategoryExclusive');
     $routes->get('perolehan-medali/tanding', 'Admin\\Sekretariat\\MedalTallyController::tanding');
     $routes->get('perolehan-medali/seni', 'Admin\\Sekretariat\\MedalTallyController::seni');
+    $routes->get('nomor-sertifikat', 'Admin\\Sekretariat\\NomorSertifikatController::index');
     $routes->get('pengadaan-medali', 'Admin\\Sekretariat\\PengadaanMedaliController::index');
     $routes->get('jadwal-tanding', 'Admin\\Sekretariat\\JadwalTandingController::index');
     $routes->get('jadwal-tanding/(:num)', 'Admin\\Sekretariat\\JadwalTandingController::show/$1');

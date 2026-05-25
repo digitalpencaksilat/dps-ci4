@@ -54,6 +54,7 @@ class SekretariatPesertaKontingenService
             'pesertaTanding' => $this->listPesertaTandingByKontingen($idKontingen),
             'kelompokSeni' => $this->listKelompokSeniByKontingen($idKontingen),
             'pesertaSeni' => $this->listPesertaSeniByKontingen($idKontingen),
+            'official' => $this->listOfficialByKontingen($idKontingen),
             'pendaftarTandingOptions' => $this->availablePendaftarForTanding($idKontingen),
             'pendaftarSeniOptions' => $this->availablePendaftarForSeni($idKontingen),
             'kompetisiTandingOptions' => $this->listKompetisiTanding(),
@@ -75,6 +76,28 @@ class SekretariatPesertaKontingenService
     {
         return (new PendaftarModel())
             ->baseSekretariatQuery()
+            ->orderBy('k.nama_kontingen', 'ASC')
+            ->orderBy('p.nama_pendaftar', 'ASC')
+            ->get()
+            ->getResult();
+    }
+
+    public function listOfficialByKontingen(int $idKontingen): array
+    {
+        return db_connect()->table('official o')
+            ->select('o.*, k.nama_kontingen')
+            ->join('kontingen k', 'k.id_kontingen = o.id_kontingen', 'left')
+            ->where('o.id_kontingen', $idKontingen)
+            ->orderBy('o.nama_official', 'ASC')
+            ->get()
+            ->getResult();
+    }
+
+    public function listPendaftarForBpjs(): array
+    {
+        return (new PendaftarModel())
+            ->baseSekretariatQuery()
+            ->select('k.nomor_telepon_penanggungjawab', false)
             ->orderBy('k.nama_kontingen', 'ASC')
             ->orderBy('p.nama_pendaftar', 'ASC')
             ->get()
@@ -418,6 +441,84 @@ class SekretariatPesertaKontingenService
     public function listKelompokSeniByKontingen(int $idKontingen): array
     {
         return $this->listKelompokSeni($idKontingen);
+    }
+
+    public function listNomorSertifikatTanding(): array
+    {
+        return db_connect()->table('perolehan_medali_tanding pmt')
+            ->select([
+                'pmt.jenis_medali',
+                'pt.id_peserta_tanding',
+                'pt.nomor_sertifikat',
+                'p.id_pendaftar',
+                'p.nama_pendaftar',
+                'p.nama_sekolah',
+                'k.id_kontingen',
+                'k.nama_kontingen',
+                'k.provinsi',
+                'kom.nomor_pool',
+                'kt.label',
+                'kt.berat_minimal',
+                'kt.berat_maksimal',
+                'kl.jenis_perlombaan',
+                'ku.nama_kategori_usia',
+                'ku.jenis_kelamin',
+            ])
+            ->join('peserta_tanding pt', 'pt.id_peserta_tanding = pmt.id_peserta_tanding')
+            ->join('pendaftar p', 'p.id_pendaftar = pt.id_pendaftar')
+            ->join('kontingen k', 'k.id_kontingen = p.id_kontingen')
+            ->join('kompetisi_tanding kom', 'kom.id_kompetisi_tanding = pt.id_kompetisi_tanding')
+            ->join('kelas_tanding kt', 'kt.id_kelas_tanding = kom.id_kelas_tanding')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = kt.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
+            ->orderBy('ku.min_umur', 'ASC')
+            ->orderBy('ku.jenis_kelamin', 'ASC')
+            ->orderBy('kt.label', 'ASC')
+            ->orderBy('p.nama_pendaftar', 'ASC')
+            ->get()
+            ->getResult();
+    }
+
+    public function listNomorSertifikatSeni(): array
+    {
+        return db_connect()->table('perolehan_medali_seni pms')
+            ->select([
+                'pms.jenis_medali',
+                'kps.id_kelompok_peserta_seni',
+                'k.nama_kontingen',
+                'k.provinsi',
+                'kom.nomor_pool',
+                'sks.nama_seni',
+                'sks.jenis_seni',
+                'kl.jenis_perlombaan',
+                'ku.nama_kategori_usia',
+                'ku.jenis_kelamin',
+                '(SELECT GROUP_CONCAT(p2.nama_pendaftar SEPARATOR ", ") FROM pendaftar p2 JOIN peserta_seni ps2 ON ps2.id_pendaftar = p2.id_pendaftar WHERE ps2.id_kelompok_peserta_seni = kps.id_kelompok_peserta_seni) AS anggota_kelompok_peserta_seni',
+                '(SELECT GROUP_CONCAT(DISTINCT p2.nama_sekolah SEPARATOR ", ") FROM pendaftar p2 JOIN peserta_seni ps2 ON ps2.id_pendaftar = p2.id_pendaftar WHERE ps2.id_kelompok_peserta_seni = kps.id_kelompok_peserta_seni AND p2.nama_sekolah IS NOT NULL AND p2.nama_sekolah != "") AS nama_sekolah',
+            ], false)
+            ->join('kelompok_peserta_seni kps', 'kps.id_kelompok_peserta_seni = pms.id_kelompok_peserta_seni')
+            ->join('kontingen k', 'k.id_kontingen = kps.id_kontingen')
+            ->join('kompetisi_seni kom', 'kom.id_kompetisi_seni = kps.id_kompetisi_seni')
+            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = kom.id_sub_kategori_seni')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
+            ->orderBy('ku.min_umur', 'ASC')
+            ->orderBy('ku.jenis_kelamin', 'ASC')
+            ->orderBy('sks.jenis_seni', 'ASC')
+            ->orderBy('sks.nama_seni', 'ASC')
+            ->get()
+            ->getResult();
+    }
+
+    public function listPesertaSeniForSertifikat(): array
+    {
+        return db_connect()->table('peserta_seni ps')
+            ->select('ps.id_kelompok_peserta_seni, ps.nomor_sertifikat, p.nama_pendaftar')
+            ->join('pendaftar p', 'p.id_pendaftar = ps.id_pendaftar')
+            ->orderBy('ps.id_kelompok_peserta_seni', 'ASC')
+            ->orderBy('p.nama_pendaftar', 'ASC')
+            ->get()
+            ->getResult();
     }
 
     public function getKelompokSeniDetail(int $idKelompok): ?object

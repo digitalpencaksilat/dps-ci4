@@ -24,29 +24,43 @@
                 <table class="table admin-table admin-datatable align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Kontingen</th>
-                            <th>Jenis</th>
-                            <th>Pendaftar</th>
-                            <th>Tanding</th>
-                            <th>Kelompok Seni</th>
-                            <th>Official</th>
-                            <th>Status Bayar</th>
+                            <th>Nama</th>
+                            <th>Provinsi</th>
+                            <th class="text-end">Tanding</th>
+                            <th class="text-end">Tunggal</th>
+                            <th class="text-end">Ganda</th>
+                            <th class="text-end">Beregu</th>
+                            <th class="text-end">Solo Kreatif</th>
+                            <th class="text-end">Total Peserta</th>
+                            <th class="text-end">ID Card</th>
+                            <th>Jenis Pendaftaran</th>
                             <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($kontingenRows as $row) : ?>
+                            <?php
+                            $jumlahTanding = (int) ($row->jumlah_peserta_tanding ?? 0);
+                            $jumlahTunggal = (int) ($row->jumlah_kelompok_peserta_seni_tunggal ?? 0);
+                            $jumlahGanda = (int) ($row->jumlah_kelompok_peserta_seni_ganda ?? 0);
+                            $jumlahBeregu = (int) ($row->jumlah_kelompok_peserta_seni_beregu ?? 0);
+                            $jumlahSoloKreatif = (int) ($row->jumlah_kelompok_peserta_seni_solo_kreatif ?? 0);
+                            $totalPeserta = $jumlahTanding + $jumlahTunggal + $jumlahGanda + $jumlahBeregu + $jumlahSoloKreatif;
+                            $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBeregu * 3) + $jumlahSoloKreatif;
+                            ?>
                             <tr>
                                 <td>
-                                    <div class="fw-semibold"><?= esc($row->nama_kontingen ?: '-') ?></div>
-                                    <div class="small muted-copy"><?= esc((string) ($row->email_kontingen ?? '-')) ?></div>
+                                    <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-capitalize"><?= esc($row->nama_kontingen ?: '-') ?></a>
                                 </td>
-                                <td><?= esc(ucwords(str_replace('_', ' ', (string) ($row->jenis_kontingen ?? '-')))) ?></td>
-                                <td><?= esc((string) ((int) ($row->jumlah_pendaftar ?? 0))) ?></td>
-                                <td><?= esc((string) ((int) ($row->jumlah_peserta_tanding ?? 0))) ?></td>
-                                <td><?= esc((string) ((int) ($row->jumlah_kelompok_peserta_seni ?? 0))) ?></td>
-                                <td><?= esc((string) ((int) ($row->jumlah_official ?? 0))) ?></td>
-                                <td><?= esc((string) ($row->status_pembayaran ?? 'belum ada')) ?></td>
+                                <td><?= esc((string) ($row->provinsi ?? '-')) ?></td>
+                                <td class="text-end"><?= esc((string) $jumlahTanding) ?></td>
+                                <td class="text-end"><?= esc((string) $jumlahTunggal) ?></td>
+                                <td class="text-end"><?= esc((string) $jumlahGanda) ?></td>
+                                <td class="text-end"><?= esc((string) $jumlahBeregu) ?></td>
+                                <td class="text-end"><?= esc((string) $jumlahSoloKreatif) ?></td>
+                                <td class="text-end"><?= esc((string) $totalPeserta) ?></td>
+                                <td class="text-end"><?= esc((string) $totalIdCard) ?> lembar</td>
+                                <td><?= esc((string) ($row->jenis_pendaftaran ?? '-')) ?></td>
                                 <td class="text-end">
                                     <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="btn btn-sm btn-outline-danger rounded-pill">Detail</a>
                                 </td>

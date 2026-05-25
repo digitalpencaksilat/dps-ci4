@@ -52,6 +52,10 @@ class KontingenModel extends Model
                 '(SELECT COUNT(*) FROM pendaftar WHERE pendaftar.id_kontingen = k.id_kontingen) AS jumlah_pendaftar',
                 '(SELECT COUNT(*) FROM peserta_tanding pt JOIN pendaftar p ON p.id_pendaftar = pt.id_pendaftar WHERE p.id_kontingen = k.id_kontingen) AS jumlah_peserta_tanding',
                 '(SELECT COUNT(*) FROM kelompok_peserta_seni kps WHERE kps.id_kontingen = k.id_kontingen) AS jumlah_kelompok_peserta_seni',
+                '(SELECT COUNT(*) FROM kelompok_peserta_seni kps JOIN kompetisi_seni ks ON ks.id_kompetisi_seni = kps.id_kompetisi_seni JOIN sub_kategori_seni sks ON sks.id_sub_kategori_seni = ks.id_sub_kategori_seni WHERE kps.id_kontingen = k.id_kontingen AND LOWER(sks.jenis_seni) = "tunggal") AS jumlah_kelompok_peserta_seni_tunggal',
+                '(SELECT COUNT(*) FROM kelompok_peserta_seni kps JOIN kompetisi_seni ks ON ks.id_kompetisi_seni = kps.id_kompetisi_seni JOIN sub_kategori_seni sks ON sks.id_sub_kategori_seni = ks.id_sub_kategori_seni WHERE kps.id_kontingen = k.id_kontingen AND LOWER(sks.jenis_seni) = "ganda") AS jumlah_kelompok_peserta_seni_ganda',
+                '(SELECT COUNT(*) FROM kelompok_peserta_seni kps JOIN kompetisi_seni ks ON ks.id_kompetisi_seni = kps.id_kompetisi_seni JOIN sub_kategori_seni sks ON sks.id_sub_kategori_seni = ks.id_sub_kategori_seni WHERE kps.id_kontingen = k.id_kontingen AND LOWER(sks.jenis_seni) = "beregu") AS jumlah_kelompok_peserta_seni_beregu',
+                '(SELECT COUNT(*) FROM kelompok_peserta_seni kps JOIN kompetisi_seni ks ON ks.id_kompetisi_seni = kps.id_kompetisi_seni JOIN sub_kategori_seni sks ON sks.id_sub_kategori_seni = ks.id_sub_kategori_seni WHERE kps.id_kontingen = k.id_kontingen AND LOWER(sks.jenis_seni) = "solo kreatif") AS jumlah_kelompok_peserta_seni_solo_kreatif',
                 '(SELECT COUNT(*) FROM official o WHERE o.id_kontingen = k.id_kontingen) AS jumlah_official',
             ]);
     }

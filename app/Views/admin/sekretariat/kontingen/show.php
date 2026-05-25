@@ -25,6 +25,13 @@ $paymentBadge = static function (?string $status): string {
     return '<span class="badge text-bg-danger">Belum Lunas</span>';
 };
 $formatGender = static fn (?string $gender): string => $gender !== null && $gender !== '' ? ucwords($gender) : '-';
+$jumlahTanding = (int) ($kontingen->jumlah_peserta_tanding ?? 0);
+$jumlahTunggal = (int) ($kontingen->jumlah_kelompok_peserta_seni_tunggal ?? 0);
+$jumlahGanda = (int) ($kontingen->jumlah_kelompok_peserta_seni_ganda ?? 0);
+$jumlahBeregu = (int) ($kontingen->jumlah_kelompok_peserta_seni_beregu ?? 0);
+$jumlahSoloKreatif = (int) ($kontingen->jumlah_kelompok_peserta_seni_solo_kreatif ?? 0);
+$totalPeserta = $jumlahTanding + $jumlahTunggal + $jumlahGanda + $jumlahBeregu + $jumlahSoloKreatif;
+$totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBeregu * 3) + $jumlahSoloKreatif;
 ?>
 
 <section class="admin-card mb-4">
@@ -33,14 +40,26 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
             <p class="eyebrow mb-1">Detail Kontingen</p>
             <h3 class="section-title h4 mb-1"><?= esc($kontingen->nama_kontingen) ?></h3>
             <p class="muted-copy mb-0">Penanggung jawab: <?= esc((string) ($kontingen->nama_penanggungjawab ?? '-')) ?> | Email: <?= esc((string) ($kontingen->email_kontingen ?? '-')) ?></p>
+            <p class="muted-copy mb-0 mt-1">Telepon: <?= esc((string) ($kontingen->nomor_telepon_penanggungjawab ?? '-')) ?> | Provinsi: <?= esc((string) ($kontingen->provinsi ?? '-')) ?></p>
         </div>
         <div class="d-flex flex-wrap gap-2 align-items-start">
             <span class="status-badge neutral">Pendaftar: <?= esc((string) ((int) ($kontingen->jumlah_pendaftar ?? 0))) ?></span>
-            <span class="status-badge neutral">Tanding: <?= esc((string) ((int) ($kontingen->jumlah_peserta_tanding ?? 0))) ?></span>
+            <span class="status-badge neutral">Tanding: <?= esc((string) $jumlahTanding) ?></span>
             <span class="status-badge neutral">Seni: <?= esc((string) ((int) ($kontingen->jumlah_kelompok_peserta_seni ?? 0))) ?></span>
+            <span class="status-badge neutral">Total Peserta: <?= esc((string) $totalPeserta) ?></span>
+            <span class="status-badge neutral">ID Card: <?= esc((string) $totalIdCard) ?> lembar</span>
             <button type="button" class="btn btn-admin-brand rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editKontingenModal">Edit Data</button>
         </div>
     </div>
+</section>
+
+<section class="row g-3 mb-4">
+    <div class="col-6 col-lg-2"><div class="placeholder-stat h-100"><div class="small muted-copy">Tanding</div><div class="h4 mb-0"><?= esc((string) $jumlahTanding) ?></div></div></div>
+    <div class="col-6 col-lg-2"><div class="placeholder-stat h-100"><div class="small muted-copy">Tunggal</div><div class="h4 mb-0"><?= esc((string) $jumlahTunggal) ?></div></div></div>
+    <div class="col-6 col-lg-2"><div class="placeholder-stat h-100"><div class="small muted-copy">Ganda</div><div class="h4 mb-0"><?= esc((string) $jumlahGanda) ?></div></div></div>
+    <div class="col-6 col-lg-2"><div class="placeholder-stat h-100"><div class="small muted-copy">Beregu</div><div class="h4 mb-0"><?= esc((string) $jumlahBeregu) ?></div></div></div>
+    <div class="col-6 col-lg-2"><div class="placeholder-stat h-100"><div class="small muted-copy">Solo Kreatif</div><div class="h4 mb-0"><?= esc((string) $jumlahSoloKreatif) ?></div></div></div>
+    <div class="col-6 col-lg-2"><div class="placeholder-stat h-100"><div class="small muted-copy">Official</div><div class="h4 mb-0"><?= esc((string) ((int) ($kontingen->jumlah_official ?? 0))) ?></div></div></div>
 </section>
 
 <section class="admin-card mb-4">
@@ -48,6 +67,7 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
         <li class="nav-item" role="presentation"><button class="nav-link active rounded-pill" data-bs-toggle="pill" data-bs-target="#tabPendaftar" type="button" role="tab">Data Atlet</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#tabTanding" type="button" role="tab">Peserta Tanding</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#tabSeni" type="button" role="tab">Peserta Seni</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#tabOfficial" type="button" role="tab">Official</button></li>
     </ul>
 
     <div class="tab-content">
@@ -139,6 +159,29 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
                                 <td><?= ($row->sistem_penampilan ?? '') === 'pool' ? esc((string) ($row->nomor_undi ?? '-')) : '<span class="muted-copy small">Tidak ada undian</span>' ?></td>
                                 <td><?= $paymentBadge($row->status_pembayaran ?? null) ?></td>
                                 <td class="text-end"><a href="<?= base_url('admin/sekretariat/kelompok-seni/' . $row->id_kelompok_peserta_seni) ?>" class="btn btn-sm btn-outline-danger rounded-pill">Detail</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div></div>
+        </div>
+
+        <div class="tab-pane fade" id="tabOfficial" role="tabpanel">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <div>
+                    <h4 class="section-title h5 mb-1">Official</h4>
+                    <p class="muted-copy mb-0">Daftar official kontingen mengikuti tab detail CI3.</p>
+                </div>
+            </div>
+            <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
+                <table class="table admin-table admin-datatable align-middle mb-0">
+                    <thead><tr><th>Nama</th><th>Kontingen</th><th>Nomor Telepon</th></tr></thead>
+                    <tbody>
+                        <?php foreach (($detail['official'] ?? []) as $row) : ?>
+                            <tr>
+                                <td class="fw-semibold text-capitalize"><?= esc((string) ($row->nama_official ?? '-')) ?></td>
+                                <td><?= esc((string) ($row->nama_kontingen ?? $kontingen->nama_kontingen ?? '-')) ?></td>
+                                <td><?= esc((string) ($row->nomor_telepon ?? '-')) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

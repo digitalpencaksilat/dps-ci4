@@ -55,15 +55,15 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .admin-sidebar {
-    width: 310px;
-    padding: 28px 20px;
+    width: 280px;
+    padding: 24px 18px;
     background:
         radial-gradient(circle at top right, rgba(255, 215, 0, 0.16), transparent 26%),
         linear-gradient(180deg, #7b0f17 0%, #510b11 100%);
     border-right: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     position: fixed;
     top: 0;
     left: 0;
@@ -91,9 +91,9 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .admin-brand {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px;
-    border-radius: 24px;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 20px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
@@ -117,12 +117,12 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .admin-brand img {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
     object-fit: contain;
-    border-radius: 16px;
+    border-radius: 14px;
     background: rgba(255, 255, 255, 0.94);
-    padding: 8px;
+    padding: 7px;
 }
 
 .admin-brand-title,
@@ -153,9 +153,9 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 16px;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
     color: rgba(255, 255, 255, 0.92);
     text-decoration: none;
     transition: 0.2s ease;
@@ -213,8 +213,8 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .admin-main {
     flex: 1;
     min-width: 0;
-    margin-left: 310px;
-    padding: 28px;
+    margin-left: 280px;
+    padding: 20px;
     overflow-x: hidden;
 }
 
@@ -222,21 +222,21 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .admin-card {
     background: rgba(255, 255, 255, 0.92);
     border: 1px solid var(--admin-border);
-    border-radius: 24px;
+    border-radius: 20px;
     box-shadow: var(--admin-shadow);
 }
 
 .admin-topbar {
-    padding: 24px;
-    margin-bottom: 24px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 .admin-card {
-    padding: 24px;
+    padding: 18px;
 }
 
 .admin-sidebar .admin-card {
@@ -279,9 +279,9 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .metric-card {
     position: relative;
     overflow: hidden;
-    min-height: 170px;
-    padding: 22px;
-    border-radius: 24px;
+    min-height: 152px;
+    padding: 18px;
+    border-radius: 20px;
     background: var(--admin-surface);
     border: 1px solid var(--admin-border);
     box-shadow: var(--admin-shadow);
@@ -297,20 +297,20 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 
 .metric-value {
     font-family: 'Oswald', sans-serif;
-    font-size: 2.2rem;
+    font-size: 1.95rem;
     line-height: 1;
 }
 
 .metric-icon {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 18px;
+    border-radius: 16px;
     background: var(--admin-accent-soft);
     color: var(--admin-accent);
-    font-size: 1.25rem;
+    font-size: 1.1rem;
 }
 
 .table-shell {
@@ -369,7 +369,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .table.admin-table thead th {
     background: rgba(111, 16, 24, 0.05);
     color: #5c1d24;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     border-bottom-width: 1px;
@@ -377,7 +377,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .table.admin-table > :not(caption) > * > * {
-    padding: 0.95rem 1rem;
+    padding: 0.8rem 0.9rem;
     border-color: rgba(198, 0, 0, 0.08);
     vertical-align: middle;
     white-space: nowrap;
@@ -404,7 +404,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .dataTables_filter input {
-    min-width: 220px;
+    min-width: 200px;
 }
 
 .admin-body .dataTables_paginate .pagination {
@@ -674,15 +674,15 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .assist-summary-box {
-    padding: 18px;
-    border-radius: 20px;
+    padding: 16px;
+    border-radius: 18px;
     background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
     border: 1px solid rgba(198, 0, 0, 0.1);
 }
 
 .assist-summary-total {
     font-family: 'Oswald', sans-serif;
-    font-size: 2rem;
+    font-size: 1.8rem;
     line-height: 1;
 }
 

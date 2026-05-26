@@ -21,7 +21,7 @@
     <?php else : ?>
         <div class="admin-table-wrap">
             <div class="table-shell admin-table-scroller">
-                <table class="table admin-table admin-datatable align-middle mb-0">
+                <table class="table admin-table admin-datatable-export align-middle mb-0">
                     <thead>
                         <tr>
                             <th>Nama</th>
@@ -29,7 +29,7 @@
                             <th>Penanggung Jawab</th>
                             <th>Nomor Telepon</th>
                             <th>Tanggal Daftar</th>
-                            <th class="text-end">Aksi</th>
+                            <th class="text-end no-export">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -1,6 +1,6 @@
 <div class="admin-table-wrap pesilat-terbaik-table">
     <div class="table-shell admin-table-scroller">
-        <table class="table admin-table admin-datatable align-middle mb-0">
+        <table class="table admin-table admin-datatable-export align-middle mb-0">
             <thead>
                 <tr>
                     <th>Nama</th>

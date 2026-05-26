@@ -32,7 +32,7 @@
 
                 <div class="admin-table-wrap">
                     <div class="table-shell admin-table-scroller">
-                        <table class="table admin-table admin-datatable align-middle mb-0" id="tabelDetailJadwalTanding">
+                        <table class="table admin-table admin-datatable-export align-middle mb-0" id="tabelDetailJadwalTanding">
                             <thead>
                                 <tr>
                                     <th></th>

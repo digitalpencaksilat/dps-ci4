@@ -22,7 +22,7 @@ $formatPeserta = static function (?string $anggota, ?string $kontingen, ?string 
 ?>
 <div class="admin-table-wrap pesilat-terbaik-table">
     <div class="table-shell admin-table-scroller">
-        <table class="table admin-table admin-datatable align-middle mb-0">
+        <table class="table admin-table admin-datatable-export align-middle mb-0">
             <thead>
                 <tr>
                     <th>Jadwal</th>
@@ -32,7 +32,7 @@ $formatPeserta = static function (?string $anggota, ?string $kontingen, ?string 
                     <th class="text-center">Babak</th>
                     <th class="text-center">Poin Merah</th>
                     <th class="text-center">Merah</th>
-                    <th class="text-end">Aksi</th>
+                    <th class="text-end no-export">Aksi</th>
                 </tr>
             </thead>
             <tbody>

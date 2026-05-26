@@ -80,10 +80,10 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
                 <button type="button" class="btn btn-admin-brand rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createPendaftarModal">Tambah Peserta</button>
             </div>
             <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-                <table class="table admin-table admin-datatable align-middle mb-0">
+                <table class="table admin-table admin-datatable-export align-middle mb-0" data-export-config='{"excel":{"numericTextColumns":[8,9]}}'>
                     <thead>
                         <tr>
-                            <th>Nama</th><th>JK</th><th>Tanggal Lahir</th><th>Umur</th><th>BB</th><th>TB</th><th>Sekolah</th><th>Provinsi</th><th>NIK</th><th>No KK</th><th class="text-end">Aksi</th>
+                            <th>Nama</th><th>JK</th><th>Tanggal Lahir</th><th>Umur</th><th>BB</th><th>TB</th><th>Sekolah</th><th>Provinsi</th><th>NIK</th><th>No KK</th><th class="text-end no-export">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,8 +116,8 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
                 <button type="button" class="btn btn-admin-brand rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createPesertaTandingModal">Tambah Peserta Tanding</button>
             </div>
             <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-                <table class="table admin-table admin-datatable align-middle mb-0">
-                    <thead><tr><th>Nama</th><th>JK</th><th>BB</th><th>TB</th><th>Kategori</th><th>Kelas</th><th>Pembayaran</th><th>Keterangan</th><th class="text-end">Aksi</th></tr></thead>
+                <table class="table admin-table admin-datatable-export align-middle mb-0">
+                    <thead><tr><th>Nama</th><th>JK</th><th>BB</th><th>TB</th><th>Kategori</th><th>Kelas</th><th>Pembayaran</th><th>Keterangan</th><th class="text-end no-export">Aksi</th></tr></thead>
                     <tbody>
                         <?php foreach (($detail['pesertaTanding'] ?? []) as $row) : ?>
                             <tr>
@@ -146,8 +146,8 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
                 <button type="button" class="btn btn-admin-brand rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createKelompokSeniModal">Tambah Kelompok Seni</button>
             </div>
             <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-                <table class="table admin-table admin-datatable align-middle mb-0">
-                    <thead><tr><th>Nama/Anggota</th><th>JK</th><th>Kategori</th><th>Jurus</th><th>Pool</th><th>No Undi</th><th>Pembayaran</th><th class="text-end">Aksi</th></tr></thead>
+                <table class="table admin-table admin-datatable-export align-middle mb-0">
+                    <thead><tr><th>Nama/Anggota</th><th>JK</th><th>Kategori</th><th>Jurus</th><th>Pool</th><th>No Undi</th><th>Pembayaran</th><th class="text-end no-export">Aksi</th></tr></thead>
                     <tbody>
                         <?php foreach (($detail['kelompokSeni'] ?? []) as $row) : ?>
                             <tr>
@@ -174,7 +174,7 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
                 </div>
             </div>
             <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-                <table class="table admin-table admin-datatable align-middle mb-0">
+                <table class="table admin-table admin-datatable-export align-middle mb-0">
                     <thead><tr><th>Nama</th><th>Kontingen</th><th>Nomor Telepon</th></tr></thead>
                     <tbody>
                         <?php foreach (($detail['official'] ?? []) as $row) : ?>

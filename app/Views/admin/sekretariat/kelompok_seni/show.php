@@ -33,7 +33,7 @@
     </div>
     <div class="table-responsive">
         <table class="table admin-table align-middle mb-0">
-            <thead><tr><th>Nama</th><th>Jenis Kelamin</th><th>Sekolah</th><th class="text-end">Aksi</th></tr></thead>
+            <thead><tr><th>Nama</th><th>Jenis Kelamin</th><th>Sekolah</th><th class="text-end no-export">Aksi</th></tr></thead>
             <tbody>
                 <?php foreach (($anggotaRows ?? []) as $anggota) : ?>
                     <tr>

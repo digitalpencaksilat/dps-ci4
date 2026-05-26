@@ -8,7 +8,7 @@ foreach (($pesertaSeniRows ?? []) as $pesertaSeni) {
 <div class="admin-table-wrap">
     <div class="admin-table-note"><i class="fas fa-arrows-left-right-to-line"></i><span>Struktur tabel mengikuti halaman nomor sertifikat CI3 untuk kategori seni.</span></div>
     <div class="table-shell admin-table-scroller">
-        <table class="table admin-table admin-datatable align-middle mb-0">
+        <table class="table admin-table admin-datatable-export align-middle mb-0">
             <thead>
                 <tr>
                     <th>Nama</th>

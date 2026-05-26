@@ -24,8 +24,8 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
         <button type="button" class="btn btn-admin-brand rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createKelompokSeniModal">Tambah Kelompok</button>
     </div>
     <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-        <table class="table admin-table admin-datatable align-middle mb-0">
-            <thead><tr><th>Nama</th><th>Kontingen</th><th>Sekolah</th><th>Kategori Usia</th><th>Jenis Kelamin</th><th>Jenis Seni</th><th>Jurus</th><th>Nomor Pool</th><th>Nomor Undi</th><th>Pembayaran</th><th class="text-end">Aksi</th></tr></thead>
+        <table class="table admin-table admin-datatable-export align-middle mb-0">
+            <thead><tr><th>Nama</th><th>Kontingen</th><th>Sekolah</th><th>Kategori Usia</th><th>Jenis Kelamin</th><th>Jenis Seni</th><th>Jurus</th><th>Nomor Pool</th><th>Nomor Undi</th><th>Pembayaran</th><th class="text-end no-export">Aksi</th></tr></thead>
             <tbody>
                 <?php foreach (($rows ?? []) as $row) : ?>
                     <tr>

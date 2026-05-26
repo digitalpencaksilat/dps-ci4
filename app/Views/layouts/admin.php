@@ -12,6 +12,7 @@
     <link href="<?= online_asset('bootstrap_5_css') ?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= online_asset('datatables_bs5_css') ?>">
     <link rel="stylesheet" href="<?= online_asset('datatables_responsive_css') ?>">
+    <link rel="stylesheet" href="<?= online_asset('datatables_buttons_css') ?>">
     <link rel="stylesheet" href="<?= online_asset('toastr_css') ?>">
     <link rel="stylesheet" href="<?= online_asset('fontawesome_6_css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/bracket-pertandingan/jquery.bracket.min.css') ?>">
@@ -269,10 +270,15 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
     <script src="<?= online_asset('datatables_bs5_js') ?>"></script>
     <script src="<?= online_asset('datatables_responsive_js') ?>"></script>
     <script src="<?= online_asset('datatables_responsive_bs5_js') ?>"></script>
+    <script src="<?= online_asset('jszip_js') ?>"></script>
+    <script src="<?= online_asset('datatables_buttons_js') ?>"></script>
+    <script src="<?= online_asset('datatables_buttons_html5_js') ?>"></script>
+    <script src="<?= online_asset('datatables_buttons_print_js') ?>"></script>
+    <script src="<?= online_asset('datatables_buttons_colvis_js') ?>"></script>
     <script src="<?= online_asset('sweetalert2_js') ?>"></script>
     <script src="<?= online_asset('toastr_js') ?>"></script>
     <script src="<?= base_url('assets/bracket-pertandingan/jquery.bracket.min.js') ?>"></script>
-    <?= $this->renderSection('scripts') ?>
+    <script src="<?= base_url('assets/js/admin-export-datatable.js') ?>"></script>
     <script>
         toastr.options = {
             closeButton: true,
@@ -322,6 +328,8 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
             }, options));
         };
 
+        // initAdminExportTable — loaded from public/assets/js/admin-export-datatable.js
+
         window.confirmAdminAction = function(form, title, text, confirmText = 'Lanjutkan') {
             Swal.fire({
                 title: title,
@@ -365,8 +373,22 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
 
                 window.initAdminDataTable('#' + table.id);
             });
+
+            document.querySelectorAll('.admin-datatable-export').forEach((table) => {
+                if (!table.id) {
+                    table.id = 'admin-table-' + Math.random().toString(36).slice(2, 10);
+                }
+
+                var config = {};
+                var configAttr = table.getAttribute('data-export-config');
+                if (configAttr) {
+                    try { config = JSON.parse(configAttr); } catch(e) { console.warn('Invalid data-export-config JSON:', e); }
+                }
+                window.initAdminExportTable('#' + table.id, config);
+            });
         });
     </script>
+    <?= $this->renderSection('scripts') ?>
 </body>
 
 </html>

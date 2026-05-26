@@ -13,6 +13,13 @@ $paymentBadge = static function (?string $status): string {
     return '<span class="badge text-bg-danger">Belum Lunas</span>';
 };
 $formatGender = static fn (?string $gender): string => $gender !== null && $gender !== '' ? ucwords($gender) : '-';
+$eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
+$exportTitle = 'DAFTAR PESERTA TANDING';
+$exportFilename = 'Daftar Peserta Tanding - ' . $eventName;
+$printHeaderHtml = view('shared_components/print/export_header', [
+    'title' => $exportTitle,
+    'subtitle' => $eventName,
+]);
 ?>
 <section class="admin-card">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
@@ -24,8 +31,8 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
         <button type="button" class="btn btn-admin-brand rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createPesertaTandingModal">Tambah Peserta Tanding</button>
     </div>
     <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-        <table class="table admin-table admin-datatable align-middle mb-0">
-            <thead><tr><th>Nama</th><th>Kontingen</th><th>Sekolah</th><th>Berat Badan</th><th>Tinggi Badan</th><th>Umur</th><th>Kategori</th><th>Jenis Kelamin</th><th>Kelas</th><th>Nomor Pool</th><th>Rentang Berat Badan</th><th>Pembayaran</th><th>Keterangan</th><th>NIK</th><th>No KK</th><th class="text-end">Aksi</th></tr></thead>
+        <table class="table admin-table align-middle mb-0" id="tabelPesertaTanding">
+            <thead><tr><th>Nama</th><th>Kontingen</th><th>Sekolah</th><th>Berat Badan</th><th>Tinggi Badan</th><th>Umur</th><th>Kategori</th><th>Jenis Kelamin</th><th>Kelas</th><th>Nomor Pool</th><th>Rentang Berat Badan</th><th>Pembayaran</th><th>Keterangan</th><th>NIK</th><th>No KK</th><th class="text-end no-export">Aksi</th></tr></thead>
             <tbody>
                 <?php foreach (($rows ?? []) as $row) : ?>
                     <tr>
@@ -44,7 +51,7 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
                         <td><?= esc((string) ($row->keterangan ?? '-')) ?></td>
                         <td><?= esc((string) ($row->nomor_induk_kependudukan ?? '-')) ?></td>
                         <td><?= esc((string) ($row->nomor_kartu_keluarga ?? '-')) ?></td>
-                        <td class="text-end"><a href="<?= base_url('admin/sekretariat/peserta-tanding/' . $row->id_peserta_tanding) ?>" class="btn btn-sm btn-outline-danger rounded-pill">Detail</a></td>
+                        <td class="text-end no-export"><a href="<?= base_url('admin/sekretariat/peserta-tanding/' . $row->id_peserta_tanding) ?>" class="btn btn-sm btn-outline-danger rounded-pill">Detail</a></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -70,4 +77,31 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
         </form>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    $(document).ready(function() {
+        window.initAdminExportTable('#tabelPesertaTanding', {
+            title: <?= json_encode($exportTitle) ?>,
+            filename: <?= json_encode($exportFilename) ?>,
+            orientation: 'landscape',
+            preset: 'wide-report',
+            printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+            excel: {
+                columnWidths: { A: 22, B: 22, C: 20, D: 12, E: 12, F: 10, G: 18, H: 14, I: 10, J: 10, K: 18, L: 18, M: 20, N: 18, O: 18 },
+                numericTextColumns: [13, 14]
+            },
+            printCustomize: function(win) {
+                $(win.document.head).append('<style>table tr td:nth-child(4), table tr td:nth-child(5), table tr td:nth-child(6), table tr td:nth-child(10), table tr td:nth-child(11){text-align:right!important;}</style>');
+            },
+            dataTable: {
+                columnDefs: [
+                    { targets: [3, 4, 5, 9, 10], className: 'text-end' },
+                    { targets: -1, orderable: false, width: '10%' }
+                ]
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>

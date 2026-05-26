@@ -28,7 +28,7 @@ $formatTanggal = static function (?string $date): string {
     <div class="admin-table-wrap">
         <div class="admin-table-note"><i class="fas fa-arrows-left-right-to-line"></i><span>Geser tabel untuk melihat NIK, nomor KK, dan nomor penanggung jawab secara utuh.</span></div>
         <div class="table-shell admin-table-scroller">
-            <table class="table admin-table admin-datatable align-middle mb-0">
+            <table class="table admin-table admin-datatable-export align-middle mb-0" data-export-config='{"excel":{"numericTextColumns":[6,7,8]}}'>
                 <thead>
                     <tr>
                         <th>No</th>

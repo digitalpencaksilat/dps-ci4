@@ -12,6 +12,7 @@
     <link href="<?= online_asset('bootstrap_5_css') ?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= online_asset('datatables_bs5_css') ?>">
     <link rel="stylesheet" href="<?= online_asset('datatables_responsive_css') ?>">
+    <link rel="stylesheet" href="<?= online_asset('datatables_buttons_css') ?>">
     <link rel="stylesheet" href="<?= online_asset('toastr_css') ?>">
     <link rel="stylesheet" href="<?= online_asset('fontawesome_6_css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/kontingen-theme.css') ?>">
@@ -104,8 +105,14 @@
     <script src="<?= online_asset('datatables_bs5_js') ?>"></script>
     <script src="<?= online_asset('datatables_responsive_js') ?>"></script>
     <script src="<?= online_asset('datatables_responsive_bs5_js') ?>"></script>
+    <script src="<?= online_asset('jszip_js') ?>"></script>
+    <script src="<?= online_asset('datatables_buttons_js') ?>"></script>
+    <script src="<?= online_asset('datatables_buttons_html5_js') ?>"></script>
+    <script src="<?= online_asset('datatables_buttons_print_js') ?>"></script>
+    <script src="<?= online_asset('datatables_buttons_colvis_js') ?>"></script>
     <script src="<?= online_asset('sweetalert2_js') ?>"></script>
     <script src="<?= online_asset('toastr_js') ?>"></script>
+    <script src="<?= base_url('assets/js/admin-export-datatable.js') ?>"></script>
     <script>
         toastr.options = {
             closeButton: true,
@@ -153,6 +160,8 @@
                     "<'d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-3'<'small text-muted'i><'p-0'p>>"
             }, options));
         };
+
+        // initAdminExportTable — loaded from public/assets/js/admin-export-datatable.js
 
         window.confirmDeleteAction = function(form, message = 'Data ini akan dihapus.') {
             Swal.fire({

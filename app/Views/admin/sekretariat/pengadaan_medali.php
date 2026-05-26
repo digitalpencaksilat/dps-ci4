@@ -50,7 +50,7 @@ $totalPerunggu = (int) array_sum(array_column($data_prediksi_medali_seni, 'perun
     </div>
     <div class="admin-table-wrap">
         <div class="table-shell admin-table-scroller">
-            <table class="table admin-table admin-datatable align-middle mb-0">
+            <table class="table admin-table admin-datatable-export align-middle mb-0">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -84,7 +84,7 @@ $totalPerunggu = (int) array_sum(array_column($data_prediksi_medali_seni, 'perun
     </div>
     <div class="admin-table-wrap">
         <div class="table-shell admin-table-scroller">
-            <table class="table admin-table admin-datatable align-middle mb-0">
+            <table class="table admin-table admin-datatable-export align-middle mb-0">
                 <thead>
                     <tr>
                         <th>No</th>

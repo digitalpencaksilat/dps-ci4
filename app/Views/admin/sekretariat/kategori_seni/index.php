@@ -6,8 +6,8 @@
         <h3 class="section-title h4 mb-0">Daftar kategori seni</h3>
         <p class="muted-copy mb-0 mt-2">Kolom utama mengikuti tabel CI3, tanpa tombol create/delete master data.</p>
     </div>
-    <div class="admin-table-wrap"><div class="table-shell admin-table-scroller"><table class="table admin-table admin-datatable align-middle mb-0">
-        <thead><tr><th>Kategori Usia</th><th>Jenis Kelamin</th><th>Jenis Seni</th><th>Nama Seni</th><th>Sistem Penampilan</th><th>Jumlah Peserta</th><th>Max Peserta</th><th>Jumlah Pool</th><th>Total Kapasitas Peserta</th><th>Konfigurasi Jumlah Peserta</th><th>Format Penilaian</th><th>Biaya DN</th><th>Biaya LN</th><th>Jenis Perlombaan</th><th>Keterangan</th><th class="text-end">Aksi</th></tr></thead>
+    <div class="admin-table-wrap"><div class="table-shell admin-table-scroller"><table class="table admin-table admin-datatable-export align-middle mb-0">
+        <thead><tr><th>Kategori Usia</th><th>Jenis Kelamin</th><th>Jenis Seni</th><th>Nama Seni</th><th>Sistem Penampilan</th><th>Jumlah Peserta</th><th>Max Peserta</th><th>Jumlah Pool</th><th>Total Kapasitas Peserta</th><th>Konfigurasi Jumlah Peserta</th><th>Format Penilaian</th><th>Biaya DN</th><th>Biaya LN</th><th>Jenis Perlombaan</th><th>Keterangan</th><th class="text-end no-export">Aksi</th></tr></thead>
         <tbody>
             <?php foreach (($rows ?? []) as $row) : ?>
                 <tr>

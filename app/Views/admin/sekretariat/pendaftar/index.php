@@ -25,7 +25,7 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
         </div>
     </div>
     <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-        <table class="table admin-table admin-datatable align-middle mb-0">
+        <table class="table admin-table admin-datatable-export align-middle mb-0" data-export-config='{"excel":{"numericTextColumns":[9,10]}}'>
             <thead><tr><th>Nama</th><th>Kontingen</th><th>Jenis Kelamin</th><th>Tanggal Lahir</th><th>Umur</th><th>Berat Badan</th><th>Tinggi Badan</th><th>Sekolah</th><th>Provinsi</th><th>NIK</th><th>No KK</th><th>Jenis Pendaftaran</th></tr></thead>
             <tbody>
                 <?php foreach (($rows ?? []) as $row) : ?>

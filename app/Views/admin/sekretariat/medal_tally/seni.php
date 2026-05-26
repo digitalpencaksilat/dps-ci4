@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="table-responsive">
-        <table class="table admin-table admin-datatable align-middle mb-0">
+        <table class="table admin-table admin-datatable-export align-middle mb-0">
             <thead>
                 <tr>
                     <th>Nama</th>

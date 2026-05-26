@@ -43,7 +43,7 @@
                             ?>
                             <tr>
                                 <td>
-                                    <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-capitalize"><?= esc($row->nama_kontingen ?: '-') ?></a>
+                                    <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-uppercase text-admin-brand"><?= esc($row->nama_kontingen ?: '-') ?></a>
                                 </td>
                                 <td><?= esc((string) ($row->email_kontingen ?? '-')) ?></td>
                                 <td><?= esc((string) ($row->nama_penanggungjawab ?? '-')) ?></td>

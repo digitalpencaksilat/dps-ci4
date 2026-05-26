@@ -50,7 +50,7 @@
                             ?>
                             <tr>
                                 <td>
-                                    <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-capitalize"><?= esc($row->nama_kontingen ?: '-') ?></a>
+                                    <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-uppercase text-admin-brand"><?= esc($row->nama_kontingen ?: '-') ?></a>
                                 </td>
                                 <td><?= esc((string) ($row->provinsi ?? '-')) ?></td>
                                 <td class="text-end"><?= esc((string) $jumlahTanding) ?></td>

@@ -21,6 +21,14 @@ This repository is a CodeIgniter 4 application for a pencak silat registration a
 - Treat authentication, role filters, payments, participant registration, and generated PDFs as security-sensitive code paths.
 - Preserve existing Indonesian labels, route names, and domain terminology unless the task explicitly asks to rename them.
 
+## Anti-Idle Workflow
+
+- Do not stay silent when work may take noticeable time; send a short progress update before long analysis, substantial edits, or potentially slow verification.
+- If a command or investigation appears stuck, has no meaningful output for about 30 seconds, or may be waiting for interactive input, stop waiting when feasible and report the current status, last action, and next option.
+- Avoid interactive commands unless explicitly requested; prefer non-interactive commands with clear timeouts.
+- For long-running verification, prefer targeted checks first, then broader checks only when useful; report any timeout or environment blocker clearly.
+- When blocked, do not idle silently; explain the blocker and continue with the safest available next step or ask one focused question if user input is required.
+
 ## CI3-to-CI4 Migration Rules
 
 - Migrate one bounded module at a time; avoid broad rewrites across unrelated admin areas.

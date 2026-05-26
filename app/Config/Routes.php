@@ -121,6 +121,7 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('statistik/tanding', 'Admin\\Sekretariat\\StatistikController::tanding');
     $routes->get('statistik/seni', 'Admin\\Sekretariat\\StatistikController::seni');
     $routes->get('kontingen', 'Admin\\Sekretariat\\KontingenController::index');
+    $routes->get('kontingen/rekap-atlet', 'Admin\\Sekretariat\\KontingenController::rekapAtlet');
     $routes->get('kontingen/(:num)', 'Admin\\Sekretariat\\KontingenController::show/$1');
     $routes->post('kontingen', 'Admin\\Sekretariat\\KontingenController::store');
     $routes->post('kontingen/(:num)/update', 'Admin\\Sekretariat\\KontingenController::update/$1');

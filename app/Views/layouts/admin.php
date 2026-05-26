@@ -94,9 +94,18 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <?php endif; ?>
 
                     <?php if ($adminRole === 'sekretariat') : ?>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'kontingen' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kontingen') ?>">
-                        <span class="label-block"><i class="fas fa-people-group"></i><span>Kontingen</span></span>
-                    </a>
+                    <div>
+                        <a class="admin-nav-link <?= ($activeMenu ?? '') === 'kontingen' ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminKontingenSubmenu" role="button" aria-expanded="<?= ($activeMenu ?? '') === 'kontingen' ? 'true' : 'false' ?>" aria-controls="adminKontingenSubmenu">
+                            <span class="label-block"><i class="fas fa-people-group"></i><span>Kontingen</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= ($activeMenu ?? '') === 'kontingen' ? 'show' : '' ?>" id="adminKontingenSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($kontingenSubmenu ?? '') === 'sub_kontingen' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kontingen') ?>">Sub Kontingen</a>
+                                <a class="admin-submenu-link <?= ($kontingenSubmenu ?? '') === 'rekap_atlet' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kontingen/rekap-atlet') ?>">Rekap Atlet</a>
+                            </div>
+                        </div>
+                    </div>
                     <?php $isAtletMenu = in_array(($activeMenu ?? ''), ['data_atlet', 'data_bpjs', 'peserta_tanding', 'kelompok_seni'], true); ?>
                     <div>
                         <a class="admin-nav-link <?= $isAtletMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminAtletSubmenu" role="button" aria-expanded="<?= $isAtletMenu ? 'true' : 'false' ?>" aria-controls="adminAtletSubmenu">

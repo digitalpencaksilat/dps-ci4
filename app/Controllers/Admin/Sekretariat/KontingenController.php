@@ -14,10 +14,24 @@ class KontingenController extends BaseController
         return view('admin/sekretariat/kontingen/index', [
             'title'         => 'Data Kontingen',
             'activeMenu'    => 'kontingen',
+            'kontingenSubmenu' => 'sub_kontingen',
             'eventName'     => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'),
             'eventLogo'     => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
             'adminName'     => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat'),
             'kontingenRows' => (new SekretariatPesertaKontingenService())->listKontingen(),
+        ]);
+    }
+
+    public function rekapAtlet(): string
+    {
+        return view('admin/sekretariat/kontingen/rekap_atlet', [
+            'title'         => 'Rekap Atlet Kontingen',
+            'activeMenu'    => 'kontingen',
+            'kontingenSubmenu' => 'rekap_atlet',
+            'eventName'     => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'),
+            'eventLogo'     => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
+            'adminName'     => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat'),
+            'kontingenRows' => (new SekretariatPesertaKontingenService())->listKontingenForRekapAtlet(),
         ]);
     }
 

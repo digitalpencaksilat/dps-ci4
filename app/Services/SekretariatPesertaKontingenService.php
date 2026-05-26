@@ -41,6 +41,11 @@ class SekretariatPesertaKontingenService
             ->getResult();
     }
 
+    public function listKontingenForRekapAtlet(): array
+    {
+        return $this->listKontingen();
+    }
+
     public function getKontingenDetail(int $idKontingen): ?array
     {
         $kontingen = (new KontingenModel())->findWithSummary($idKontingen);

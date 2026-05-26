@@ -30,7 +30,7 @@ Related migration docs:
 | Kontingen pembayaran | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Needs Review | Security-sensitive; verify payment state transitions and receipt/PDF behavior. |
 | Admin bendahara | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Needs Review | Cross-check existing bendahara audit docs. |
 | Admin sekretariat dashboard | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Partial | Related untracked/current work appears active; verify before marking complete. |
-| Admin sekretariat kontingen | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Partial | Verify role filter, reset password flow, and pendaftar management. |
+| Admin sekretariat kontingen | Present | Present | Partial | Present | Needs Review | Missing/Manual | Partial | CI4 now includes sekretariat `kontingen/rekap-atlet` route and rekap table with peserta/seni/official aggregates; payment data remains bendahara-only. Verify CI3 table parity, role filter, reset password flow, and pendaftar management. |
 | Admin sekretariat data atlet | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Partial | Verify list/detail/export expectations. |
 | Admin sekretariat peserta tanding | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Partial | Verify by-pendaftar route and CRUD behavior. |
 | Admin sekretariat kelompok seni | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Partial | Verify member add/remove behavior and constraints. |

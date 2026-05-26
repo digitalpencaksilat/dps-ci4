@@ -14,6 +14,13 @@ class PoolSeniController extends BaseController
         return view('admin/sekretariat/pool_seni/index', $this->viewData(['rows' => (new SekretariatKategoriSeniService())->listPool()]));
     }
 
+    public function urutanPoin(): string
+    {
+        return view('admin/sekretariat/pool_seni/urutan_poin', $this->viewData([
+            'rows' => (new SekretariatKategoriSeniService())->listPenampilanUrutanPoinPool(),
+        ], 'Urutan Penampilan Seni Pool', 'pesilat_terbaik_pool_seni'));
+    }
+
     public function show(int $id): string
     {
         $service = new SekretariatKategoriSeniService();
@@ -68,8 +75,8 @@ class PoolSeniController extends BaseController
         return view('admin/sekretariat/pool_seni/print_bagan', ['row' => $row]);
     }
 
-    private function viewData(array $data, string $title = 'Daftar Pool Seni'): array
+    private function viewData(array $data, string $title = 'Daftar Pool Seni', string $activeMenu = 'pool_seni'): array
     {
-        return $data + ['title' => $title, 'activeMenu' => 'pool_seni', 'eventName' => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'), 'eventLogo' => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'), 'adminName' => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat')];
+        return $data + ['title' => $title, 'activeMenu' => $activeMenu, 'eventName' => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'), 'eventLogo' => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'), 'adminName' => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat')];
     }
 }

@@ -34,6 +34,7 @@ Related migration docs:
 | Admin sekretariat data atlet | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Partial | Verify list/detail/export expectations. |
 | Admin sekretariat peserta tanding | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Partial | Verify by-pendaftar route and CRUD behavior. |
 | Admin sekretariat kelompok seni | Present | Present | Needs Review | Present | Needs Review | Missing/Manual | Partial | Verify member add/remove behavior and constraints. |
+| Admin sekretariat pesilat terbaik | Present | Present | Partial | Present | N/A | Missing/Manual | Partial | CI4 now includes Urutan Poin Tanding, Urutan Poin Battle Seni, and Urutan Poin Pool; manual QA and focused tests still pending. |
 | Admin super | Present | Minimal | Needs Review | Needs Review | Needs Review | Missing/Manual | Partial | Confirm intended feature scope. |
 | Location helpers | Present | Present | Needs Review | N/A | Needs Review | Missing/Manual | Needs Review | Verify country/province/regency/district/village JSON outputs. |
 

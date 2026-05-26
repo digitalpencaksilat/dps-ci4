@@ -14,6 +14,15 @@ class PertandinganTandingController extends BaseController
         return view('admin/sekretariat/pertandingan_tanding/index', $this->viewData(['rows' => $service->listPertandingan(), 'poolOptions' => $service->listPool()]));
     }
 
+    public function urutanPoin(): string
+    {
+        $service = new SekretariatKategoriTandingService();
+
+        return view('admin/sekretariat/pertandingan_tanding/urutan_poin', $this->viewData([
+            'rows' => $service->listPertandinganUrutanPoin(),
+        ], 'Urutan Poin Pertandingan', 'pesilat_terbaik_pertandingan_tanding'));
+    }
+
     public function show(int $id): string
     {
         $service = new SekretariatKategoriTandingService();
@@ -61,8 +70,8 @@ class PertandinganTandingController extends BaseController
         return ['id_kompetisi_tanding' => 'required|integer', 'babak' => 'required', 'nomor_pertandingan' => 'required|integer'];
     }
 
-    private function viewData(array $data, string $title = 'Daftar Pertandingan Tanding'): array
+    private function viewData(array $data, string $title = 'Daftar Pertandingan Tanding', string $activeMenu = 'pertandingan_tanding'): array
     {
-        return $data + ['title' => $title, 'activeMenu' => 'pertandingan_tanding', 'eventName' => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'), 'eventLogo' => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'), 'adminName' => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat')];
+        return $data + ['title' => $title, 'activeMenu' => $activeMenu, 'eventName' => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'), 'eventLogo' => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'), 'adminName' => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat')];
     }
 }

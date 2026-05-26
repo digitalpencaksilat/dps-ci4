@@ -127,6 +127,20 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
+                    <?php $isPesilatTerbaikMenu = in_array(($activeMenu ?? ''), ['pesilat_terbaik_pertandingan_tanding', 'pesilat_terbaik_battle_seni', 'pesilat_terbaik_pool_seni'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isPesilatTerbaikMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminPesilatTerbaikSubmenu" role="button" aria-expanded="<?= $isPesilatTerbaikMenu ? 'true' : 'false' ?>" aria-controls="adminPesilatTerbaikSubmenu">
+                            <span class="label-block"><i class="fas fa-ranking-star"></i><span>Pesilat Terbaik</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isPesilatTerbaikMenu ? 'show' : '' ?>" id="adminPesilatTerbaikSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pesilat_terbaik_pertandingan_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pesilat-terbaik/pertandingan-tanding') ?>">Urutan Poin Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pesilat_terbaik_battle_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pesilat-terbaik/battle-seni') ?>">Urutan Poin Battle</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pesilat_terbaik_pool_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pesilat-terbaik/pool-seni') ?>">Urutan Poin Pool</a>
+                            </div>
+                        </div>
+                    </div>
                     <?php $isSeniMenu = in_array(($activeMenu ?? ''), ['kategori_seni_admin', 'pool_seni', 'sistem_pool_seni', 'battle_seni', 'kuota_prestasi_seni'], true); ?>
                     <div>
                         <a class="admin-nav-link <?= $isSeniMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminSeniSubmenu" role="button" aria-expanded="<?= $isSeniMenu ? 'true' : 'false' ?>" aria-controls="adminSeniSubmenu">

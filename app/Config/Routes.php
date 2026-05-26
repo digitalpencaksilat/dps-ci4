@@ -153,6 +153,7 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->post('pool-tanding/(:num)/update', 'Admin\\Sekretariat\\PoolTandingController::update/$1');
     $routes->post('pool-tanding/(:num)/acak-bagan', 'Admin\\Sekretariat\\PoolTandingController::acakBagan/$1');
     $routes->get('pertandingan-tanding', 'Admin\\Sekretariat\\PertandinganTandingController::index');
+    $routes->get('pesilat-terbaik/pertandingan-tanding', 'Admin\\Sekretariat\\PertandinganTandingController::urutanPoin', ['filter' => 'adminrole:sekretariat,super_admin']);
     $routes->get('pertandingan-tanding/(:num)', 'Admin\\Sekretariat\\PertandinganTandingController::show/$1');
     $routes->post('pertandingan-tanding', 'Admin\\Sekretariat\\PertandinganTandingController::store');
     $routes->post('pertandingan-tanding/(:num)/update', 'Admin\\Sekretariat\\PertandinganTandingController::update/$1');
@@ -161,6 +162,7 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('kategori-seni', 'Admin\\Sekretariat\\KategoriSeniAdminController::index');
     $routes->get('kategori-seni/(:num)', 'Admin\\Sekretariat\\KategoriSeniAdminController::show/$1');
     $routes->get('pool-seni', 'Admin\\Sekretariat\\PoolSeniController::index');
+    $routes->get('pesilat-terbaik/pool-seni', 'Admin\\Sekretariat\\PoolSeniController::urutanPoin', ['filter' => 'adminrole:sekretariat,super_admin']);
     $routes->get('pool-seni/(:num)', 'Admin\\Sekretariat\\PoolSeniController::show/$1');
     $routes->get('pool-seni/(:num)/bagan.pdf', 'Admin\\Sekretariat\\PoolSeniController::printBagan/$1');
     $routes->post('pool-seni/(:num)/update', 'Admin\\Sekretariat\\PoolSeniController::update/$1');
@@ -169,6 +171,7 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('sistem-pool-seni', 'Admin\\Sekretariat\\SistemPoolSeniController::index');
     $routes->post('sistem-pool-seni/(:num)/update', 'Admin\\Sekretariat\\SistemPoolSeniController::update/$1');
     $routes->get('battle-seni', 'Admin\\Sekretariat\\BattleSeniController::index');
+    $routes->get('pesilat-terbaik/battle-seni', 'Admin\\Sekretariat\\BattleSeniController::urutanPoin', ['filter' => 'adminrole:sekretariat,super_admin']);
     $routes->get('battle-seni/(:num)', 'Admin\\Sekretariat\\BattleSeniController::show/$1');
     $routes->get('kuota-prestasi-seni', 'Admin\\Sekretariat\\KuotaPrestasiSeniController::index');
     $routes->get('perolehan-medali/akumulasi', 'Admin\\Sekretariat\\MedalTallyController::aggregate');

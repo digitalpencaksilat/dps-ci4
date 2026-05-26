@@ -79,6 +79,17 @@ class SekretariatKategoriTandingService
             ->get()->getResult();
     }
 
+    public function listPertandinganUrutanPoin(): array
+    {
+        return $this->pertandinganBaseQuery()
+            ->where('p.jenis_kemenangan !=', 'BYE')
+            ->orderBy('ku.min_umur', 'ASC')
+            ->orderBy('kt.label', 'ASC')
+            ->orderBy('kom.nomor_pool', 'ASC')
+            ->orderBy('p.nomor_pertandingan', 'ASC')
+            ->get()->getResult();
+    }
+
     public function listPertandinganByPool(int $idKompetisi): array
     {
         return $this->pertandinganBaseQuery()
@@ -180,6 +191,8 @@ class SekretariatKategoriTandingService
             ->select('(SELECT k.nama_kontingen FROM peserta_tanding pt JOIN pendaftar pd ON pd.id_pendaftar = pt.id_pendaftar JOIN kontingen k ON k.id_kontingen = pd.id_kontingen WHERE pt.id_peserta_tanding = p.id_atlet_biru) AS nama_kontingen_biru', false)
             ->select('(SELECT IF(p.babak != "Perebutan Juara Tiga", (SELECT djt.nomor_partai FROM detail_jadwal_tanding djt JOIN pertandingan pl ON djt.id_pertandingan = pl.id_pertandingan WHERE pl.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pl.nomor_pertandingan_selanjutnya = p.nomor_pertandingan AND pl.nomor_pertandingan % 2 = 0), (SELECT djt.nomor_partai FROM detail_jadwal_tanding djt JOIN pertandingan pl ON djt.id_pertandingan = pl.id_pertandingan WHERE pl.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pl.babak = "Semi Final" AND pl.nomor_pertandingan % 2 = 0))) AS calon_atlet_merah', false)
             ->select('(SELECT IF(p.babak != "Perebutan Juara Tiga", (SELECT djt.nomor_partai FROM detail_jadwal_tanding djt JOIN pertandingan pl ON djt.id_pertandingan = pl.id_pertandingan WHERE pl.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pl.nomor_pertandingan_selanjutnya = p.nomor_pertandingan AND pl.nomor_pertandingan % 2 = 1), (SELECT djt.nomor_partai FROM detail_jadwal_tanding djt JOIN pertandingan pl ON djt.id_pertandingan = pl.id_pertandingan WHERE pl.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pl.babak = "Semi Final" AND pl.nomor_pertandingan % 2 = 1))) AS calon_atlet_biru', false)
+            ->select('(SELECT IF(p.babak != "Perebutan Juara Tiga", (SELECT g.nama_gelanggang FROM detail_jadwal_tanding djt JOIN jadwal_tanding jt ON jt.id_jadwal_tanding = djt.id_jadwal_tanding JOIN gelanggang g ON g.id_gelanggang = jt.id_gelanggang JOIN pertandingan pl ON djt.id_pertandingan = pl.id_pertandingan WHERE pl.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pl.nomor_pertandingan_selanjutnya = p.nomor_pertandingan AND pl.nomor_pertandingan % 2 = 0 LIMIT 1), (SELECT g.nama_gelanggang FROM detail_jadwal_tanding djt JOIN jadwal_tanding jt ON jt.id_jadwal_tanding = djt.id_jadwal_tanding JOIN gelanggang g ON g.id_gelanggang = jt.id_gelanggang JOIN pertandingan pl ON djt.id_pertandingan = pl.id_pertandingan WHERE pl.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pl.babak = "Semi Final" AND pl.nomor_pertandingan % 2 = 0 LIMIT 1))) AS gelanggang_calon_atlet_merah', false)
+            ->select('(SELECT IF(p.babak != "Perebutan Juara Tiga", (SELECT g.nama_gelanggang FROM detail_jadwal_tanding djt JOIN jadwal_tanding jt ON jt.id_jadwal_tanding = djt.id_jadwal_tanding JOIN gelanggang g ON g.id_gelanggang = jt.id_gelanggang JOIN pertandingan pl ON djt.id_pertandingan = pl.id_pertandingan WHERE pl.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pl.nomor_pertandingan_selanjutnya = p.nomor_pertandingan AND pl.nomor_pertandingan % 2 = 1 LIMIT 1), (SELECT g.nama_gelanggang FROM detail_jadwal_tanding djt JOIN jadwal_tanding jt ON jt.id_jadwal_tanding = djt.id_jadwal_tanding JOIN gelanggang g ON g.id_gelanggang = jt.id_gelanggang JOIN pertandingan pl ON djt.id_pertandingan = pl.id_pertandingan WHERE pl.id_kompetisi_tanding = kom.id_kompetisi_tanding AND pl.babak = "Semi Final" AND pl.nomor_pertandingan % 2 = 1 LIMIT 1))) AS gelanggang_calon_atlet_biru', false)
             ->select('(SELECT djt.id_detail_jadwal_tanding FROM detail_jadwal_tanding djt WHERE djt.id_pertandingan = p.id_pertandingan) AS id_detail_jadwal_tanding', false)
             ->select('(SELECT nomor_partai FROM detail_jadwal_tanding djt WHERE djt.id_pertandingan = p.id_pertandingan) AS nomor_partai', false)
             ->select('(SELECT g.nama_gelanggang FROM gelanggang g JOIN jadwal_tanding jt ON g.id_gelanggang = jt.id_gelanggang JOIN detail_jadwal_tanding djt ON jt.id_jadwal_tanding = djt.id_jadwal_tanding WHERE djt.id_pertandingan = p.id_pertandingan) AS nama_gelanggang', false)

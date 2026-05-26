@@ -22,6 +22,10 @@ class AdminRoleFilter implements FilterInterface
             return null;
         }
 
+        if ($level === 'super_admin') {
+            return null;
+        }
+
         if (! in_array($level, $allowedRoles, true)) {
             $redirect = $this->dashboardUrlFor($level);
             if ($redirect !== null) {

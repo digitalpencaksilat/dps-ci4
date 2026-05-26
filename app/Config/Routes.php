@@ -117,6 +117,9 @@ $routes->group('admin/bendahara', ['filter' => 'adminrole:bendahara'], static fu
 $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], static function ($routes): void {
     $routes->get('/', 'Admin\\Sekretariat\\DashboardController::index');
     $routes->get('dashboard', 'Admin\\Sekretariat\\DashboardController::index');
+    $routes->get('statistik', 'Admin\\Sekretariat\\StatistikController::index');
+    $routes->get('statistik/tanding', 'Admin\\Sekretariat\\StatistikController::tanding');
+    $routes->get('statistik/seni', 'Admin\\Sekretariat\\StatistikController::seni');
     $routes->get('kontingen', 'Admin\\Sekretariat\\KontingenController::index');
     $routes->get('kontingen/(:num)', 'Admin\\Sekretariat\\KontingenController::show/$1');
     $routes->post('kontingen', 'Admin\\Sekretariat\\KontingenController::store');

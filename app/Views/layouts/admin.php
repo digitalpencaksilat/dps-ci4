@@ -112,6 +112,20 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
+                    <?php $isStatistikMenu = in_array(($activeMenu ?? ''), ['statistik_pendaftaran', 'statistik_tanding', 'statistik_seni'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isStatistikMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminStatistikSubmenu" role="button" aria-expanded="<?= $isStatistikMenu ? 'true' : 'false' ?>" aria-controls="adminStatistikSubmenu">
+                            <span class="label-block"><i class="fas fa-chart-pie"></i><span>Statistik</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isStatistikMenu ? 'show' : '' ?>" id="adminStatistikSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_pendaftaran' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik') ?>">Progress Pendaftaran</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik/tanding') ?>">Statistik Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik/seni') ?>">Statistik Seni</a>
+                            </div>
+                        </div>
+                    </div>
                     <?php $isTandingMenu = in_array(($activeMenu ?? ''), ['kelas_tanding', 'pool_tanding', 'pertandingan_tanding', 'kuota_prestasi_tanding'], true); ?>
                     <div>
                         <a class="admin-nav-link <?= $isTandingMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminTandingSubmenu" role="button" aria-expanded="<?= $isTandingMenu ? 'true' : 'false' ?>" aria-controls="adminTandingSubmenu">
@@ -249,6 +263,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
     <script src="<?= online_asset('sweetalert2_js') ?>"></script>
     <script src="<?= online_asset('toastr_js') ?>"></script>
     <script src="<?= base_url('assets/bracket-pertandingan/jquery.bracket.min.js') ?>"></script>
+    <?= $this->renderSection('scripts') ?>
     <script>
         toastr.options = {
             closeButton: true,

@@ -1,13 +1,11 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": [
-    ".opencode/instructions/INSTRUCTIONS.md"
-  ],
+  "instructions": [".opencode/instructions/INSTRUCTIONS.md"],
   "agent": {
     "planner": {
       "description": "Plans CodeIgniter/PHP implementation work with minimal, testable changes.",
       "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/agents/planner.txt}",
+      "prompt": "{file:prompts/agents/planner.txt}",
       "tools": {
         "read": true,
         "bash": true,
@@ -18,7 +16,7 @@
     "code-reviewer": {
       "description": "Reviews PHP/CodeIgniter changes for correctness, security, maintainability, and missing tests.",
       "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/agents/code-reviewer.txt}",
+      "prompt": "{file:prompts/agents/code-reviewer.txt}",
       "tools": {
         "read": true,
         "bash": true,
@@ -29,7 +27,7 @@
     "security-reviewer": {
       "description": "Reviews authentication, authorization, validation, file handling, and database changes for security risks.",
       "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/agents/security-reviewer.txt}",
+      "prompt": "{file:prompts/agents/security-reviewer.txt}",
       "tools": {
         "read": true,
         "bash": true,
@@ -40,7 +38,7 @@
     "build-error-resolver": {
       "description": "Diagnoses and fixes Composer, PHPUnit, PHP syntax, and CodeIgniter runtime errors with minimal diffs.",
       "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/agents/build-error-resolver.txt}",
+      "prompt": "{file:prompts/agents/build-error-resolver.txt}",
       "tools": {
         "read": true,
         "bash": true,
@@ -51,7 +49,7 @@
     "migration-reviewer": {
       "description": "Reviews and plans CI3-to-CI4 migration work across routes, controllers, models, views, database, and verification.",
       "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/agents/migration-reviewer.txt}",
+      "prompt": "{file:prompts/agents/migration-reviewer.txt}",
       "tools": {
         "read": true,
         "bash": true,
@@ -62,7 +60,7 @@
     "github-flow-operator": {
       "description": "Prepares GitHub-ready summaries, PR notes, issue drafts, and release handoff details from local changes.",
       "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/agents/github-flow-operator.txt}",
+      "prompt": "{file:prompts/agents/github-flow-operator.txt}",
       "tools": {
         "read": true,
         "bash": true,
@@ -73,7 +71,7 @@
     "ui-ux-reviewer": {
       "description": "Reviews CodeIgniter 4 views, layouts, frontend interactions, and responsive UX for this project.",
       "mode": "subagent",
-      "prompt": "{file:.opencode/prompts/agents/ui-ux-reviewer.txt}",
+      "prompt": "{file:prompts/agents/ui-ux-reviewer.txt}",
       "tools": {
         "read": true,
         "bash": true,

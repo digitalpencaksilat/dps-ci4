@@ -5,7 +5,7 @@
                 <span class="badge rounded-pill text-bg-danger-subtle text-danger px-3 py-2 mb-3">Registrasi Kontingen</span>
                 <h1 class="display-5 fw-bold mb-3">Pendaftaran Kontingen</h1>
                 <p class="text-muted lead mb-0">
-                    Halaman registrasi kontingen sedang disiapkan ulang untuk migrasi penuh ke CodeIgniter 4.
+                    Lengkapi data kontingen Anda dengan benar dan valid untuk melanjutkan proses pendaftaran.
                 </p>
             </div>
         </div>
@@ -17,85 +17,91 @@
                         <?= view('shared_components/notification') ?>
 
                         <?php if (! empty($perbolehkan_kontingen_mendaftar)) : ?>
-                            <form method="post" action="<?= base_url('registrasi') ?>" class="row g-4">
+                            <form method="post" action="<?= base_url('registrasi') ?>" class="row g-4" id="formRegistrasiKontingen">
                                 <?= csrf_field() ?>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nama Kontingen</label>
-                                    <input type="text" name="nama_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('nama_kontingen') ?>" required>
+                                    <label for="registrasi_nama_kontingen" class="form-label fw-semibold">Nama Kontingen</label>
+                                    <input type="text" id="registrasi_nama_kontingen" name="nama_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('nama_kontingen') ?>" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Email Kontingen</label>
-                                    <input type="email" name="email_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('email_kontingen') ?>" required>
+                                    <label for="registrasi_email_kontingen" class="form-label fw-semibold">Email Kontingen</label>
+                                    <input type="email" id="registrasi_email_kontingen" name="email_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('email_kontingen') ?>" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Password</label>
-                                    <input type="password" name="password" class="form-control form-control-lg rounded-4" required>
+                                    <label for="registrasi_password" class="form-label fw-semibold">Password</label>
+                                    <input type="password" id="registrasi_password" name="password" class="form-control form-control-lg rounded-4" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Ulangi Password</label>
-                                    <input type="password" name="retype_password" class="form-control form-control-lg rounded-4" required>
+                                    <label for="registrasi_retype_password" class="form-label fw-semibold">Ulangi Password</label>
+                                    <input type="password" id="registrasi_retype_password" name="retype_password" class="form-control form-control-lg rounded-4" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Jenis Kontingen</label>
-                                    <select name="jenis_kontingen" class="form-select form-select-lg rounded-4" required>
+                                    <label for="registrasi_jenis_kontingen" class="form-label fw-semibold">Jenis Kontingen</label>
+                                    <select name="jenis_kontingen" id="registrasi_jenis_kontingen" class="form-select form-select-lg rounded-4" required>
                                         <option value="dalam_negeri" <?= old('jenis_kontingen', 'dalam_negeri') === 'dalam_negeri' ? 'selected' : '' ?>>Dalam Negeri</option>
                                         <option value="luar_negeri" <?= old('jenis_kontingen') === 'luar_negeri' ? 'selected' : '' ?>>Luar Negeri</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Negara</label>
+                                    <label for="negara" class="form-label fw-semibold">Negara</label>
                                     <select name="negara" id="negara" class="form-select form-select-lg rounded-4"></select>
                                 </div>
 
                                 <div class="col-md-6 wilayah-dalam-negeri">
-                                    <label class="form-label fw-semibold">Provinsi</label>
+                                    <label for="provinsi" class="form-label fw-semibold">Provinsi</label>
                                     <select name="provinsi" id="provinsi" class="form-select form-select-lg rounded-4"></select>
                                 </div>
 
                                 <div class="col-md-6 wilayah-dalam-negeri">
-                                    <label class="form-label fw-semibold">Kabupaten / Kota</label>
+                                    <label for="kabupaten_kota" class="form-label fw-semibold">Kabupaten / Kota</label>
                                     <select name="kabupaten_kota" id="kabupaten_kota" class="form-select form-select-lg rounded-4"></select>
                                 </div>
 
                                 <div class="col-md-6 wilayah-dalam-negeri">
-                                    <label class="form-label fw-semibold">Kecamatan</label>
+                                    <label for="kecamatan" class="form-label fw-semibold">Kecamatan</label>
                                     <select name="kecamatan" id="kecamatan" class="form-select form-select-lg rounded-4"></select>
                                 </div>
 
                                 <div class="col-md-6 wilayah-dalam-negeri">
-                                    <label class="form-label fw-semibold">Kelurahan</label>
+                                    <label for="kelurahan" class="form-label fw-semibold">Kelurahan</label>
                                     <select name="kelurahan" id="kelurahan" class="form-select form-select-lg rounded-4"></select>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nama Penanggung Jawab</label>
-                                    <input type="text" name="nama_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('nama_penanggungjawab') ?>" required>
+                                <div class="col-12 d-none" id="wilayahErrorWrap">
+                                    <div class="alert alert-danger border-0 rounded-4 mb-0" id="wilayahErrorMessage">
+                                        Data wilayah belum lengkap. Pastikan provinsi, kabupaten/kota, kecamatan, dan kelurahan sudah terisi.
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Jabatan Penanggung Jawab</label>
-                                    <input type="text" name="jabatan_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('jabatan_penanggungjawab', 'Manager Kontingen') ?>" required>
+                                    <label for="registrasi_nama_penanggungjawab" class="form-label fw-semibold">Nama Penanggung Jawab</label>
+                                    <input type="text" id="registrasi_nama_penanggungjawab" name="nama_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('nama_penanggungjawab') ?>" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nomor Telepon Penanggung Jawab</label>
-                                    <input type="text" name="nomor_telepon_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('nomor_telepon_penanggungjawab') ?>" required>
+                                    <label for="registrasi_jabatan_penanggungjawab" class="form-label fw-semibold">Jabatan Penanggung Jawab</label>
+                                    <input type="text" id="registrasi_jabatan_penanggungjawab" name="jabatan_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('jabatan_penanggungjawab', 'Manager Kontingen') ?>" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nomor Telepon Kontingen</label>
-                                    <input type="text" name="nomor_telepon_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('nomor_telepon_kontingen') ?>">
+                                    <label for="registrasi_nomor_telepon_penanggungjawab" class="form-label fw-semibold">Nomor Telepon Penanggung Jawab</label>
+                                    <input type="text" id="registrasi_nomor_telepon_penanggungjawab" name="nomor_telepon_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('nomor_telepon_penanggungjawab') ?>" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="registrasi_nomor_telepon_kontingen" class="form-label fw-semibold">Nomor Telepon Kontingen</label>
+                                    <input type="text" id="registrasi_nomor_telepon_kontingen" name="nomor_telepon_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('nomor_telepon_kontingen') ?>">
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold">Alamat Lengkap</label>
-                                    <textarea name="alamat_lengkap" rows="4" class="form-control rounded-4" required><?= old('alamat_lengkap') ?></textarea>
+                                    <label for="registrasi_alamat_lengkap" class="form-label fw-semibold">Alamat Lengkap</label>
+                                    <textarea id="registrasi_alamat_lengkap" name="alamat_lengkap" rows="4" class="form-control rounded-4" required><?= old('alamat_lengkap') ?></textarea>
                                 </div>
 
                                 <div class="col-12 d-flex flex-wrap gap-3 pt-2">
@@ -105,7 +111,7 @@
                                         </div>
                                     <?php endif; ?>
 
-                                    <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">Daftarkan Kontingen</button>
+                                    <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4" id="registrasiSubmit">Daftarkan Kontingen</button>
                                     <a href="<?= base_url('pendaftaran/login') ?>" class="btn btn-outline-dark btn-lg rounded-pill px-4">Sudah Punya Akun</a>
                                 </div>
                             </form>
@@ -134,6 +140,16 @@
         const kecamatan = document.getElementById('kecamatan');
         const kelurahan = document.getElementById('kelurahan');
         const wilayahDalamNegeri = document.querySelectorAll('.wilayah-dalam-negeri');
+        const form = document.getElementById('formRegistrasiKontingen');
+        const submitButton = document.getElementById('registrasiSubmit');
+        const wilayahErrorWrap = document.getElementById('wilayahErrorWrap');
+        const wilayahErrorMessage = document.getElementById('wilayahErrorMessage');
+        const wilayahSelects = [provinsi, kabupaten, kecamatan, kelurahan];
+        let wilayahLoadFailed = false;
+
+        if (!form || !jenisKontingen || !negara || !provinsi || !kabupaten || !kecamatan || !kelurahan || !submitButton) {
+            return;
+        }
 
         const oldNegara = <?= json_encode(old('negara', 'Indonesia')) ?>;
         const oldProvinsi = <?= json_encode(old('provinsi')) ?>;
@@ -141,8 +157,43 @@
         const oldKecamatan = <?= json_encode(old('kecamatan')) ?>;
         const oldKelurahan = <?= json_encode(old('kelurahan')) ?>;
 
+        const setWilayahMessage = (message = '') => {
+            if (!wilayahErrorWrap || !wilayahErrorMessage) return;
+            wilayahErrorWrap.classList.toggle('d-none', message === '');
+            wilayahErrorMessage.textContent = message;
+        };
+
+        const isDalamNegeri = () => jenisKontingen.value === 'dalam_negeri';
+
+        const hasValidSelection = (select) => Boolean(select?.value && select.options[select.selectedIndex]?.dataset.id);
+
+        const validateWilayah = (showMessage = false) => {
+            if (!isDalamNegeri()) {
+                submitButton.disabled = false;
+                setWilayahMessage('');
+                return true;
+            }
+
+            if (wilayahLoadFailed) {
+                submitButton.disabled = true;
+                if (showMessage) {
+                    setWilayahMessage('Data wilayah gagal dimuat. Muat ulang halaman atau coba lagi saat koneksi stabil.');
+                }
+                return false;
+            }
+
+            const valid = wilayahSelects.every(hasValidSelection);
+            submitButton.disabled = !valid;
+            if (showMessage || valid) {
+                setWilayahMessage(valid ? '' : 'Lengkapi provinsi, kabupaten/kota, kecamatan, dan kelurahan sebelum mendaftar.');
+            }
+
+            return valid;
+        };
+
         const setOptions = (select, options, selected, placeholder) => {
             select.innerHTML = '';
+            select.disabled = false;
 
             const entries = Object.entries(options);
             if (entries.length === 0) {
@@ -150,6 +201,7 @@
                 first.value = '';
                 first.textContent = placeholder;
                 select.appendChild(first);
+                validateWilayah(false);
                 return;
             }
 
@@ -163,31 +215,56 @@
                 }
                 select.appendChild(option);
             });
+            validateWilayah(false);
         };
 
-        const fetchJson = async (url) => {
-            const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-            if (!response.ok) {
+        const fetchJson = async (url, targetSelect = null) => {
+            if (targetSelect) {
+                targetSelect.disabled = true;
+                targetSelect.innerHTML = `<option value="">Memuat data...</option>`;
+            }
+            try {
+                const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!response.ok) {
+                    throw new Error('Gagal memuat data');
+                }
+                return await response.json();
+            } catch (error) {
+                if (targetSelect) {
+                    targetSelect.innerHTML = `<option value="">Gagal memuat data wilayah</option>`;
+                    targetSelect.disabled = false;
+                }
+                if (targetSelect !== negara) {
+                    wilayahLoadFailed = true;
+                    validateWilayah(true);
+                }
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('Koneksi terputus. Gagal memuat data wilayah dari server.');
+                }
                 return {};
             }
-            return response.json();
         };
 
         const updateJenisKontingen = () => {
-            const dalamNegeri = jenisKontingen.value === 'dalam_negeri';
+            const dalamNegeri = isDalamNegeri();
             wilayahDalamNegeri.forEach((item) => {
                 item.style.display = dalamNegeri ? '' : 'none';
             });
+            wilayahSelects.forEach((select) => {
+                select.required = dalamNegeri;
+            });
+            negara.required = !dalamNegeri;
             negara.closest('.col-md-6').style.display = dalamNegeri ? 'none' : '';
             if (dalamNegeri) {
                 negara.value = 'Indonesia';
             }
+            validateWilayah(false);
         };
 
-        const countries = await fetchJson('<?= base_url('location/countries') ?>');
+        const countries = await fetchJson('<?= base_url('location/countries') ?>', negara);
         setOptions(negara, countries, oldNegara, 'Pilih negara');
 
-        const provinces = await fetchJson('<?= base_url('location/provinces') ?>');
+        const provinces = await fetchJson('<?= base_url('location/provinces') ?>', provinsi);
         setOptions(provinsi, provinces, oldProvinsi, 'Pilih provinsi');
 
         const loadRegencies = async (selected = null) => {
@@ -199,7 +276,7 @@
                 setOptions(kelurahan, {}, null, 'Pilih kelurahan');
                 return;
             }
-            const items = await fetchJson(`<?= base_url('location/regencies') ?>/` + id);
+            const items = await fetchJson(`<?= base_url('location/regencies') ?>/` + id, kabupaten);
             setOptions(kabupaten, items, selected, 'Pilih kabupaten / kota');
         };
 
@@ -211,7 +288,7 @@
                 setOptions(kelurahan, {}, null, 'Pilih kelurahan');
                 return;
             }
-            const items = await fetchJson(`<?= base_url('location/districts') ?>/` + id);
+            const items = await fetchJson(`<?= base_url('location/districts') ?>/` + id, kecamatan);
             setOptions(kecamatan, items, selected, 'Pilih kecamatan');
         };
 
@@ -222,7 +299,7 @@
                 setOptions(kelurahan, {}, null, 'Pilih kelurahan');
                 return;
             }
-            const items = await fetchJson(`<?= base_url('location/villages') ?>/` + id);
+            const items = await fetchJson(`<?= base_url('location/villages') ?>/` + id, kelurahan);
             setOptions(kelurahan, items, selected, 'Pilih kelurahan');
         };
 
@@ -236,13 +313,26 @@
             await loadRegencies();
             await loadDistricts();
             await loadVillages();
+            validateWilayah(true);
         });
         kabupaten.addEventListener('change', async () => {
             await loadDistricts();
             await loadVillages();
+            validateWilayah(true);
         });
         kecamatan.addEventListener('change', async () => {
             await loadVillages();
+            validateWilayah(true);
+        });
+        kelurahan.addEventListener('change', () => validateWilayah(true));
+
+        form.addEventListener('submit', (event) => {
+            if (!validateWilayah(true)) {
+                event.preventDefault();
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('Lengkapi data wilayah sebelum mendaftar.');
+                }
+            }
         });
     });
 </script>

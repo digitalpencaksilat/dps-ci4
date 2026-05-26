@@ -81,13 +81,13 @@ class KontingenController extends BaseController
     public function update(int $id)
     {
         if (! $this->validate($this->kontingenRules(false))) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=pendaftar'))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
         }
 
         try {
             (new SekretariatPesertaKontingenService())->updateKontingen($id, $this->request->getPost());
         } catch (\RuntimeException $e) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $e->getMessage());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=pendaftar'))->withInput()->with('status', false)->with('message', $e->getMessage());
         }
 
         return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->with('status', true)->with('message', 'Kontingen berhasil diperbarui.');
@@ -132,23 +132,23 @@ class KontingenController extends BaseController
             return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $e->getMessage());
         }
 
-        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->with('status', true)->with('message', 'Peserta berhasil ditambahkan.');
+        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=pendaftar'))->with('status', true)->with('message', 'Peserta berhasil ditambahkan.');
     }
 
     public function updatePendaftar(int $id, int $idPendaftar)
     {
         if (! $this->validate($this->pendaftarRules())) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=pendaftar'))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
         }
 
         try {
             (new SekretariatPesertaKontingenService())->updatePendaftar($id, $idPendaftar, $this->request->getPost());
             (new ArsipPendaftarService())->syncUploads($idPendaftar, $this->request->getFiles());
         } catch (\RuntimeException $e) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $e->getMessage());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=pendaftar'))->withInput()->with('status', false)->with('message', $e->getMessage());
         }
 
-        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->with('status', true)->with('message', 'Peserta berhasil diperbarui.');
+        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=pendaftar'))->with('status', true)->with('message', 'Peserta berhasil diperbarui.');
     }
 
     public function deletePendaftar(int $id, int $idPendaftar)
@@ -156,25 +156,25 @@ class KontingenController extends BaseController
         try {
             (new SekretariatPesertaKontingenService())->deletePendaftar($id, $idPendaftar);
         } catch (\RuntimeException $e) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->with('status', false)->with('message', $e->getMessage());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=pendaftar'))->with('status', false)->with('message', $e->getMessage());
         }
 
-        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->with('status', true)->with('message', 'Peserta berhasil dihapus.');
+        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=pendaftar'))->with('status', true)->with('message', 'Peserta berhasil dihapus.');
     }
 
     public function storePesertaTanding(int $id)
     {
         if (! $this->validate(['id_pendaftar' => 'required|integer', 'id_kompetisi_tanding' => 'required|integer'])) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=tanding'))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
         }
 
         try {
             (new SekretariatPesertaKontingenService())->createPesertaTanding($this->request->getPost());
         } catch (\RuntimeException $e) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $e->getMessage());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=tanding'))->withInput()->with('status', false)->with('message', $e->getMessage());
         }
 
-        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->with('status', true)->with('message', 'Peserta tanding berhasil ditambahkan.');
+        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=tanding'))->with('status', true)->with('message', 'Peserta tanding berhasil ditambahkan.');
     }
 
     public function storeKelompokSeni(int $id)
@@ -183,16 +183,16 @@ class KontingenController extends BaseController
         $payload['id_kontingen'] = $id;
 
         if (! $this->validate(['id_kompetisi_seni' => 'required|integer', 'id_pendaftar' => 'required'])) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=seni'))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
         }
 
         try {
             (new SekretariatPesertaKontingenService())->createKelompokSeni($payload);
         } catch (\RuntimeException $e) {
-            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->withInput()->with('status', false)->with('message', $e->getMessage());
+            return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=seni'))->withInput()->with('status', false)->with('message', $e->getMessage());
         }
 
-        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id))->with('status', true)->with('message', 'Kelompok seni berhasil ditambahkan.');
+        return redirect()->to(base_url('admin/sekretariat/kontingen/' . $id . '?tab=seni'))->with('status', true)->with('message', 'Kelompok seni berhasil ditambahkan.');
     }
 
     private function kontingenRules(bool $requirePassword): array
@@ -223,8 +223,8 @@ class KontingenController extends BaseController
             'tempat_lahir' => 'required|max_length[255]',
             'tanggal_lahir' => 'required|valid_date[Y-m-d]',
             'nama_sekolah' => 'permit_empty|max_length[255]',
-            'nomor_induk_kependudukan' => 'permit_empty|max_length[100]',
-            'nomor_kartu_keluarga' => 'permit_empty|max_length[100]',
+            'nomor_induk_kependudukan' => 'permit_empty|exact_length[16]|numeric',
+            'nomor_kartu_keluarga' => 'permit_empty|exact_length[16]|numeric',
         ];
     }
 }

@@ -44,14 +44,14 @@ class PesertaController extends BaseController
         }
 
         if (! $this->validate($this->pesertaRules())) {
-            return redirect()->to(base_url('kontingen/peserta'))->withInput()->with('status', false)->with('message', $this->validator->getErrors());
+            return redirect()->to(base_url('kontingen/peserta'))->withInput()->with('status', false)->with('message', $this->validator->getErrors())->with('openPesertaModal', 'create');
         }
 
         try {
             $idPendaftar = (new PesertaService())->create((int) session()->get('id_kontingen'), $this->request->getPost());
             (new ArsipPendaftarService())->syncUploads($idPendaftar, $this->request->getFiles());
         } catch (\RuntimeException $e) {
-            return redirect()->to(base_url('kontingen/peserta'))->withInput()->with('status', false)->with('message', $e->getMessage());
+            return redirect()->to(base_url('kontingen/peserta'))->withInput()->with('status', false)->with('message', $e->getMessage())->with('openPesertaModal', 'create');
         }
 
         return redirect()->to(base_url('kontingen/peserta'))->with('status', true)->with('message', 'Peserta berhasil ditambahkan.');
@@ -69,7 +69,7 @@ class PesertaController extends BaseController
         }
 
         if (! $this->validate($this->pesertaRules())) {
-            return redirect()->to(base_url('kontingen/peserta'))->with('status', false)->with('message', $this->validator->getErrors());
+            return redirect()->to(base_url('kontingen/peserta'))->withInput()->with('status', false)->with('message', $this->validator->getErrors())->with('openPesertaModal', 'edit')->with('openPesertaId', $id);
         }
 
         (new PesertaService())->update($peserta, $this->request->getPost());

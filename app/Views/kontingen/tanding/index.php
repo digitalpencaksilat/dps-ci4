@@ -18,7 +18,10 @@
         <div class="empty-state-box">
             <div class="empty-state-icon"><i class="fas fa-fist-raised"></i></div>
             <h4>Belum Ada Kategori Tanding</h4>
-            <p>Belum ada atlet yang didaftarkan ke kategori tanding.</p>
+            <p><?= $allowCreate ? 'Gunakan tombol Tambah Kategori Tanding di kanan atas untuk memilih atlet dan kategori tanding.' : 'Belum ada atlet yang didaftarkan ke kategori tanding.' ?></p>
+            <?php if (! $allowCreate) : ?>
+                <p class="small text-muted mb-0">Pemilihan kategori tanding sedang ditutup.</p>
+            <?php endif; ?>
         </div>
     <?php else : ?>
         <div class="table-responsive">
@@ -104,12 +107,12 @@
                         <p class="eyebrow mb-1" id="tandingModalEyebrow">Tambah</p>
                         <h3 class="panel-title mb-0" id="tandingModalTitle">Tambah Kategori Tanding</h3>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body pt-3">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pilih Atlet</label>
+                            <label for="id_pendaftar_tanding_modal" class="form-label fw-semibold">Pilih Atlet</label>
                             <select name="id_pendaftar" id="id_pendaftar_tanding_modal" class="form-select rounded-4" required>
                                 <option value="">Pilih atlet</option>
                                 <?php foreach ($pendaftarTersedia as $row) : ?>
@@ -119,9 +122,10 @@
                                     <option value="<?= $row->id_pendaftar ?>"><?= esc($row->nama_pendaftar) ?> (<?= esc((string) $row->berat_badan) ?> Kg)</option>
                                 <?php endforeach; ?>
                             </select>
+                            <div class="form-text text-muted" id="tandingAthleteHelp"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pilih Kategori Tanding</label>
+                            <label for="id_kompetisi_tanding_modal" class="form-label fw-semibold">Pilih Kategori Tanding</label>
                             <select name="id_kompetisi_tanding" id="id_kompetisi_tanding_modal" class="form-select rounded-4" required>
                                 <option value="">Pilih atlet terlebih dahulu</option>
                             </select>
@@ -150,17 +154,21 @@
         const submitEl = document.getElementById('tandingModalSubmit');
         const baseAction = <?= json_encode(base_url('kontingen/tanding')) ?>;
 
-        const fillOptions = (select, items, selected = null) => {
+        const setSingleOption = (select, text) => {
             select.innerHTML = '';
-            const first = document.createElement('option');
-            first.value = '';
-            first.textContent = 'Pilih kategori tanding';
-            select.appendChild(first);
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = text;
+            select.appendChild(option);
+        };
+
+        const fillOptions = (select, items, selected = null, emptyText = 'Kategori tanding tidak ditemukan') => {
+            setSingleOption(select, 'Pilih kategori tanding');
 
             if (!Array.isArray(items) || items.length === 0) {
                 const option = document.createElement('option');
                 option.disabled = true;
-                option.textContent = 'Kategori tanding tidak ditemukan';
+                option.textContent = emptyText;
                 select.appendChild(option);
                 return;
             }
@@ -185,11 +193,29 @@
                 fillOptions(kompetisiSelect, []);
                 return;
             }
-            const response = await fetch(`<?= base_url('kontingen/tanding/options') ?>/` + idPendaftar, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            });
-            const items = response.ok ? await response.json() : [];
-            fillOptions(kompetisiSelect, items, selected);
+
+            setSingleOption(kompetisiSelect, 'Memuat kategori tanding...');
+            kompetisiSelect.disabled = true;
+            submitEl.disabled = true;
+
+            try {
+                const response = await fetch(`<?= base_url('kontingen/tanding/options') ?>/` + idPendaftar, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                if (!response.ok) {
+                    throw new Error('Gagal memuat kategori tanding');
+                }
+                const items = await response.json();
+                fillOptions(kompetisiSelect, items, selected);
+            } catch (error) {
+                fillOptions(kompetisiSelect, [], null, 'Gagal memuat kategori. Coba pilih atlet ulang atau muat ulang halaman.');
+                if (window.toastr && typeof window.toastr.error === 'function') {
+                    toastr.error('Gagal memuat kategori tanding. Periksa koneksi atau coba lagi.');
+                }
+            } finally {
+                kompetisiSelect.disabled = false;
+                submitEl.disabled = false;
+            }
         };
 
         pendaftarSelect?.addEventListener('change', () => loadOptions(pendaftarSelect.value));
@@ -206,6 +232,7 @@
                 pendaftarSelect.value = trigger.dataset.pendaftar || '';
                 await loadOptions(trigger.dataset.pendaftar || '', trigger.dataset.selected || null);
                 pendaftarSelect.setAttribute('disabled', 'disabled');
+                document.getElementById('tandingAthleteHelp').textContent = 'Atlet tidak dapat diubah pada mode edit. Hapus kategori ini jika ingin memilih atlet lain.';
                 let hidden = form.querySelector('input[name="id_pendaftar"]');
                 if (!hidden) {
                     hidden = document.createElement('input');
@@ -222,6 +249,7 @@
                 form.reset();
                 fillOptions(kompetisiSelect, []);
                 pendaftarSelect.removeAttribute('disabled');
+                document.getElementById('tandingAthleteHelp').textContent = '';
                 const hidden = form.querySelector('input[type="hidden"][name="id_pendaftar"]');
                 if (hidden) hidden.remove();
             }

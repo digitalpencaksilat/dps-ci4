@@ -18,7 +18,10 @@
         <div class="empty-state-box">
             <div class="empty-state-icon"><i class="fas fa-drum"></i></div>
             <h4>Belum Ada Kategori Seni</h4>
-            <p>Belum ada kelompok peserta seni yang didaftarkan untuk kontingen ini.</p>
+            <p><?= $allowCreate ? 'Gunakan tombol Tambah Kategori Seni di kanan atas untuk memilih kategori seni dan atlet sesuai jumlah peserta yang dibutuhkan.' : 'Belum ada kelompok peserta seni yang didaftarkan untuk kontingen ini.' ?></p>
+            <?php if (! $allowCreate) : ?>
+                <p class="small text-muted mb-0">Pemilihan kategori seni sedang ditutup.</p>
+            <?php endif; ?>
         </div>
     <?php else : ?>
         <div class="table-responsive">
@@ -103,12 +106,12 @@
                         <p class="eyebrow mb-1">Tambah</p>
                         <h3 class="panel-title mb-0">Tambah Kategori Seni</h3>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body pt-3">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pilih Kategori Seni</label>
+                            <label for="id_kompetisi_seni_modal" class="form-label fw-semibold">Pilih Kategori Seni</label>
                             <select name="id_kompetisi_seni" id="id_kompetisi_seni_modal" class="form-select rounded-4" required>
                                 <option value="">Pilih kategori seni</option>
                                 <?php foreach ($kompetisiSeni as $item) : ?>
@@ -119,12 +122,12 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Keterangan</label>
-                            <input type="text" name="keterangan" class="form-control rounded-4" placeholder="Opsional, misal senjata atau catatan kelompok">
+                            <label for="keterangan_seni_modal" class="form-label fw-semibold">Keterangan</label>
+                            <input type="text" id="keterangan_seni_modal" name="keterangan" class="form-control rounded-4" placeholder="Opsional, misal senjata atau catatan kelompok">
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold">Pilih Atlet</label>
-                            <div id="daftar-atlet-seni-modal" class="peserta-checkbox-grid empty-state-box text-start">
+                            <div id="label_daftar_atlet_seni_modal" class="form-label fw-semibold">Pilih Atlet</div>
+                            <div id="daftar-atlet-seni-modal" class="peserta-checkbox-grid empty-state-box text-start" role="group" aria-labelledby="label_daftar_atlet_seni_modal">
                                 Pilih kategori seni terlebih dahulu untuk memuat atlet yang tersedia.
                             </div>
                             <div class="form-text text-muted" id="bantuan-atlet-seni-modal"></div>
@@ -133,7 +136,7 @@
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-outline-dark rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger rounded-pill px-4">Simpan</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4" id="seniModalSubmit" disabled>Simpan</button>
                 </div>
             </form>
         </div>
@@ -150,12 +153,12 @@
                         <p class="eyebrow mb-1">Edit</p>
                         <h3 class="panel-title mb-0">Edit Kategori Seni</h3>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body pt-3">
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label fw-semibold">Kategori Seni Baru</label>
+                            <label for="id_kompetisi_seni_edit" class="form-label fw-semibold">Kategori Seni Baru</label>
                             <select name="id_kompetisi_seni" id="id_kompetisi_seni_edit" class="form-select rounded-4" required>
                                 <?php foreach ($kompetisiSeni as $item) : ?>
                                     <option value="<?= $item->id_kompetisi_seni ?>" <?= !empty($item->disabled) ? 'disabled' : '' ?>>
@@ -182,14 +185,56 @@
         const kategoriSelect = document.getElementById('id_kompetisi_seni_modal');
         const daftarAtlet = document.getElementById('daftar-atlet-seni-modal');
         const bantuan = document.getElementById('bantuan-atlet-seni-modal');
+        const tambahForm = document.getElementById('formTambahSeniModal');
+        const tambahSubmit = document.getElementById('seniModalSubmit');
         const editModal = document.getElementById('seniModalEdit');
         const editForm = document.getElementById('formEditSeniModal');
         const editSelect = document.getElementById('id_kompetisi_seni_edit');
 
         const strictTypes = ['tunggal', 'ganda', 'beregu', 'solo kreatif', 'perorangan', 'berpasangan', 'berkelompok'];
+        let atletRequirement = {
+            jumlah: 0,
+            strict: false,
+        };
+
+        const isSelectionValid = (selected) => {
+            if (atletRequirement.jumlah <= 0) {
+                return selected > 0;
+            }
+
+            return atletRequirement.strict
+                ? selected === atletRequirement.jumlah
+                : selected >= atletRequirement.jumlah;
+        };
+
+        const updateAtletCounter = () => {
+            const selected = daftarAtlet.querySelectorAll('input[name="id_pendaftar[]"]:checked').length;
+            const valid = isSelectionValid(selected);
+            const targetText = atletRequirement.strict ? 'tepat' : 'minimal';
+
+            bantuan.textContent = atletRequirement.jumlah > 0
+                ? `Dipilih ${selected} atlet. Kategori ini membutuhkan ${targetText} ${atletRequirement.jumlah} atlet.`
+                : `Dipilih ${selected} atlet.`;
+            bantuan.classList.toggle('text-danger', !valid);
+            bantuan.classList.toggle('text-success', valid);
+
+            if (tambahSubmit) {
+                tambahSubmit.disabled = !valid;
+            }
+
+            return valid;
+        };
 
         const renderAtlet = (items, jumlahPeserta, jenisSeni) => {
             daftarAtlet.innerHTML = '';
+            atletRequirement = {
+                jumlah: Number(jumlahPeserta || 0),
+                strict: strictTypes.includes(String(jenisSeni).toLowerCase()),
+            };
+
+            if (tambahSubmit) {
+                tambahSubmit.disabled = true;
+            }
 
             if (!Array.isArray(items) || items.length === 0) {
                 daftarAtlet.textContent = 'Tidak ada atlet yang memenuhi syarat untuk kategori ini.';
@@ -200,19 +245,31 @@
             items.forEach((item) => {
                 const wrapper = document.createElement('label');
                 wrapper.className = 'checkbox-card';
-                wrapper.innerHTML = `
-                    <input type="checkbox" name="id_pendaftar[]" value="${item.id_pendaftar}">
-                    <div>
-                        <strong>${item.nama_pendaftar}</strong>
-                        <small>${item.nama_sekolah ?? '-'} | ${item.jenis_kelamin}</small>
-                    </div>
-                `;
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'id_pendaftar[]';
+                checkbox.value = item.id_pendaftar;
+
+                const content = document.createElement('div');
+                const nama = document.createElement('strong');
+                nama.textContent = item.nama_pendaftar || '-';
+
+                const meta = document.createElement('small');
+                meta.textContent = `${item.nama_sekolah || '-'} | ${item.jenis_kelamin || '-'}`;
+
+                content.appendChild(nama);
+                content.appendChild(meta);
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(content);
                 daftarAtlet.appendChild(wrapper);
             });
 
-            bantuan.textContent = strictTypes.includes(String(jenisSeni).toLowerCase())
-                ? `Kategori ini membutuhkan tepat ${jumlahPeserta} atlet.`
-                : `Kategori ini membutuhkan minimal ${jumlahPeserta} atlet.`;
+            daftarAtlet.querySelectorAll('input[name="id_pendaftar[]"]').forEach((checkbox) => {
+                checkbox.addEventListener('change', updateAtletCounter);
+            });
+
+            updateAtletCounter();
         };
 
         const loadAtlet = async () => {
@@ -223,15 +280,43 @@
             const jumlahPeserta = selectedOption?.dataset.jumlahPeserta || '0';
             const jenisSeni = selectedOption?.dataset.jenisSeni || '';
 
-            const response = await fetch(`<?= base_url('kontingen/seni/options') ?>/` + id, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            });
+            daftarAtlet.innerHTML = '';
+            daftarAtlet.textContent = 'Memuat atlet yang tersedia...';
+            bantuan.textContent = '';
+            if (tambahSubmit) {
+                tambahSubmit.disabled = true;
+            }
 
-            const items = response.ok ? await response.json() : [];
-            renderAtlet(items, jumlahPeserta, jenisSeni);
+            try {
+                const response = await fetch(`<?= base_url('kontingen/seni/options') ?>/` + id, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                if (!response.ok) {
+                    throw new Error('Gagal memuat atlet');
+                }
+
+                const items = await response.json();
+                renderAtlet(items, jumlahPeserta, jenisSeni);
+            } catch (error) {
+                daftarAtlet.textContent = 'Gagal memuat atlet. Coba pilih kategori ulang atau muat ulang halaman.';
+                bantuan.textContent = '';
+                if (window.toastr && typeof window.toastr.error === 'function') {
+                    toastr.error('Gagal memuat atlet seni. Periksa koneksi atau coba lagi.');
+                }
+            }
         };
 
         kategoriSelect?.addEventListener('change', loadAtlet);
+
+        tambahForm?.addEventListener('submit', (event) => {
+            if (!updateAtletCounter()) {
+                event.preventDefault();
+                if (window.toastr && typeof window.toastr.error === 'function') {
+                    const targetText = atletRequirement.strict ? 'tepat' : 'minimal';
+                    toastr.error(`Pilih ${targetText} ${atletRequirement.jumlah} atlet untuk kategori seni ini.`);
+                }
+            }
+        });
 
         editModal?.addEventListener('show.bs.modal', (event) => {
             const trigger = event.relatedTarget;

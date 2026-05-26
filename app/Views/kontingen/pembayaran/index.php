@@ -22,10 +22,31 @@
             </div>
 
             <?php if (($tanding === []) && ($seni === [])) : ?>
+                <?php
+                    $waitingCount = count($waitingTransactions ?? []);
+                    $paidCount = count($paidTransactions ?? []);
+                    if ($waitingCount > 0) {
+                        $emptyTitle = 'Tagihan Sedang Diproses';
+                        $emptyMessage = 'Semua item pembayaran sudah masuk transaksi dan sedang menunggu konfirmasi bendahara.';
+                    } elseif ($paidCount > 0) {
+                        $emptyTitle = 'Semua Pembayaran Lunas';
+                        $emptyMessage = 'Tidak ada tagihan aktif yang perlu dibayar saat ini.';
+                    } else {
+                        $emptyTitle = 'Belum Ada Tagihan';
+                        $emptyMessage = 'Daftarkan peserta tanding atau seni terlebih dahulu untuk membuat tagihan pembayaran.';
+                    }
+                ?>
                 <div class="empty-state-box">
                     <div class="empty-state-icon"><i class="fas fa-wallet"></i></div>
-                    <h4>Tidak Ada Tagihan Aktif</h4>
-                    <p>Semua item tanding dan seni untuk kontingen ini belum tersedia atau sudah masuk transaksi pembayaran.</p>
+                    <h4><?= esc($emptyTitle) ?></h4>
+                    <p><?= esc($emptyMessage) ?></p>
+                    <?php if ($waitingCount > 0) : ?>
+                        <a href="<?= base_url('kontingen/pembayaran/menunggu-konfirmasi') ?>" class="btn btn-danger rounded-pill px-4 mt-2">Lihat Menunggu Konfirmasi</a>
+                    <?php elseif ($paidCount > 0) : ?>
+                        <a href="<?= base_url('kontingen/pembayaran/lunas') ?>" class="btn btn-danger rounded-pill px-4 mt-2">Lihat Pembayaran Lunas</a>
+                    <?php else : ?>
+                        <a href="<?= base_url('kontingen/peserta') ?>" class="btn btn-danger rounded-pill px-4 mt-2">Tambah Peserta</a>
+                    <?php endif; ?>
                 </div>
             <?php else : ?>
                 <form method="post" action="<?= base_url('kontingen/pembayaran') ?>" enctype="multipart/form-data" id="formPembayaranKontingen">
@@ -75,11 +96,13 @@
                                 <label class="form-label fw-semibold">Upload Bukti Pembayaran</label>
                                 <input type="file" name="foto" class="form-control rounded-4" accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-max-kb="10240" required>
                                 <div class="small text-muted mt-2">Hanya JPG, JPEG, atau PNG. Maksimal 10 MB. Gambar akan dioptimasi otomatis agar ukuran lebih ringan.</div>
+                                <div class="small fw-semibold text-success mt-2" id="paymentProofPreview"></div>
                             </div>
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-top pt-3">
                                 <div>
                                     <div class="text-muted small">Total tagihan terpilih</div>
                                     <div class="h4 fw-bold mb-0" id="totalPembayaranKontingen">Rp 0</div>
+                                    <div class="small text-muted mt-1" id="paymentSelectionHint">Pilih minimal satu item pembayaran untuk mengaktifkan tombol upload.</div>
                                 </div>
                                 <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">Upload Bukti & Buat Transaksi</button>
                             </div>
@@ -124,6 +147,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('formPembayaranKontingen');
         const totalEl = document.getElementById('totalPembayaranKontingen');
+        const selectionHint = document.getElementById('paymentSelectionHint');
+        const proofPreview = document.getElementById('paymentProofPreview');
         const uploadInput = form?.querySelector('input[type="file"][name="foto"]');
 
         if (!form || !totalEl) {
@@ -139,27 +164,61 @@
             window.alert(message);
         };
 
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        const formatFileSize = (bytes) => {
+            if (!Number.isFinite(bytes) || bytes <= 0) {
+                return '0 MB';
+            }
+
+            return (bytes / (1024 * 1024)).toLocaleString('id-ID', {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+            }) + ' MB';
+        };
+
+        const clearProofPreview = () => {
+            if (proofPreview) {
+                proofPreview.textContent = '';
+            }
+        };
+
         const updateTotal = () => {
             let total = 0;
             form.querySelectorAll('input[type="checkbox"]:checked').forEach((input) => {
                 total += Number(input.dataset.nominal || 0);
             });
             totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+            if (submitBtn) {
+                submitBtn.disabled = (total === 0);
+            }
+            if (selectionHint) {
+                selectionHint.textContent = total === 0
+                    ? 'Pilih minimal satu item pembayaran untuk mengaktifkan tombol upload.'
+                    : 'Pastikan bukti transfer sesuai dengan total tagihan terpilih.';
+                selectionHint.classList.toggle('text-danger', total === 0);
+                selectionHint.classList.toggle('text-muted', total !== 0);
+            }
         };
 
         form.querySelectorAll('input[type="checkbox"]').forEach((input) => {
             input.addEventListener('change', updateTotal);
         });
 
+        // Jalankan pada pemuatan pertama untuk inisialisasi status tombol submit
+        updateTotal();
+
         uploadInput?.addEventListener('change', () => {
             const file = uploadInput.files?.[0];
             if (!file) {
+                clearProofPreview();
                 return;
             }
 
             const validType = ['image/jpeg', 'image/png'].includes(String(file.type || '').toLowerCase()) || /\.(jpe?g|png)$/i.test(file.name || '');
             if (!validType) {
                 uploadInput.value = '';
+                clearProofPreview();
                 notifyFileError('Bukti pembayaran hanya boleh berupa gambar JPG, JPEG, atau PNG.');
                 return;
             }
@@ -167,7 +226,13 @@
             const maxKb = Number(uploadInput.dataset.maxKb || 0);
             if (maxKb > 0 && file.size > (maxKb * 1024)) {
                 uploadInput.value = '';
-                notifyFileError(`Ukuran file ${file.name} melebihi batas ${maxKb} KB.`);
+                clearProofPreview();
+                notifyFileError(`Ukuran file ${file.name} melebihi batas 10 MB.`);
+                return;
+            }
+
+            if (proofPreview) {
+                proofPreview.textContent = `File dipilih: ${file.name} (${formatFileSize(file.size)})`;
             }
         });
     });

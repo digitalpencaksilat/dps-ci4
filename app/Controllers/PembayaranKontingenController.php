@@ -13,6 +13,8 @@ class PembayaranKontingenController extends BaseController
         $service = new PembayaranKontingenService();
         $idKontingen = (int) session()->get('id_kontingen');
         $pending = $service->pendingItems($idKontingen);
+        $waitingTransactions = $service->transactionsByStatus($idKontingen, 'menunggu');
+        $paidTransactions = $service->transactionsByStatus($idKontingen, 'lunas');
 
         return view('kontingen/pembayaran/index', [
             'title'        => 'Pembayaran',
@@ -24,6 +26,8 @@ class PembayaranKontingenController extends BaseController
             'tanding'      => $pending['tanding'],
             'seni'         => $pending['seni'],
             'accounts'     => $service->accounts(),
+            'waitingTransactions' => $waitingTransactions,
+            'paidTransactions' => $paidTransactions,
             'allowPayment' => (bool) (ci3_config_item('perbolehkan_kontingen_melunasi_pembayaran', 'pendaftaran/akses_pendaftaran') ?? false),
         ]);
     }

@@ -84,9 +84,10 @@
                                 <span class="badge text-bg-secondary rounded-pill">Opsional</span>
                             <?php endif; ?>
                         </div>
-                        <input type="file" name="<?= esc($fieldName) ?>" class="form-control rounded-4 js-arsip-file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-max-kb="<?= esc((string) ((int) ($slot['max_size'] ?? 0))) ?>">
+                        <input type="file" name="<?= esc($fieldName) ?>" class="form-control rounded-4 js-arsip-file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-slot-name="<?= esc($slot['nama_arsip'] ?? $slotName, 'attr') ?>" data-max-kb="<?= esc((string) ((int) ($slot['max_size'] ?? 0))) ?>">
                         <div class="small text-muted mt-2">Gambar akan dioptimasi otomatis agar ukuran lebih ringan dengan kualitas tetap mudah dibaca.</div>
                         <div class="arsip-preview small text-muted mt-2"></div>
+                        <div class="arsip-existing small mt-2" data-arsip-existing="<?= esc($slot['nama_arsip'] ?? $slotName, 'attr') ?>"></div>
                         <?php if ($existingFile !== null) : ?>
                             <div class="small mt-2"><a href="<?= esc(url_arsip_pendaftar_ci4($existingFile->nama_arsip)) ?>" target="_blank" class="text-decoration-none">File saat ini: <?= esc($existingFile->nama_arsip) ?></a></div>
                         <?php endif; ?>
@@ -112,19 +113,24 @@
                 const file = input.files?.[0];
                 if (!preview) return;
                 preview.textContent = '';
+                preview.classList.remove('text-danger', 'text-success');
                 if (!file) return;
+                const slotName = input.dataset.slotName || 'arsip ini';
                 if (!/\.(jpe?g|png)$/i.test(file.name || '') && !['image/jpeg', 'image/png'].includes(String(file.type || '').toLowerCase())) {
                     input.value = '';
-                    preview.textContent = 'File arsip hanya boleh JPG, JPEG, atau PNG.';
+                    preview.classList.add('text-danger');
+                    preview.textContent = `${slotName}: file hanya boleh JPG, JPEG, atau PNG.`;
                     return;
                 }
                 const maxKb = Number(input.dataset.maxKb || 0);
                 if (maxKb > 0 && file.size > maxKb * 1024) {
                     input.value = '';
-                    preview.textContent = `Ukuran file melebihi batas ${maxKb} KB.`;
+                    preview.classList.add('text-danger');
+                    preview.textContent = `${slotName}: ukuran file melebihi batas ${maxKb} KB.`;
                     return;
                 }
-                preview.textContent = `File dipilih: ${file.name} (${Math.max(1, Math.round(file.size / 1024))} KB)`;
+                preview.classList.add('text-success');
+                preview.textContent = `${slotName}: file dipilih ${file.name} (${Math.max(1, Math.round(file.size / 1024))} KB)`;
             });
         });
     })();

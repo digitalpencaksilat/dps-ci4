@@ -66,7 +66,7 @@
                             <h4>Peserta</h4>
                             <p>Kelola data atlet dan biodata peserta.</p>
                         </div>
-                        <span class="badge text-bg-danger">Aktif</span>
+                        <span class="badge <?= !empty($featureAccess['peserta']['enabled']) ? 'text-bg-danger' : 'text-bg-secondary' ?>"><?= esc($featureAccess['peserta']['label'] ?? 'Ditutup') ?></span>
                     </a>
                 </div>
                 <div class="col-md-6">
@@ -75,7 +75,7 @@
                             <h4>Kategori Tanding</h4>
                             <p>Pilih dan kelola kategori tanding atlet.</p>
                         </div>
-                        <span class="badge text-bg-danger">Aktif</span>
+                        <span class="badge <?= !empty($featureAccess['tanding']['enabled']) ? 'text-bg-danger' : 'text-bg-secondary' ?>"><?= esc($featureAccess['tanding']['label'] ?? 'Ditutup') ?></span>
                     </a>
                 </div>
                 <div class="col-md-6">
@@ -84,7 +84,7 @@
                             <h4>Kategori Seni</h4>
                             <p>Atur kelompok peserta seni dan kategorinya.</p>
                         </div>
-                        <span class="badge text-bg-danger">Aktif</span>
+                        <span class="badge <?= !empty($featureAccess['seni']['enabled']) ? 'text-bg-danger' : 'text-bg-secondary' ?>"><?= esc($featureAccess['seni']['label'] ?? 'Ditutup') ?></span>
                     </a>
                 </div>
                 <div class="col-md-6">
@@ -93,7 +93,7 @@
                             <h4>Pembayaran</h4>
                             <p>Lihat checkout, bukti bayar, dan status transaksi.</p>
                         </div>
-                        <span class="badge text-bg-danger">Aktif</span>
+                        <span class="badge <?= !empty($featureAccess['pembayaran']['enabled']) ? 'text-bg-danger' : 'text-bg-secondary' ?>"><?= esc($featureAccess['pembayaran']['label'] ?? 'Ditutup') ?></span>
                     </a>
                 </div>
             </div>

@@ -1,6 +1,12 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
+<?php
+$from = (string) service('request')->getGet('from');
+$backUrl = str_starts_with($from, 'admin/bendahara/pembayaran')
+    ? base_url($from)
+    : base_url('admin/bendahara/pembayaran');
+?>
 <section class="admin-card mb-4">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3">
         <div>
@@ -9,7 +15,7 @@
             <p class="muted-copy mb-0">Rincian dibuat lebih padat supaya transaksi cepat dipindai.</p>
         </div>
         <div class="section-toolbar">
-            <a href="<?= base_url('admin/bendahara/pembayaran') ?>" class="btn btn-soft btn-sm rounded-pill px-3">Kembali</a>
+            <a href="<?= esc($backUrl) ?>" class="btn btn-soft btn-sm rounded-pill px-3">Kembali</a>
             <a href="<?= base_url('admin/bendahara/pembayaran/' . $detail['pembayaran']->id_pembayaran . '/nota.pdf') ?>" class="btn btn-outline-danger btn-sm rounded-pill px-3">Nota PDF</a>
         </div>
     </div>
@@ -127,13 +133,13 @@
                         <p class="muted-copy mb-0">Pembayaran ini sudah dikonfirmasi. Tidak perlu aksi tambahan.</p>
                     </div>
                 <?php else : ?>
-                    <form method="post" action="<?= base_url('admin/bendahara/pembayaran/' . $detail['pembayaran']->id_pembayaran . '/konfirmasi') ?>" class="d-grid mb-3">
+                    <form method="post" action="<?= base_url('admin/bendahara/pembayaran/' . $detail['pembayaran']->id_pembayaran . '/konfirmasi') ?>" class="d-grid mb-3" onsubmit="return confirmAdminAction(this, 'Konfirmasi pembayaran ini?', 'Status transaksi akan berubah menjadi lunas.', 'Ya, konfirmasi');">
                         <?= csrf_field() ?>
                         <button type="submit" class="btn btn-danger btn-sm rounded-pill">Konfirmasi Pembayaran</button>
                     </form>
                 <?php endif; ?>
 
-                <form method="post" action="<?= base_url('admin/bendahara/pembayaran/' . $detail['pembayaran']->id_pembayaran . '/tolak') ?>" class="d-grid">
+                <form method="post" action="<?= base_url('admin/bendahara/pembayaran/' . $detail['pembayaran']->id_pembayaran . '/tolak') ?>" class="d-grid" onsubmit="return confirmAdminAction(this, 'Tolak pembayaran ini?', 'Item pembayaran akan dikembalikan ke tagihan aktif dan bukti pembayaran akan dilepas.', 'Ya, tolak');">
                     <?= csrf_field() ?>
                     <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">Tolak Pembayaran</button>
                 </form>

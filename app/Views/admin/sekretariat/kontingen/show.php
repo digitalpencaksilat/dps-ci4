@@ -32,6 +32,8 @@ $jumlahBeregu = (int) ($kontingen->jumlah_kelompok_peserta_seni_beregu ?? 0);
 $jumlahSoloKreatif = (int) ($kontingen->jumlah_kelompok_peserta_seni_solo_kreatif ?? 0);
 $totalPeserta = $jumlahTanding + $jumlahTunggal + $jumlahGanda + $jumlahBeregu + $jumlahSoloKreatif;
 $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBeregu * 3) + $jumlahSoloKreatif;
+$activeTab = (string) service('request')->getGet('tab');
+$activeTab = in_array($activeTab, ['pendaftar', 'tanding', 'seni', 'official'], true) ? $activeTab : 'pendaftar';
 ?>
 
 <section class="admin-card mb-4">
@@ -64,14 +66,14 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
 
 <section class="admin-card mb-4">
     <ul class="nav nav-pills gap-2 mb-4" id="kontingenTabs" role="tablist">
-        <li class="nav-item" role="presentation"><button class="nav-link active rounded-pill" data-bs-toggle="pill" data-bs-target="#tabPendaftar" type="button" role="tab">Data Atlet</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#tabTanding" type="button" role="tab">Peserta Tanding</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#tabSeni" type="button" role="tab">Peserta Seni</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link rounded-pill" data-bs-toggle="pill" data-bs-target="#tabOfficial" type="button" role="tab">Official</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link <?= $activeTab === 'pendaftar' ? 'active' : '' ?> rounded-pill" data-bs-toggle="pill" data-bs-target="#tabPendaftar" type="button" role="tab">Data Atlet</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link <?= $activeTab === 'tanding' ? 'active' : '' ?> rounded-pill" data-bs-toggle="pill" data-bs-target="#tabTanding" type="button" role="tab">Peserta Tanding</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link <?= $activeTab === 'seni' ? 'active' : '' ?> rounded-pill" data-bs-toggle="pill" data-bs-target="#tabSeni" type="button" role="tab">Peserta Seni</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link <?= $activeTab === 'official' ? 'active' : '' ?> rounded-pill" data-bs-toggle="pill" data-bs-target="#tabOfficial" type="button" role="tab">Official</button></li>
     </ul>
 
     <div class="tab-content">
-        <div class="tab-pane fade show active" id="tabPendaftar" role="tabpanel">
+        <div class="tab-pane fade <?= $activeTab === 'pendaftar' ? 'show active' : '' ?>" id="tabPendaftar" role="tabpanel">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
                 <div>
                     <h4 class="section-title h5 mb-1">Data Atlet</h4>
@@ -99,7 +101,7 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
                                 <td><?= esc((string) ($kontingen->provinsi ?: '-')) ?></td>
                                 <td><?= esc((string) ($row->nomor_induk_kependudukan ?: '-')) ?></td>
                                 <td><?= esc((string) ($row->nomor_kartu_keluarga ?: '-')) ?></td>
-                                <td class="text-end"><button type="button" class="btn btn-sm btn-outline-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#editPendaftarModal<?= esc((string) $row->id_pendaftar) ?>">Edit</button></td>
+                                <td class="text-end"><button type="button" class="btn btn-sm btn-outline-danger rounded-pill js-edit-pendaftar" data-bs-toggle="modal" data-bs-target="#editPendaftarModal" data-id="<?= esc((string) $row->id_pendaftar, 'attr') ?>" data-nama="<?= esc((string) $row->nama_pendaftar, 'attr') ?>" data-gender="<?= esc((string) $row->jenis_kelamin, 'attr') ?>" data-tanggal="<?= esc((string) ($row->tanggal_lahir ?? ''), 'attr') ?>" data-tinggi="<?= esc((string) ($row->tinggi_badan ?? ''), 'attr') ?>" data-berat="<?= esc((string) ($row->berat_badan ?? ''), 'attr') ?>" data-tempat="<?= esc((string) ($row->tempat_lahir ?? ''), 'attr') ?>" data-sekolah="<?= esc((string) ($row->nama_sekolah ?? ''), 'attr') ?>" data-nik="<?= esc((string) ($row->nomor_induk_kependudukan ?? ''), 'attr') ?>" data-kk="<?= esc((string) ($row->nomor_kartu_keluarga ?? ''), 'attr') ?>" data-alamat="<?= esc((string) ($row->alamat ?? ''), 'attr') ?>" data-arsip='<?= esc(json_encode(array_map(static fn($arsip) => ["jenis_arsip" => $arsip->jenis_arsip ?? "", "nama_arsip" => $arsip->nama_arsip ?? "", "url" => url_arsip_pendaftar_ci4($arsip->nama_arsip ?? "")], $arsipByPendaftar[$row->id_pendaftar] ?? [])), 'attr') ?>'>Edit</button></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -107,7 +109,7 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
             </div></div>
         </div>
 
-        <div class="tab-pane fade" id="tabTanding" role="tabpanel">
+        <div class="tab-pane fade <?= $activeTab === 'tanding' ? 'show active' : '' ?>" id="tabTanding" role="tabpanel">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
                 <div>
                     <h4 class="section-title h5 mb-1">Peserta Tanding</h4>
@@ -137,7 +139,7 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
             </div></div>
         </div>
 
-        <div class="tab-pane fade" id="tabSeni" role="tabpanel">
+        <div class="tab-pane fade <?= $activeTab === 'seni' ? 'show active' : '' ?>" id="tabSeni" role="tabpanel">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
                 <div>
                     <h4 class="section-title h5 mb-1">Peserta Seni</h4>
@@ -166,7 +168,7 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
             </div></div>
         </div>
 
-        <div class="tab-pane fade" id="tabOfficial" role="tabpanel">
+        <div class="tab-pane fade <?= $activeTab === 'official' ? 'show active' : '' ?>" id="tabOfficial" role="tabpanel">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
                 <div>
                     <h4 class="section-title h5 mb-1">Official</h4>
@@ -192,7 +194,7 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
 </section>
 
 <section class="row g-4 mb-4">
-    <div class="col-12 col-xl-8"><div class="admin-card h-100"><h4 class="section-title h5 mb-3">Kontrol Kontingen</h4><div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">Reset Password</button><form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/delete') ?>" onsubmit="return confirmAdminAction(this, 'Hapus kontingen?', 'Data kontingen akan dihapus dari sistem.', 'Hapus')"><?= csrf_field() ?><button type="submit" class="btn btn-outline-secondary rounded-pill px-4">Hapus Kontingen</button></form></div></div></div>
+    <div class="col-12 col-xl-8"><div class="admin-card h-100"><h4 class="section-title h5 mb-3">Kontrol Kontingen</h4><div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">Reset Password</button></div><div class="placeholder-stat mt-4 border-danger-subtle"><div class="small text-danger fw-bold mb-1">Danger Zone</div><p class="muted-copy mb-3">Menghapus kontingen dapat memengaruhi peserta, kategori, dan data terkait. Gunakan hanya jika data memang harus dihapus.</p><form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/delete') ?>" onsubmit="return confirmAdminAction(this, 'Hapus kontingen?', 'Data kontingen akan dihapus dari sistem.', 'Hapus')"><?= csrf_field() ?><button type="submit" class="btn btn-outline-danger rounded-pill px-4">Hapus Kontingen</button></form></div></div></div>
     <div class="col-12 col-xl-4"><div class="admin-card h-100"><div class="small muted-copy mb-1">Status Data</div><div class="fw-semibold"><?= esc((string) ($kontingen->status_data ?? '-')) ?></div></div></div>
 </section>
 
@@ -200,10 +202,57 @@ $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBe
 <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/reset-password') ?>" class="modal-content"><?= csrf_field() ?><div class="modal-header"><h5 class="modal-title">Reset Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div><div class="modal-body"><label class="form-label fw-semibold">Password Baru</label><input type="password" name="password" class="form-control rounded-4" minlength="6" required></div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-admin-brand rounded-pill">Reset Password</button></div></form></div></div>
 
 <div class="modal fade" id="createPendaftarModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-scrollable"><form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/pendaftar') ?>" class="modal-content" enctype="multipart/form-data"><?= csrf_field() ?><div class="modal-header"><h5 class="modal-title">Tambah Peserta</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div><div class="modal-body"><?= view('admin/sekretariat/pendaftar/_form', ['mode' => 'create', 'formId' => 'create-pendaftar', 'arsipSlots' => $arsipSlots ?? [], 'arsipExisting' => []]) ?></div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-admin-brand rounded-pill">Simpan Peserta</button></div></form></div></div>
+<div class="modal fade" id="editPendaftarModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content"><form method="post" action="" enctype="multipart/form-data" id="editPendaftarForm"><?= csrf_field() ?><div class="modal-header"><h5 class="modal-title">Edit Peserta</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div><div class="modal-body"><?= view('admin/sekretariat/pendaftar/_form', ['mode' => 'edit', 'formId' => 'edit-pendaftar-reusable', 'arsipSlots' => $arsipSlots ?? [], 'arsipExisting' => []]) ?></div><div class="modal-footer justify-content-between"><button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-admin-brand rounded-pill">Simpan Perubahan</button></div></form><form method="post" action="" class="px-3 pb-3" id="deletePendaftarForm" onsubmit="return confirmAdminAction(this, 'Hapus peserta?', 'Data peserta dan kategori terkait akan ikut dihapus.', 'Hapus')"><?= csrf_field() ?><button type="submit" class="btn btn-outline-danger rounded-pill">Hapus Peserta</button></form></div></div></div>
 <div class="modal fade" id="createPesertaTandingModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-scrollable"><form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/peserta-tanding') ?>" class="modal-content"><?= csrf_field() ?><div class="modal-header"><h5 class="modal-title">Tambah Peserta Tanding</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div><div class="modal-body"><?= view('admin/sekretariat/peserta_tanding/_form', ['mode' => 'create', 'pendaftarOptions' => $detail['pendaftarTandingOptions'] ?? [], 'kompetisiOptions' => $detail['kompetisiTandingOptions'] ?? []]) ?></div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-admin-brand rounded-pill">Simpan</button></div></form></div></div>
 <div class="modal fade" id="createKelompokSeniModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-scrollable"><form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/kelompok-seni') ?>" class="modal-content"><?= csrf_field() ?><div class="modal-header"><h5 class="modal-title">Tambah Kelompok Seni</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div><div class="modal-body"><?= view('admin/sekretariat/kelompok_seni/_form', ['mode' => 'create', 'hideKontingen' => true, 'idKontingen' => (int) $kontingen->id_kontingen, 'kompetisiOptions' => $detail['kompetisiSeniOptions'] ?? [], 'pendaftarOptions' => $detail['pendaftarSeniOptions'] ?? []]) ?></div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-admin-brand rounded-pill">Simpan Kelompok</button></div></form></div></div>
 
-<?php foreach (($detail['pendaftar'] ?? []) as $pendaftar) : ?>
-    <div class="modal fade" id="editPendaftarModal<?= esc((string) $pendaftar->id_pendaftar) ?>" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content"><form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/pendaftar/' . $pendaftar->id_pendaftar . '/update') ?>" enctype="multipart/form-data"><?= csrf_field() ?><div class="modal-header"><h5 class="modal-title">Edit Peserta</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div><div class="modal-body"><?= view('admin/sekretariat/pendaftar/_form', ['mode' => 'edit', 'formId' => 'edit-pendaftar-' . $pendaftar->id_pendaftar, 'pendaftar' => $pendaftar, 'arsipSlots' => $arsipSlots ?? [], 'arsipExisting' => $arsipByPendaftar[$pendaftar->id_pendaftar] ?? []]) ?></div><div class="modal-footer justify-content-between"><button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-admin-brand rounded-pill">Simpan Perubahan</button></div></form><form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/pendaftar/' . $pendaftar->id_pendaftar . '/delete') ?>" class="px-3 pb-3" onsubmit="return confirmAdminAction(this, 'Hapus peserta?', 'Data peserta dan kategori terkait akan ikut dihapus.', 'Hapus')"><?= csrf_field() ?><button type="submit" class="btn btn-outline-danger rounded-pill">Hapus Peserta</button></form></div></div></div>
-<?php endforeach; ?>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const editForm = document.getElementById('editPendaftarForm');
+        const deleteForm = document.getElementById('deletePendaftarForm');
+        const baseUrl = <?= json_encode(base_url('admin/sekretariat/kontingen/' . $kontingen->id_kontingen . '/pendaftar')) ?>;
+
+        document.querySelectorAll('.js-edit-pendaftar').forEach((button) => {
+            button.addEventListener('click', () => {
+                const data = button.dataset;
+                if (!editForm || !deleteForm || !data.id) return;
+
+                editForm.action = `${baseUrl}/${data.id}/update`;
+                deleteForm.action = `${baseUrl}/${data.id}/delete`;
+                editForm.nama_pendaftar.value = data.nama || '';
+                editForm.jenis_kelamin.value = data.gender || 'putra';
+                editForm.tanggal_lahir.value = data.tanggal || '';
+                editForm.tinggi_badan.value = data.tinggi || '';
+                editForm.berat_badan.value = data.berat || '';
+                editForm.tempat_lahir.value = data.tempat || '';
+                editForm.nama_sekolah.value = data.sekolah || '';
+                editForm.nomor_induk_kependudukan.value = data.nik || '';
+                editForm.nomor_kartu_keluarga.value = data.kk || '';
+                editForm.alamat.value = data.alamat || '';
+
+                editForm.querySelectorAll('.arsip-existing').forEach((el) => {
+                    el.textContent = '';
+                });
+
+                let arsip = [];
+                try {
+                    arsip = JSON.parse(data.arsip || '[]');
+                } catch (error) {
+                    arsip = [];
+                }
+
+                arsip.forEach((item) => {
+                    const existing = Array.from(editForm.querySelectorAll('[data-arsip-existing]')).find((el) => el.dataset.arsipExisting === item.jenis_arsip);
+                    if (!existing) return;
+                    const link = document.createElement('a');
+                    link.href = item.url;
+                    link.target = '_blank';
+                    link.className = 'text-decoration-none';
+                    link.textContent = `File saat ini: ${item.nama_arsip}`;
+                    existing.appendChild(link);
+                });
+            });
+        });
+    });
+</script>
 <?= $this->endSection() ?>

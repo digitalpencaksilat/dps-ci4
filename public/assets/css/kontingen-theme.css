@@ -141,6 +141,26 @@ h6,
     min-height: 100vh;
 }
 
+.kontingen-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1040;
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+body.kontingen-sidebar-open {
+    overflow: hidden;
+}
+
+body.kontingen-sidebar-open .kontingen-sidebar-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .kontingen-sidebar {
     position: sticky;
     top: 0;
@@ -154,6 +174,24 @@ h6,
         linear-gradient(180deg, var(--brand-primary-dark) 0%, var(--brand-primary-deeper) 100%);
     border-right: 1px solid rgba(255, 255, 255, 0.06);
     color: rgba(255, 255, 255, 0.94);
+}
+
+.kontingen-sidebar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.kontingen-sidebar-close {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    flex-shrink: 0;
 }
 
 .brand-block {
@@ -270,6 +308,16 @@ h6,
     padding: 1.05rem 1.2rem;
     margin-bottom: 1.1rem;
     border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.kontingen-mobile-toggle {
+    display: none;
+    width: 46px;
+    height: 46px;
+    border: 0;
+    border-radius: 16px;
+    background: rgba(198, 0, 0, 0.08);
+    color: var(--brand-primary-dark);
 }
 
 .page-title {
@@ -675,14 +723,33 @@ h6,
     }
 
     .kontingen-sidebar {
-        position: static;
-        height: auto;
-        border-right: 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 1050;
+        width: min(88vw, 340px);
+        height: calc(100vh - 24px);
+        overflow-y: auto;
+        border-radius: 28px;
+        transform: translateX(calc(-100% - 24px));
+        transition: transform 0.24s ease;
+        box-shadow: 0 24px 80px rgba(15, 23, 42, 0.34);
+    }
+
+    body.kontingen-sidebar-open .kontingen-sidebar {
+        transform: translateX(0);
+    }
+
+    .kontingen-sidebar-close,
+    .kontingen-mobile-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
     .topbar-card {
-        flex-direction: column;
+        justify-content: flex-start;
         align-items: flex-start;
     }
 

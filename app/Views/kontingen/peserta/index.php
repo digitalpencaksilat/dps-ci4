@@ -21,7 +21,10 @@
         <div class="empty-state-box">
             <div class="empty-state-icon"><i class="fas fa-users"></i></div>
             <h4>Belum Ada Peserta</h4>
-            <p>Belum ada data atlet yang terdaftar untuk kontingen ini.</p>
+            <p><?= $allowCreate ? 'Gunakan tombol Tambah Peserta di kanan atas untuk menambahkan atlet sebelum mendaftarkan kategori tanding atau seni.' : 'Belum ada data atlet yang terdaftar untuk kontingen ini.' ?></p>
+            <?php if (! $allowCreate) : ?>
+                <p class="small text-muted mb-0">Input atlet sedang ditutup.</p>
+            <?php endif; ?>
         </div>
     <?php else : ?>
         <div class="table-responsive">
@@ -115,7 +118,7 @@
                         <p class="eyebrow mb-1" id="pesertaModalEyebrow">Tambah</p>
                         <h3 class="panel-title mb-0" id="pesertaModalTitle">Tambah Peserta</h3>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body pt-3">
                     <ul class="nav nav-tabs modal-tabs mb-3" id="pesertaTab" role="tablist">
@@ -131,47 +134,47 @@
                         <div class="tab-pane fade show active" id="data-peserta-pane" role="tabpanel">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nama Peserta</label>
-                                    <input type="text" name="nama_pendaftar" class="form-control rounded-4" required>
+                                    <label for="peserta_nama_pendaftar" class="form-label fw-semibold">Nama Peserta</label>
+                                    <input type="text" id="peserta_nama_pendaftar" name="nama_pendaftar" class="form-control rounded-4" required>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Jenis Kelamin</label>
-                                    <select name="jenis_kelamin" class="form-select rounded-4" required>
+                                    <label for="peserta_jenis_kelamin" class="form-label fw-semibold">Jenis Kelamin</label>
+                                    <select name="jenis_kelamin" id="peserta_jenis_kelamin" class="form-select rounded-4" required>
                                         <option value="putra">Putra</option>
                                         <option value="putri">Putri</option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Tanggal Lahir</label>
-                                    <input type="date" name="tanggal_lahir" class="form-control rounded-4" required>
+                                    <label for="peserta_tanggal_lahir" class="form-label fw-semibold">Tanggal Lahir</label>
+                                    <input type="date" id="peserta_tanggal_lahir" name="tanggal_lahir" class="form-control rounded-4" required>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Tinggi Badan</label>
-                                    <input type="text" name="tinggi_badan" class="form-control rounded-4 input-numeric-only" inputmode="numeric" required>
+                                    <label for="peserta_tinggi_badan" class="form-label fw-semibold">Tinggi Badan</label>
+                                    <input type="text" id="peserta_tinggi_badan" name="tinggi_badan" class="form-control rounded-4 input-numeric-only" inputmode="numeric" required>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Berat Badan</label>
-                                    <input type="text" name="berat_badan" class="form-control rounded-4 input-numeric-only" inputmode="numeric" required>
+                                    <label for="peserta_berat_badan" class="form-label fw-semibold">Berat Badan</label>
+                                    <input type="text" id="peserta_berat_badan" name="berat_badan" class="form-control rounded-4 input-numeric-only" inputmode="numeric" required>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Tempat Lahir</label>
-                                    <input type="text" name="tempat_lahir" class="form-control rounded-4" required>
+                                    <label for="peserta_tempat_lahir" class="form-label fw-semibold">Tempat Lahir</label>
+                                    <input type="text" id="peserta_tempat_lahir" name="tempat_lahir" class="form-control rounded-4" required>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Sekolah</label>
-                                    <input type="text" name="nama_sekolah" class="form-control rounded-4">
+                                    <label for="peserta_nama_sekolah" class="form-label fw-semibold">Sekolah</label>
+                                    <input type="text" id="peserta_nama_sekolah" name="nama_sekolah" class="form-control rounded-4">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">NIK</label>
-                                    <input type="text" name="nomor_induk_kependudukan" maxlength="16" minlength="16" class="form-control rounded-4 input-digits-16" inputmode="numeric">
+                                    <label for="peserta_nomor_induk_kependudukan" class="form-label fw-semibold">NIK</label>
+                                    <input type="text" id="peserta_nomor_induk_kependudukan" name="nomor_induk_kependudukan" maxlength="16" minlength="16" class="form-control rounded-4 input-digits-16" inputmode="numeric">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nomor Kartu Keluarga</label>
-                                    <input type="text" name="nomor_kartu_keluarga" maxlength="16" minlength="16" class="form-control rounded-4 input-digits-16" inputmode="numeric">
+                                    <label for="peserta_nomor_kartu_keluarga" class="form-label fw-semibold">Nomor Kartu Keluarga</label>
+                                    <input type="text" id="peserta_nomor_kartu_keluarga" name="nomor_kartu_keluarga" maxlength="16" minlength="16" class="form-control rounded-4 input-digits-16" inputmode="numeric">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold">Alamat</label>
-                                    <textarea name="alamat" rows="3" class="form-control rounded-4"></textarea>
+                                    <label for="peserta_alamat" class="form-label fw-semibold">Alamat</label>
+                                    <textarea id="peserta_alamat" name="alamat" rows="3" class="form-control rounded-4"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -200,7 +203,7 @@
                                                         <span class="badge text-bg-secondary rounded-pill">Opsional</span>
                                                     <?php endif; ?>
                                                 </div>
-                                                <input type="file" name="<?= esc($fieldName) ?>" class="form-control rounded-4" accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-max-kb="<?= esc((string) ((int) ($slot['max_size'] ?? 0))) ?>">
+                                                <input type="file" id="peserta_arsip_<?= esc($fieldName, 'attr') ?>" aria-label="Unggah <?= esc($slot['nama_arsip'] ?? $slotName, 'attr') ?>" name="<?= esc($fieldName) ?>" class="form-control rounded-4" accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-max-kb="<?= esc((string) ((int) ($slot['max_size'] ?? 0))) ?>">
                                                 <div class="small text-muted mt-2">Gambar akan dioptimasi otomatis agar ukuran lebih ringan dengan kualitas tetap mudah dibaca.</div>
                                                 <div class="arsip-preview small text-muted mt-2" data-slot-preview="<?= esc($fieldName) ?>"></div>
                                                 <div class="arsip-existing small mt-2" data-slot-existing="<?= esc($fieldName) ?>"></div>
@@ -233,6 +236,20 @@
         const eyebrowEl = document.getElementById('pesertaModalEyebrow');
         const submitEl = document.getElementById('pesertaModalSubmit');
         const baseAction = <?= json_encode(base_url('kontingen/peserta')) ?>;
+        const reopenMode = <?= json_encode(session()->getFlashdata('openPesertaModal')) ?>;
+        const reopenId = <?= json_encode(session()->getFlashdata('openPesertaId')) ?>;
+        const oldInput = <?= json_encode([
+            'nama' => old('nama_pendaftar'),
+            'gender' => old('jenis_kelamin'),
+            'tanggal' => old('tanggal_lahir'),
+            'tinggi' => old('tinggi_badan'),
+            'berat' => old('berat_badan'),
+            'tempat' => old('tempat_lahir'),
+            'sekolah' => old('nama_sekolah'),
+            'nik' => old('nomor_induk_kependudukan'),
+            'kk' => old('nomor_kartu_keluarga'),
+            'alamat' => old('alamat'),
+        ]) ?>;
         const allowedImageMimes = ['image/jpeg', 'image/png'];
         const allowedImageName = /\.(jpe?g|png)$/i;
 
@@ -305,6 +322,15 @@
             form.alamat.value = data.alamat || '';
         };
 
+        const clearArsipState = () => {
+            modalEl.querySelectorAll('[data-slot-preview]').forEach((el) => {
+                el.textContent = '';
+            });
+            modalEl.querySelectorAll('[data-slot-existing]').forEach((el) => {
+                el.innerHTML = '';
+            });
+        };
+
         modalEl.addEventListener('show.bs.modal', (event) => {
             const trigger = event.relatedTarget;
             const mode = trigger?.dataset.mode || 'create';
@@ -315,12 +341,7 @@
                 submitEl.textContent = 'Simpan Perubahan';
                 form.action = `${baseAction}/${trigger.dataset.id}/update`;
                 fillForm(trigger.dataset);
-                modalEl.querySelectorAll('[data-slot-preview]').forEach((el) => {
-                    el.textContent = '';
-                });
-                modalEl.querySelectorAll('[data-slot-existing]').forEach((el) => {
-                    el.innerHTML = '';
-                });
+                clearArsipState();
 
                 let arsip = [];
                 try {
@@ -341,14 +362,19 @@
                 form.action = baseAction;
                 form.reset();
                 fillForm({});
-                modalEl.querySelectorAll('[data-slot-preview]').forEach((el) => {
-                    el.textContent = '';
-                });
-                modalEl.querySelectorAll('[data-slot-existing]').forEach((el) => {
-                    el.innerHTML = '';
-                });
+                clearArsipState();
             }
         });
+
+        if (reopenMode === 'create' || reopenMode === 'edit') {
+            eyebrowEl.textContent = reopenMode === 'edit' ? 'Edit' : 'Tambah';
+            titleEl.textContent = reopenMode === 'edit' ? 'Edit Peserta' : 'Tambah Peserta';
+            submitEl.textContent = reopenMode === 'edit' ? 'Simpan Perubahan' : 'Simpan';
+            form.action = reopenMode === 'edit' && reopenId ? `${baseAction}/${reopenId}/update` : baseAction;
+            fillForm(oldInput);
+            clearArsipState();
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
 
         setDigitsOnly();
     });

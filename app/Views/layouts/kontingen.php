@@ -19,17 +19,23 @@
 </head>
 
 <body class="kontingen-body">
+    <div class="kontingen-sidebar-overlay" data-kontingen-sidebar-close></div>
     <div class="kontingen-shell">
-        <aside class="kontingen-sidebar">
-            <a href="<?= base_url('kontingen/dashboard') ?>" class="brand-block text-decoration-none">
-                <?php if (! empty($eventLogo)) : ?>
-                    <img src="<?= esc($eventLogo) ?>" alt="<?= esc($eventName ?? 'Event') ?>">
-                <?php endif; ?>
-                <div>
-                    <div class="brand-title">Kontingen Panel</div>
-                    <div class="brand-subtitle"><?= esc($eventName ?? 'Digital Pencak Silat') ?></div>
-                </div>
-            </a>
+        <aside class="kontingen-sidebar" id="kontingenSidebar" aria-label="Navigasi kontingen">
+            <div class="kontingen-sidebar-head">
+                <a href="<?= base_url('kontingen/dashboard') ?>" class="brand-block text-decoration-none flex-grow-1">
+                    <?php if (! empty($eventLogo)) : ?>
+                        <img src="<?= esc($eventLogo) ?>" alt="<?= esc($eventName ?? 'Event') ?>">
+                    <?php endif; ?>
+                    <div>
+                        <div class="brand-title">Kontingen Panel</div>
+                        <div class="brand-subtitle"><?= esc($eventName ?? 'Digital Pencak Silat') ?></div>
+                    </div>
+                </a>
+                <button type="button" class="kontingen-sidebar-close" data-kontingen-sidebar-close aria-label="Tutup menu">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
 
             <div class="sidebar-section-label">Menu Utama</div>
             <nav class="nav flex-column gap-2">
@@ -78,15 +84,14 @@
                 </a>
             </div>
         </aside>
-
         <main class="kontingen-main">
             <header class="topbar-card">
+                <button type="button" class="kontingen-mobile-toggle" data-kontingen-sidebar-open aria-label="Buka menu" aria-controls="kontingenSidebar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div>
                     <p class="eyebrow mb-1">Area Kontingen</p>
                     <h1 class="page-title mb-0"><?= esc($title ?? 'Dashboard Kontingen') ?></h1>
-                </div>
-                <div class="topbar-meta text-end">
-                    <div class="kontingen-name"><?= esc(session('nama_kontingen') ?? '-') ?></div>
                 </div>
             </header>
 
@@ -162,6 +167,41 @@
         };
 
         // initAdminExportTable — loaded from public/assets/js/admin-export-datatable.js
+
+        (() => {
+            const sidebar = document.getElementById('kontingenSidebar');
+            const openButton = document.querySelector('[data-kontingen-sidebar-open]');
+            const closeButtons = document.querySelectorAll('[data-kontingen-sidebar-close]');
+
+            if (!sidebar || !openButton) {
+                return;
+            }
+
+            const setOpen = (open) => {
+                document.body.classList.toggle('kontingen-sidebar-open', open);
+                openButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+            };
+
+            openButton.addEventListener('click', () => setOpen(true));
+            closeButtons.forEach((button) => button.addEventListener('click', () => setOpen(false)));
+
+            sidebar.querySelectorAll('a[href]:not([data-bs-toggle="collapse"])').forEach((link) => {
+                link.addEventListener('click', () => setOpen(false));
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && document.body.classList.contains('kontingen-sidebar-open')) {
+                    setOpen(false);
+                    openButton.focus();
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 992) {
+                    setOpen(false);
+                }
+            });
+        })();
 
         window.confirmDeleteAction = function(form, message = 'Data ini akan dihapus.') {
             Swal.fire({

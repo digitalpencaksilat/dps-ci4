@@ -48,7 +48,7 @@
                                 <td>Rp <?= number_format((int) $trx->total_pembayaran, 0, ',', '.') ?></td>
                                 <td><?= esc(format_tanggal_indo($trx->tanggal_pembayaran)) ?></td>
                                 <td class="text-end">
-                                    <a href="<?= base_url('admin/bendahara/pembayaran/' . $trx->id_pembayaran) ?>" class="btn btn-sm btn-outline-danger rounded-pill">Detail</a>
+                                    <a href="<?= base_url('admin/bendahara/pembayaran/' . $trx->id_pembayaran . '?from=' . rawurlencode(uri_string())) ?>" class="btn btn-sm btn-outline-danger rounded-pill">Detail</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

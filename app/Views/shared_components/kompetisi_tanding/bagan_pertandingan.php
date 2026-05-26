@@ -5,7 +5,7 @@
 
 	/* Font dan Warna Dasar */
 	.jQBracket {
-		font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+		font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
 	}
 
 	/* Modifikasi Kotak Tim (Team Card) */

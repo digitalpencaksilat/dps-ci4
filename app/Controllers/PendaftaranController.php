@@ -20,7 +20,7 @@ class PendaftaranController extends BaseController
     {
         $data = $this->baseViewData();
         $data['main_view'] = 'pendaftaran/pages/registrasi';
-        $data['perbolehkan_kontingen_mendaftar'] = (bool) ci3_config_item('perbolehkan_kontingen_mendaftar', 'pendaftaran/akses_pendaftaran');
+        $data['perbolehkan_kontingen_mendaftar'] = (string) (get_setting('perbolehkan_kontingen_mendaftar') ?? '0') === '1';
         $data['recaptchaSiteKey'] = (new RecaptchaService())->siteKey();
         $data['recaptchaEnabled'] = (new RecaptchaService())->isConfigured();
 
@@ -29,7 +29,7 @@ class PendaftaranController extends BaseController
 
     public function submitRegistrasi()
     {
-        $allowRegister = (bool) (ci3_config_item('perbolehkan_kontingen_mendaftar', 'pendaftaran/akses_pendaftaran') ?? true);
+        $allowRegister = (string) (get_setting('perbolehkan_kontingen_mendaftar') ?? '1') === '1';
         if (! $allowRegister) {
             return redirect()->to(base_url('registrasi'))->with('status', false)->with('message', 'Pendaftaran kontingen sedang ditutup.');
         }
@@ -119,20 +119,20 @@ class PendaftaranController extends BaseController
     private function loadEventConfig(): array
     {
         return [
-            'brand_abbreviation' => (string) (ci3_config_item('brand_abbreviation', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'event_name' => (string) (ci3_config_item('event_name', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'landing_page_description' => (string) (ci3_config_item('landing_page_description', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'event_host' => (string) (ci3_config_item('event_host', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'registration_start' => (string) (ci3_config_item('registration_start', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'registration_end' => (string) (ci3_config_item('registration_end', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'event_location' => (string) (ci3_config_item('event_location', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'date_start' => (string) (ci3_config_item('date_start', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'date_end' => (string) (ci3_config_item('date_end', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'technical_meeting_date' => (string) (ci3_config_item('technical_meeting_date', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'technical_meeting_location' => (string) (ci3_config_item('technical_meeting_location', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'contact_person' => (string) (ci3_config_item('contact_person', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'countdown' => (string) (ci3_config_item('countdown', 'pendaftaran/profil_kejuaraan') ?? ''),
-            'fight_category' => (string) (ci3_config_item('fight_category', 'pendaftaran/profil_kejuaraan') ?? ''),
+            'brand_abbreviation' => (string) (get_setting('brand_abbreviation') ?? ''),
+            'event_name' => (string) (get_setting('event_name') ?? ''),
+            'landing_page_description' => (string) (get_setting('landing_page_description') ?? ''),
+            'event_host' => (string) (get_setting('event_host') ?? ''),
+            'registration_start' => (string) (get_setting('registration_start') ?? ''),
+            'registration_end' => (string) (get_setting('registration_end') ?? ''),
+            'event_location' => (string) (get_setting('event_location') ?? ''),
+            'date_start' => (string) (get_setting('date_start') ?? ''),
+            'date_end' => (string) (get_setting('date_end') ?? ''),
+            'technical_meeting_date' => (string) (get_setting('technical_meeting_date') ?? ''),
+            'technical_meeting_location' => (string) (get_setting('technical_meeting_location') ?? ''),
+            'contact_person' => (string) (get_setting('contact_person') ?? ''),
+            'countdown' => (string) (get_setting('countdown') ?? ''),
+            'fight_category' => (string) (get_setting('fight_category') ?? ''),
         ];
     }
 }

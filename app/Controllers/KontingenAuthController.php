@@ -15,8 +15,8 @@ class KontingenAuthController extends BaseController
         return view('kontingen/auth/login', [
             'eventName' => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'),
             'eventLogo' => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
-            'allowLogin' => (bool) (ci3_config_item('perbolehkan_kontingen_login', 'pendaftaran/akses_pendaftaran') ?? true),
-            'allowForgotPassword' => (bool) (ci3_config_item('perbolehkan_lupa_password', 'pendaftaran/akun_kontingen') ?? false),
+            'allowLogin' => (string) (get_setting('perbolehkan_kontingen_login') ?? '1') === '1',
+            'allowForgotPassword' => (string) (get_setting('perbolehkan_lupa_password') ?? '0') === '1',
         ]);
     }
 
@@ -31,7 +31,7 @@ class KontingenAuthController extends BaseController
             return redirect()->back()->withInput()->with('status', false)->with('message', $this->validator->getErrors());
         }
 
-        $allowLogin = (bool) (ci3_config_item('perbolehkan_kontingen_login', 'pendaftaran/akses_pendaftaran') ?? true);
+        $allowLogin = (string) (get_setting('perbolehkan_kontingen_login') ?? '1') === '1';
         if (! $allowLogin) {
             return redirect()->to(base_url('pendaftaran/login'))->with('status', false)->with('message', 'Proses pendaftaran ditutup');
         }

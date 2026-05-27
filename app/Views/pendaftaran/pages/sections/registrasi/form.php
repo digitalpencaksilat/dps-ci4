@@ -1,7 +1,7 @@
 <section class="py-5 bg-light" id="registrasi">
     <div class="container">
 
-        <?php if (ci3_config_item('perbolehkan_kontingen_mendaftar', 'pendaftaran/akses_pendaftaran')) : ?>
+        <?php if ((string) (get_setting('perbolehkan_kontingen_mendaftar') ?? '0') === '1') : ?>
 
             <div class="row justify-content-center">
                 <div class="col-12">

@@ -28,10 +28,10 @@ class PesertaController extends BaseController
             'peserta'    => $peserta,
             'arsipByPendaftar' => $arsipByPendaftar,
             'arsipSlots' => get_active_arsip_pendaftar_ci4(),
-            'allowCreate' => (bool) (ci3_config_item('perbolehkan_kontingen_input_atlet', 'pendaftaran/akses_pendaftaran') ?? false),
-            'allowEdit'   => (bool) (ci3_config_item('perbolehkan_edit_biodata', 'pendaftaran/akses_pendaftaran') ?? false),
-            'allowDelete' => (bool) (ci3_config_item('perbolehkan_undur_diri_atlet', 'pendaftaran/akses_pendaftaran') ?? false),
-            'maxAtlet'    => (int) (ci3_config_item('max_atlet_per_kontingen', 'pendaftaran/max_atlet_per_kontingen') ?? 0),
+            'allowCreate' => (string) (get_setting('perbolehkan_kontingen_input_atlet') ?? '0') === '1',
+            'allowEdit'   => (string) (get_setting('perbolehkan_edit_biodata') ?? '0') === '1',
+            'allowDelete' => (string) (get_setting('perbolehkan_undur_diri_atlet') ?? '0') === '1',
+            'maxAtlet'    => (int) (get_setting('max_atlet_per_kontingen') ?? 0),
             'eventName'  => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'),
             'eventLogo'  => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
         ]);
@@ -39,7 +39,7 @@ class PesertaController extends BaseController
 
     public function store()
     {
-        if (! (bool) (ci3_config_item('perbolehkan_kontingen_input_atlet', 'pendaftaran/akses_pendaftaran') ?? false)) {
+        if ((string) (get_setting('perbolehkan_kontingen_input_atlet') ?? '0') !== '1') {
             return redirect()->to(base_url('kontingen/peserta'))->with('status', false)->with('message', 'Input atlet saat ini ditutup.');
         }
 
@@ -59,7 +59,7 @@ class PesertaController extends BaseController
 
     public function update(int $id)
     {
-        if (! (bool) (ci3_config_item('perbolehkan_edit_biodata', 'pendaftaran/akses_pendaftaran') ?? false)) {
+        if ((string) (get_setting('perbolehkan_edit_biodata') ?? '0') !== '1') {
             return redirect()->to(base_url('kontingen/peserta'))->with('status', false)->with('message', 'Edit biodata peserta saat ini ditutup.');
         }
 
@@ -80,7 +80,7 @@ class PesertaController extends BaseController
 
     public function delete(int $id)
     {
-        if (! (bool) (ci3_config_item('perbolehkan_undur_diri_atlet', 'pendaftaran/akses_pendaftaran') ?? false)) {
+        if ((string) (get_setting('perbolehkan_undur_diri_atlet') ?? '0') !== '1') {
             return redirect()->to(base_url('kontingen/peserta'))->with('status', false)->with('message', 'Hapus peserta saat ini ditutup.');
         }
 

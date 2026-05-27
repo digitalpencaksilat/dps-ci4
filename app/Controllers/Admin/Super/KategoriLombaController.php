@@ -133,7 +133,7 @@ class KategoriLombaController extends BaseController
         return [
             'id_kategori_usia' => 'required',
             'nama_kategori_lomba' => 'required|max_length[100]',
-            'peraturan_pertandingan' => 'required|max_length[100]',
+            'peraturan_pertandingan' => 'permit_empty',
             'jenis_perlombaan' => 'required|max_length[100]',
             'jumlah_juri' => 'permit_empty|integer|greater_than_equal_to[0]',
             'semua_dapat_medali' => 'required|in_list[0,1]',
@@ -148,7 +148,7 @@ class KategoriLombaController extends BaseController
     {
         $data = [
             'nama_kategori_lomba' => trim((string) $this->request->getPost('nama_kategori_lomba')),
-            'peraturan_pertandingan' => trim((string) $this->request->getPost('peraturan_pertandingan')),
+            'peraturan_pertandingan' => 'PERSILAT',
             'jenis_perlombaan' => trim((string) $this->request->getPost('jenis_perlombaan')),
             'jumlah_juri' => $this->request->getPost('jumlah_juri') === '' ? null : (int) $this->request->getPost('jumlah_juri'),
             'semua_dapat_medali' => (int) $this->request->getPost('semua_dapat_medali'),

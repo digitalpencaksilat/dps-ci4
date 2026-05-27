@@ -67,9 +67,57 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
             <div>
                 <div class="admin-section-label mb-2">Navigasi</div>
                 <nav class="d-flex flex-column gap-2">
+                    <?php if ($adminRole === 'super_admin') : ?>
+                    <?php $superMode = (string) (session()->get('tipe_super_admin') ?? ''); ?>
+                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'super_home' ? 'active' : '' ?>" href="<?= base_url('admin/super/menu-utama') ?>">
+                        <span class="label-block"><i class="fas fa-house"></i><span>Menu Utama</span></span>
+                    </a>
+
+                    <?php if ($superMode === 'pengaturan_event') : ?>
+                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_event' ? 'active' : '' ?>" href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>">
+                        <span class="label-block"><i class="fas fa-sliders"></i><span>Dashboard Pengaturan Event</span></span>
+                    </a>
+
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/profil-kejuaraan') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/profil-kejuaraan') ?>">
+                        <span class="label-block"><i class="fas fa-trophy"></i><span>Profil Kejuaraan</span></span>
+                    </a>
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/akses-pendaftaran') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/akses-pendaftaran') ?>">
+                        <span class="label-block"><i class="fas fa-shield-halved"></i><span>Akses Pendaftaran</span></span>
+                    </a>
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/akses-pemilihan-kategori') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/akses-pemilihan-kategori') ?>">
+                        <span class="label-block"><i class="fas fa-list-check"></i><span>Akses Pemilihan Kategori</span></span>
+                    </a>
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/konten-landing') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/konten-landing') ?>">
+                        <span class="label-block"><i class="fas fa-file-lines"></i><span>Konten Landing</span></span>
+                    </a>
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/gambar-dan-juknis') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/gambar-dan-juknis') ?>">
+                        <span class="label-block"><i class="fas fa-image"></i><span>Gambar dan Juknis</span></span>
+                    </a>
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/rekening-pembayaran') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/rekening-pembayaran') ?>">
+                        <span class="label-block"><i class="fas fa-building-columns"></i><span>Rekening Pembayaran</span></span>
+                    </a>
+
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/arsip-pendaftar') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/arsip-pendaftar') ?>">
+                        <span class="label-block"><i class="fas fa-folder-open"></i><span>Arsip Pendaftar</span></span>
+                    </a>
+                    <?php endif; ?>
+
+                    <?php if ($superMode === 'perngaturan_kategori_lomba') : ?>
+                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'kategori-usia') ? 'active' : '' ?>" href="<?= base_url('admin/super/kategori-usia') ?>">
+                        <span class="label-block"><i class="fas fa-users-between-lines"></i><span>Kategori Usia</span></span>
+                    </a>
+                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'kategori-lomba') ? 'active' : '' ?>" href="<?= base_url('admin/super/kategori-lomba') ?>">
+                        <span class="label-block"><i class="fas fa-medal"></i><span>Kategori Lomba</span></span>
+                    </a>
+                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'sub-kategori-seni') ? 'active' : '' ?>" href="<?= base_url('admin/super/sub-kategori-seni') ?>">
+                        <span class="label-block"><i class="fas fa-masks-theater"></i><span>Sub Kategori Seni</span></span>
+                    </a>
+                    <?php endif; ?>
+                    <?php else : ?>
                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'dashboard' ? 'active' : '' ?>" href="<?= base_url($adminPanel['home']) ?>">
                         <span class="label-block"><i class="fas fa-chart-line"></i><span>Dashboard</span></span>
                     </a>
+                    <?php endif; ?>
 
                     <?php if ($adminRole === 'bendahara') : ?>
                     <div>
@@ -249,10 +297,12 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
+                <?php if ($adminRole !== 'super_admin') : ?>
                 <div class="admin-topbar-meta text-md-end">
                     <div class="fw-semibold"><?= esc($adminName ?? $adminPanel['label']) ?></div>
                     <div class="small">Versi aplikasi <?= esc(app_version()) ?></div>
                 </div>
+                <?php endif; ?>
             </header>
 
             <?= $this->renderSection('content') ?>
@@ -279,6 +329,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
     <script src="<?= online_asset('toastr_js') ?>"></script>
     <script src="<?= base_url('assets/bracket-pertandingan/jquery.bracket.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/admin-export-datatable.js') ?>"></script>
+    <script src="<?= base_url('assets/js/admin-currency-formatter.js') ?>"></script>
     <script>
         toastr.options = {
             closeButton: true,

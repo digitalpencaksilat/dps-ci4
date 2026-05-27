@@ -864,6 +864,75 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     margin-inline: auto;
 }
 
+.super-mode-grid {
+    max-width: 1120px;
+    margin-inline: auto;
+}
+
+.super-mode-card {
+    border-radius: 20px;
+}
+
+.super-mode-card-inner {
+    min-height: 320px;
+    padding: 28px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.super-mode-card:hover .super-mode-card-inner,
+.super-mode-card:focus-visible .super-mode-card-inner {
+    transform: translateY(-4px);
+    border-color: rgba(198, 0, 0, 0.18);
+    box-shadow: 0 22px 44px rgba(74, 17, 23, 0.12);
+}
+
+.super-mode-icon {
+    width: 68px;
+    height: 68px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(198, 0, 0, 0.12) 0%, rgba(143, 11, 20, 0.18) 100%);
+    color: var(--admin-accent-dark);
+    font-size: 1.5rem;
+    box-shadow: inset 0 0 0 1px rgba(198, 0, 0, 0.08);
+}
+
+.super-mode-card-event .super-mode-icon {
+    background: linear-gradient(135deg, rgba(198, 0, 0, 0.14) 0%, rgba(143, 11, 20, 0.2) 100%);
+    color: var(--admin-accent-dark);
+    box-shadow: inset 0 0 0 1px rgba(198, 0, 0, 0.1);
+}
+
+.super-mode-card-kategori .super-mode-icon {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(217, 119, 6, 0.22) 100%);
+    color: #9a6700;
+    box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.12);
+}
+
+.super-mode-copy {
+    display: grid;
+    gap: 0;
+}
+
+.super-mode-copy .section-title {
+    line-height: 1.05;
+}
+
+.super-mode-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--admin-accent);
+    font-weight: 700;
+}
+
+.super-mode-card:hover .super-mode-link,
+.super-mode-card:focus-visible .super-mode-link {
+    color: var(--admin-accent-dark);
+}
+
 @media (max-width: 991.98px) {
     .admin-shell {
         flex-direction: column;

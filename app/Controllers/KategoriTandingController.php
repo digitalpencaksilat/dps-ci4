@@ -20,9 +20,9 @@ class KategoriTandingController extends BaseController
             'eventLogo'         => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
             'pesertaTanding'    => $service->listByKontingen($idKontingen),
             'pendaftarTersedia' => $service->availablePendaftar($idKontingen),
-            'allowCreate'       => (bool) (ci3_config_item('perbolehkan_kontingen_memilih_kategori', 'pendaftaran/akses_pendaftaran') ?? false),
-            'allowDelete'       => (bool) (ci3_config_item('perbolehkan_undur_diri_atlet', 'pendaftaran/akses_pendaftaran') ?? false),
-            'allowEdit'         => (bool) (ci3_config_item('perbolehkan_ganti_atlet_dan_kategori', 'pendaftaran/akses_pendaftaran') ?? false),
+            'allowCreate'       => (string) (get_setting('perbolehkan_kontingen_memilih_kategori') ?? '0') === '1',
+            'allowDelete'       => (string) (get_setting('perbolehkan_undur_diri_atlet') ?? '0') === '1',
+            'allowEdit'         => (string) (get_setting('perbolehkan_ganti_atlet_dan_kategori') ?? '0') === '1',
         ]);
     }
 
@@ -33,7 +33,7 @@ class KategoriTandingController extends BaseController
 
     public function store()
     {
-        if (! (bool) (ci3_config_item('perbolehkan_kontingen_memilih_kategori', 'pendaftaran/akses_pendaftaran') ?? false)) {
+        if ((string) (get_setting('perbolehkan_kontingen_memilih_kategori') ?? '0') !== '1') {
             return redirect()->to(base_url('kontingen/tanding'))->with('status', false)->with('message', 'Pemilihan kategori tanding sedang ditutup.');
         }
 
@@ -61,7 +61,7 @@ class KategoriTandingController extends BaseController
 
     public function update(int $id)
     {
-        if (! (bool) (ci3_config_item('perbolehkan_ganti_atlet_dan_kategori', 'pendaftaran/akses_pendaftaran') ?? false)) {
+        if ((string) (get_setting('perbolehkan_ganti_atlet_dan_kategori') ?? '0') !== '1') {
             return redirect()->to(base_url('kontingen/tanding'))->with('status', false)->with('message', 'Perubahan kategori tanding sedang ditutup.');
         }
 
@@ -81,7 +81,7 @@ class KategoriTandingController extends BaseController
 
     public function delete(int $id)
     {
-        if (! (bool) (ci3_config_item('perbolehkan_undur_diri_atlet', 'pendaftaran/akses_pendaftaran') ?? false)) {
+        if ((string) (get_setting('perbolehkan_undur_diri_atlet') ?? '0') !== '1') {
             return redirect()->to(base_url('kontingen/tanding'))->with('status', false)->with('message', 'Penghapusan kategori tanding sedang ditutup.');
         }
 

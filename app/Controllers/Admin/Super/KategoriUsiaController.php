@@ -28,6 +28,19 @@ class KategoriUsiaController extends BaseController
         ], 'Kategori Usia'));
     }
 
+    public function show(int $id): string
+    {
+        $row = $this->kategoriUsiaModel->find($id);
+        if ($row === null) {
+            throw PageNotFoundException::forPageNotFound('Kategori usia tidak ditemukan.');
+        }
+
+        return view('admin/super/kategori_usia/show', $this->viewData([
+            'row' => $row,
+            'activeMode' => (string) (session()->get('tipe_super_admin') ?? ''),
+        ], 'Detail Kategori Usia'));
+    }
+
     public function edit(int $id): string
     {
         $row = $this->kategoriUsiaModel->find($id);

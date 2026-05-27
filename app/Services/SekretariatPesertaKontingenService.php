@@ -213,9 +213,10 @@ class SekretariatPesertaKontingenService
         }
 
         $umur = $this->calculateAge($pendaftar->tanggal_lahir ?? null);
-        $checkAge = ! (bool) (ci3_config_item('perbolehkan_memilih_kategori_usia', 'pendaftaran/akses_pendaftaran') ?? false);
-        $checkWeight = ! (bool) (ci3_config_item('perbolehkan_memilih_kelas_tanding', 'pendaftaran/akses_pendaftaran') ?? false);
-        $allowSameKontingen = (bool) (ci3_config_item('perbolehkan_atlet_dari_kontingen_yang_sama', 'pendaftaran/akses_pendaftaran') ?? false);
+        // Settings are stored in DB via super admin module.
+        $checkAge = (string) (get_setting('perbolehkan_memilih_kategori_usia') ?? '1') !== '1';
+        $checkWeight = (string) (get_setting('perbolehkan_memilih_kelas_tanding') ?? '1') !== '1';
+        $allowSameKontingen = (string) (get_setting('perbolehkan_atlet_dari_kontingen_yang_sama') ?? '1') === '1';
 
         $items = db_connect()->table('kompetisi_tanding kom')
             ->select([
@@ -318,7 +319,8 @@ class SekretariatPesertaKontingenService
             'id_pendaftar' => $idPendaftar,
             'id_kompetisi_tanding' => $idKompetisi,
             'id_pembayaran' => null,
-            'nomor_bagan' => $payload['nomor_bagan'] !== '' ? ($payload['nomor_bagan'] ?? null) : null,
+            // Optional field (not always present in POST payload).
+            'nomor_bagan' => ($payload['nomor_bagan'] ?? '') !== '' ? $payload['nomor_bagan'] : null,
             'keterangan' => trim((string) ($payload['keterangan'] ?? '')),
             'status' => (string) ($payload['status'] ?? 'OK'),
             'status_sertifikat' => 'belum_dicetak',
@@ -638,7 +640,7 @@ class SekretariatPesertaKontingenService
             return [];
         }
 
-        $checkAge = ! (bool) (ci3_config_item('perbolehkan_memilih_kategori_usia', 'pendaftaran/akses_pendaftaran') ?? false);
+        $checkAge = (string) (get_setting('perbolehkan_memilih_kategori_usia') ?? '1') !== '1';
         $rows = db_connect()->table('pendaftar p')
             ->select('p.*, k.nama_kontingen')
             ->join('kontingen k', 'k.id_kontingen = p.id_kontingen')
@@ -994,8 +996,8 @@ class SekretariatPesertaKontingenService
             'alamat_lengkap' => trim((string) ($payload['alamat_lengkap'] ?? '')),
             'alamat_penanggungjawab' => trim((string) ($payload['alamat_penanggungjawab'] ?? '')),
             'keterangan' => trim((string) ($payload['keterangan'] ?? '')),
-            'pembayaran_dn' => (int) (ci3_config_item('biaya_pendaftaran_kontingen_dalam_negeri', 'pendaftaran/biaya_registrasi_kontingen') ?? 0),
-            'pembayaran_ln' => (int) (ci3_config_item('biaya_pendaftaran_kontingen_luar_negeri', 'pendaftaran/biaya_registrasi_kontingen') ?? 0),
+            'pembayaran_dn' => (int) (get_setting('biaya_pendaftaran_kontingen_dalam_negeri') ?? 0),
+            'pembayaran_ln' => (int) (get_setting('biaya_pendaftaran_kontingen_luar_negeri') ?? 0),
             'status_data' => 'belum_final',
             'jenis_pendaftaran' => 'input_admin',
         ]);

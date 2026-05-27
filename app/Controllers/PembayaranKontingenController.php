@@ -28,13 +28,13 @@ class PembayaranKontingenController extends BaseController
             'accounts'     => $service->accounts(),
             'waitingTransactions' => $waitingTransactions,
             'paidTransactions' => $paidTransactions,
-            'allowPayment' => (bool) (ci3_config_item('perbolehkan_kontingen_melunasi_pembayaran', 'pendaftaran/akses_pendaftaran') ?? false),
+            'allowPayment' => (string) (get_setting('perbolehkan_kontingen_melunasi_pembayaran') ?? '0') === '1',
         ]);
     }
 
     public function store()
     {
-        if (! (bool) (ci3_config_item('perbolehkan_kontingen_melunasi_pembayaran', 'pendaftaran/akses_pendaftaran') ?? false)) {
+        if ((string) (get_setting('perbolehkan_kontingen_melunasi_pembayaran') ?? '0') !== '1') {
             return redirect()->to(base_url('kontingen/pembayaran'))->with('status', false)->with('message', 'Akses pembayaran sedang ditutup.');
         }
 

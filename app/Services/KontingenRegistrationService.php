@@ -43,8 +43,8 @@ class KontingenRegistrationService
             'alamat_lengkap'                => $alamatLengkap,
             'alamat_penanggungjawab'        => $alamatLengkap,
             'keterangan'                    => '',
-            'pembayaran_dn'                 => (int) (ci3_config_item('biaya_pendaftaran_kontingen_dalam_negeri', 'pendaftaran/biaya_registrasi_kontingen') ?? 0),
-            'pembayaran_ln'                 => (int) (ci3_config_item('biaya_pendaftaran_kontingen_luar_negeri', 'pendaftaran/biaya_registrasi_kontingen') ?? 0),
+            'pembayaran_dn'                 => (int) (get_setting('biaya_pendaftaran_kontingen_dalam_negeri') ?? 0),
+            'pembayaran_ln'                 => (int) (get_setting('biaya_pendaftaran_kontingen_luar_negeri') ?? 0),
             'status_data'                   => 'belum_final',
             'jenis_pendaftaran'             => 'web',
         ];

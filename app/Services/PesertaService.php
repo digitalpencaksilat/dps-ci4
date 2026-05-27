@@ -64,7 +64,7 @@ class PesertaService
     private function ensureQuotaAvailable(int $idKontingen): void
     {
         $count = (new PendaftarModel())->where('id_kontingen', $idKontingen)->countAllResults();
-        $max = (int) (ci3_config_item('max_atlet_per_kontingen', 'pendaftaran/max_atlet_per_kontingen') ?? 0);
+        $max = (int) (get_setting('max_atlet_per_kontingen') ?? 0);
 
         if ($max > 0 && $count >= $max) {
             throw new \RuntimeException('Kuota maksimal atlet per kontingen sudah tercapai.');

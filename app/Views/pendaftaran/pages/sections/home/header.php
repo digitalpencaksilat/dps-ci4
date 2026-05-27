@@ -1,6 +1,7 @@
      1|     1|     1|<!-- Wrapper dengan background -->
+     1|     1|     1|<?php $brand = strtolower((string) (get_setting('brand_abbreviation') ?? '')); ?>
      2|     2|     2|<div class="hero-wrapper"
-     3|     3|     3|	style="background: url('<?= base_url('assets/images/brand/' . strtolower(ci3_config_item('\1', 'pendaftaran/profil_kejuaraan')) . '/ilustrasi/header-home.jpg') ?>') no-repeat center center;
+     3|     3|     3|	style="background: url('<?= base_url('assets/images/brand/' . $brand . '/ilustrasi/header-home.jpg') ?>') no-repeat center center;
      4|     4|     4|            background-size: cover;
      5|     5|     5|            background-attachment: fixed;
      6|     6|     6|            position: relative;
@@ -16,17 +17,17 @@
     16|    16|    16|		<?php else : ?>
     17|    17|    17|			<div class="row py-5 mt-5">
     18|    18|    18|				<div class="col-12 col-lg-5 d-flex justify-content-center align-items-center">
-    19|    19|    19|					<img src="<?= get_instance()->get_setting('poster', 'pendaftaran/gambar_dan_juknis') ?>"
-    20|    20|    20|						alt="<?= get_instance()->get_setting('event_name') ?>"
+     19|    19|    19|					<img src="<?= esc((string) (get_setting('poster', 'pendaftaran/gambar_dan_juknis') ?? '')) ?>"
+     20|    20|    20|						alt="<?= esc((string) (get_setting('event_name') ?? 'Event')) ?>"
     21|    21|    21|						class="img-fluid w-100 h-auto"
     22|    22|    22|						style="max-height: 600px; object-fit: contain;">
     23|    23|    23|				</div>
     24|    24|    24|				<div class="col-12 col-lg-7 ml-auto mr-auto text-center py-7">
-    25|    25|    25|					<h1 class="display-3 fw-bold text-white"><?= get_instance()->get_setting('event_name') ?></h1>
-    26|    26|    26|					<h4 class="fw-normal text-light mb-5"><?= get_instance()->get_setting('landing_page_description') ?></h4>
+     25|    25|    25|					<h1 class="display-3 fw-bold text-white"><?= esc((string) (get_setting('event_name') ?? '')) ?></h1>
+     26|    26|    26|					<h4 class="fw-normal text-light mb-5"><?= esc((string) (get_setting('landing_page_description') ?? '')) ?></h4>
     27|    27|    27|					<div class="buttons">
-    28|    28|    28|						<a class="btn btn-primary btn-lg mb-3" href="<?= base_url('registrasi') ?>"><i class="fa fa-user-plus me-2"></i> <?= Daftar Sekarang ?></a>
-    29|    29|    29|						<a href="<?= base_url("pendaftaran/download-juknis") ?>" class="btn btn-secondary btn-lg mb-3"><i class="fa fa-download me-2"></i> <?= Download Juknis ?></a>
+     28|    28|    28|						<a class="btn btn-primary btn-lg mb-3" href="<?= base_url('registrasi') ?>"><i class="fa fa-user-plus me-2"></i> Daftar Sekarang</a>
+     29|    29|    29|						<a href="<?= base_url("pendaftaran/download-juknis") ?>" class="btn btn-secondary btn-lg mb-3"><i class="fa fa-download me-2"></i> Download Juknis</a>
     30|    30|    30|						<!-- Countdown Timer -->
     31|    31|    31|						<!-- Countdown Section -->
     32|    32|    32|						<div id="countdown" class="d-flex justify-content-center gap-3 mb-4 text-white fw-bold"></div>

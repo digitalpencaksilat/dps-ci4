@@ -36,7 +36,8 @@
         </div>
         <div class="col-12 col-lg-6">
             <label for="peraturan_pertandingan" class="form-label">Peraturan Pertandingan</label>
-            <input type="text" class="form-control" id="peraturan_pertandingan" name="peraturan_pertandingan" value="<?= esc((string) old('peraturan_pertandingan', $row->peraturan_pertandingan ?? '')) ?>" required>
+            <input type="text" class="form-control" id="peraturan_pertandingan" value="PERSILAT" disabled>
+            <div class="form-text">Dikunci untuk menjaga format kategori dan penilaian tetap konsisten.</div>
         </div>
         <div class="col-12 col-md-4">
             <label for="jumlah_juri" class="form-label">Jumlah Juri</label>

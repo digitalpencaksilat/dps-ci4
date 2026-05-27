@@ -118,10 +118,30 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->get('/', 'Admin\\Super\\DashboardController::index');
     $routes->get('dashboard', 'Admin\\Super\\DashboardController::index');
     $routes->get('menu-tipe', 'Admin\\Super\\ModeController::menuTipe');
+    $routes->get('menu-utama', 'Admin\\Super\\ModeController::menuUtama');
     $routes->get('mode-pengaturan-event', 'Admin\\Super\\ModeController::pengaturanEvent');
     $routes->get('mode-pengaturan-kategori-lomba', 'Admin\\Super\\ModeController::pengaturanKategoriLomba');
     $routes->get('dashboard-pengaturan-event', 'Admin\\Super\\PengaturanEventController::dashboard');
+    $routes->get('pengaturan-event/profil-kejuaraan', 'Admin\\Super\\EventProfileController::edit');
+    $routes->post('pengaturan-event/profil-kejuaraan/update', 'Admin\\Super\\EventProfileController::update');
+    $routes->get('pengaturan-event/akses-pendaftaran', 'Admin\\Super\\AksesPendaftaranController::edit');
+    $routes->post('pengaturan-event/akses-pendaftaran/update', 'Admin\\Super\\AksesPendaftaranController::update');
+    $routes->get('pengaturan-event/akses-pemilihan-kategori', 'Admin\\Super\\AksesPemilihanKategoriController::edit');
+    $routes->post('pengaturan-event/akses-pemilihan-kategori/update', 'Admin\\Super\\AksesPemilihanKategoriController::update');
+    $routes->get('pengaturan-event/konten-landing', 'Admin\\Super\\KontenLandingController::edit');
+    $routes->post('pengaturan-event/konten-landing/update', 'Admin\\Super\\KontenLandingController::update');
+    $routes->get('pengaturan-event/gambar-dan-juknis', 'Admin\\Super\\GambarDanJuknisController::edit');
+    $routes->post('pengaturan-event/gambar-dan-juknis/update', 'Admin\\Super\\GambarDanJuknisController::update');
+    $routes->get('pengaturan-event/rekening-pembayaran', 'Admin\\Super\\RekeningPembayaranController::edit');
+    $routes->post('pengaturan-event/rekening-pembayaran/update', 'Admin\\Super\\RekeningPembayaranController::update');
+
+    // Pengaturan Arsip Pendaftar (CI3: pengaturan_arsip_pendaftar)
+    $routes->get('pengaturan-event/arsip-pendaftar', 'Admin\\Super\\ArsipPendaftarSettingsController::index');
+    $routes->post('pengaturan-event/arsip-pendaftar', 'Admin\\Super\\ArsipPendaftarSettingsController::store');
+    $routes->post('pengaturan-event/arsip-pendaftar/update', 'Admin\\Super\\ArsipPendaftarSettingsController::update');
+    $routes->post('pengaturan-event/arsip-pendaftar/delete', 'Admin\\Super\\ArsipPendaftarSettingsController::delete');
     $routes->get('kategori-usia', 'Admin\\Super\\KategoriUsiaController::index');
+    $routes->get('kategori-usia/(:num)', 'Admin\\Super\\KategoriUsiaController::show/$1');
     $routes->get('kategori-usia/(:num)/edit', 'Admin\\Super\\KategoriUsiaController::edit/$1');
     $routes->post('kategori-usia', 'Admin\\Super\\KategoriUsiaController::store');
     $routes->post('kategori-usia/(:num)/update', 'Admin\\Super\\KategoriUsiaController::update/$1');
@@ -132,6 +152,11 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('kategori-lomba/(:num)/update', 'Admin\\Super\\KategoriLombaController::update/$1');
     $routes->post('kategori-lomba/(:num)/delete', 'Admin\\Super\\KategoriLombaController::delete/$1');
     $routes->get('sub-kategori-seni', 'Admin\\Super\\SubKategoriSeniController::index');
+    $routes->get('sub-kategori-seni/(:num)', 'Admin\\Super\\SubKategoriSeniController::show/$1');
+    $routes->get('sub-kategori-seni/(:num)/edit', 'Admin\\Super\\SubKategoriSeniController::edit/$1');
+    $routes->post('sub-kategori-seni', 'Admin\\Super\\SubKategoriSeniController::store');
+    $routes->post('sub-kategori-seni/(:num)/update', 'Admin\\Super\\SubKategoriSeniController::update/$1');
+    $routes->post('sub-kategori-seni/(:num)/delete', 'Admin\\Super\\SubKategoriSeniController::delete/$1');
 });
 
 $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], static function ($routes): void {
@@ -264,10 +289,6 @@ $routes->group('development', ['filter' => 'developmentgate'], static function (
     $routes->post('data-pusher/push', 'Development\DataPusherController::push');
 });
 
-$routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
-    $routes->get('/', 'Admin\\Super\\DashboardController::index');
-    $routes->get('dashboard', 'Admin\\Super\\DashboardController::index');
-});
 
 /*
  * --------------------------------------------------------------------

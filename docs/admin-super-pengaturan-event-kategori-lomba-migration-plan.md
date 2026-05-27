@@ -415,6 +415,11 @@ Implementasi tahap lanjutan setelah CRUD kategori stabil:
 Catatan:
 
 - Stage ini sebaiknya dipisahkan lagi karena menyentuh upload, pembayaran, public landing, dan pendaftaran.
+- Implementasi stage ini harus memakai pola native CodeIgniter 4.
+- Jangan mem-port `Config_form_library`, `return_view()`, atau mekanisme edit file config CI3 ke repo CI4.
+- Halaman CI4 harus memakai controller, service, validation, request handling, CSRF, dan view CI4 biasa.
+- Persistence untuk setting yang bersifat runtime harus memakai storage aplikasi CI4 yang terkontrol, dengan prioritas ke `site_builder_settings` karena sudah dipakai helper `get_setting()` di repo ini.
+- File `app/Config/ci3/*` hanya dipakai sebagai referensi audit, fallback bacaan, atau sumber default saat data setting belum pernah disimpan di storage runtime CI4. File-file itu bukan target write utama untuk migrasi lanjutan.
 
 ## Verification Plan
 
@@ -482,6 +487,106 @@ Rollback data QA:
 - Model CI4 kategori belum lengkap terhadap field CI3.
 - View CI3 mungkin memiliki asumsi layout/helper yang belum ada di CI4.
 - Pengaturan event lanjutan sebaiknya menjadi plan lanjutan karena cakupannya lebih sensitif.
+
+## Audit Lanjutan Pengaturan Event
+
+Audit lanjutan terhadap source CI3 menunjukkan bahwa sebagian besar halaman pengaturan event lanjutan bukan modul bisnis kompleks, tetapi wrapper `Config_form_library` untuk membaca dan menulis konfigurasi.
+
+### Temuan CI3 per Halaman
+
+- `pengaturan_profil_kejuaraan`
+  - View membaca `pendaftaran/profil_kejuaraan.php`.
+  - Field utama: `event_name`, `landing_page_description`, `abbreviation`, `event_host`, `registration_start`, `registration_end`, `date_start`, `date_end`, `technical_meeting_date`, `technical_meeting_location`, `event_location`, `contact_person`, `countdown`, `fight_category`, `domain_hosting`.
+  - Di CI4 file config kompatibel sudah ada: `app/Config/ci3/pendaftaran/profil_kejuaraan.php`.
+
+- `pengaturan_akses_pendaftaran_peserta`
+  - View membaca `pendaftaran/akses_pendaftaran.php`.
+  - Isinya boolean gate untuk alur kontingen: daftar, login, input atlet, memilih kategori, bayar, undur diri, ganti atlet/kategori, edit biodata, input official.
+  - Di CI4 file config kompatibel sudah ada: `app/Config/ci3/pendaftaran/akses_pendaftaran.php`.
+
+- `pengaturan_akses_pemilihan_kategori_perlombaan`
+  - View membaca `pendaftaran/akses_pemilihan_kategori_perlombaan.php`.
+  - Isinya boolean gate untuk pemilihan kategori usia, kelas tanding, dan partisipasi atlet dari kontingen yang sama.
+  - Di CI4 file config kompatibel sudah ada: `app/Config/ci3/pendaftaran/akses_pemilihan_kategori_perlombaan.php`.
+
+- `pengaturan_konten_halaman_landing`
+  - View membaca `pendaftaran/konten_halaman_landing.php`.
+  - Berisi teks konten landing lama.
+  - Di CI4 file config kompatibel sudah ada: `app/Config/ci3/pendaftaran/konten_halaman_landing.php`.
+
+- `pengaturan_gambar_dan_juknis`
+  - View membaca `pendaftaran/gambar_dan_juknis.php`.
+  - Berisi file metadata untuk `technical_handbook`, `poster`, `event_big_logo`, `event_logo`, `event_host_big_logo`, `event_host_logo`.
+  - Menampilkan preview file saat nilai sudah tersimpan.
+  - Di CI4 file config kompatibel sudah ada: `app/Config/ci3/pendaftaran/gambar_dan_juknis.php`.
+  - Scope sensitif karena menyentuh upload file, validasi MIME/extensi, ukuran, dan lokasi penyimpanan.
+
+- `pengaturan_rekening_pembayaran`
+  - View membaca `pendaftaran/rekening_pembayaran.php`.
+  - Tiap slot rekening memuat nama bank, nama akun, nomor akun, metadata QR code, flag `display_qrcode`, dan flag `active`.
+  - Di CI4 file config kompatibel sudah ada: `app/Config/ci3/pendaftaran/rekening_pembayaran.php`.
+  - Sudah ada pembacaan read-only sebagian di `App\Services\PembayaranKontingenService::accounts()`.
+  - Scope sensitif karena menyentuh pembayaran dan upload QR code.
+
+- `pengaturan_video_sponsor`
+  - View membaca `assets/video_sponsor.php`.
+  - Tiap item memuat metadata file video dan flag `active`.
+  - Belum ditemukan file config kompatibel di `app/Config/ci3/assets/` pada repo CI4 saat audit ini.
+  - Scope sensitif karena menyentuh upload/penyajian file media.
+
+- `pengaturan_digital_scoring_tanding`
+  - View CI3 menggabungkan dua form sekaligus: `scoring/tanding.php` dan `scoring/seni.php`.
+  - Belum ditemukan file config kompatibel di `app/Config/ci3/scoring/` pada repo CI4 saat audit ini.
+  - Scope sensitif karena berpotensi berdampak ke jalannya pertandingan dan penilaian.
+
+### Klasifikasi Migrasi Lanjutan
+
+Kelompok lebih aman untuk dimigrasikan lebih dulu:
+
+- Profil kejuaraan
+- Akses pendaftaran peserta
+- Akses pemilihan kategori perlombaan
+- Konten halaman landing
+
+Alasan:
+
+- Seluruhnya berbasis config sederhana.
+- File config kompatibel CI4 sudah tersedia.
+- Tidak membutuhkan upload file.
+- Risiko regresi lebih rendah dibanding pembayaran/media/scoring.
+
+Kelompok sensitif yang sebaiknya dipisah tahap berikutnya:
+
+- Gambar dan juknis
+- Rekening pembayaran
+- Video sponsor
+- Digital scoring tanding/seni
+
+Alasan:
+
+- Menyentuh upload file, preview file, atau konfigurasi scoring.
+- Perlu aturan validasi file, storage path, dan rollback lebih ketat.
+- Dampak bisnis lebih tinggi untuk landing, pembayaran, dan pertandingan.
+
+### Implikasi ke CI4 Saat Ini
+
+- Repo CI4 sudah memiliki helper kompatibilitas untuk membaca setting DB melalui `get_setting()`.
+- Repo CI4 juga sudah menyimpan banyak file config CI3 di `app/Config/ci3/pendaftaran/`.
+- `Config_form_library` CI3 tidak boleh dibawa ke CI4.
+- Untuk perubahan minimal yang tetap native CI4, pendekatan yang dipilih adalah membuat controller, service, validation, dan view eksplisit per halaman.
+- Untuk setting runtime, write path utama harus diarahkan ke storage yang dibaca aplikasi CI4 saat runtime, bukan ke file config CI3.
+- File CI3 compatibility tetap boleh dipakai sebagai fallback read untuk bootstrap awal jika record setting belum tersedia di runtime storage.
+
+### Urutan Implementasi yang Disarankan
+
+1. `pengaturan_profil_kejuaraan`
+2. `pengaturan_akses_pendaftaran_peserta`
+3. `pengaturan_akses_pemilihan_kategori_perlombaan`
+4. `pengaturan_konten_halaman_landing`
+5. `pengaturan_gambar_dan_juknis`
+6. `pengaturan_rekening_pembayaran`
+7. `pengaturan_video_sponsor`
+8. `pengaturan_digital_scoring_tanding`
 
 ## Done Criteria
 

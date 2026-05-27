@@ -1,5 +1,6 @@
 <!-- Hero Section -->
-<section id="beranda" class="hero-section" style='background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.7)), url("<?= base_url("assets/images/brand/" . strtolower(ci3_config_item("brand_abbreviation", "pendaftaran/profil_kejuaraan")) . "/ilustrasi/ilustrasiv2.jpg") ?>"); background-size: cover; background-position: center; background-attachment: fixed;'>
+<?php $brand = strtolower((string) (get_setting('brand_abbreviation') ?? '')); ?>
+<section id="beranda" class="hero-section" style='background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.7)), url("<?= base_url("assets/images/brand/" . $brand . "/ilustrasi/ilustrasiv2.jpg") ?>"); background-size: cover; background-position: center; background-attachment: fixed;'>
     <div class="container">
         <div class="row align-items-center flex-lg-row-reverse">
             <!-- Poster Column -->
@@ -15,7 +16,7 @@
                     <rect width="100%" height="100%" fill="#1a1a1a" />
 
                     <image
-                        href="<?= get_instance()->get_setting('poster', 'pendaftaran/gambar_dan_juknis') ?>"
+                        href="<?= esc((string) (get_setting('poster', 'pendaftaran/gambar_dan_juknis') ?? '')) ?>"
                         x="0" y="0" width="100%" height="100%"
                         preserveAspectRatio="xMidYMid slice" />
 
@@ -28,7 +29,7 @@
             <!-- Content Column -->
             <div class="col-lg-7 col-md-12 reveal">
                 <h4 class="event-subtitle"><i class="fa-solid fa-medal me-2"></i>KEJUARAAN PENCAK SILAT</h4>
-                <h1 class="event-title"><?= get_instance()->get_setting('event_name') ?></h1>
+                <h1 class="event-title"><?= esc((string) (get_setting('event_name') ?? '')) ?></h1>
 
                 <!-- Modified Motivational Text -->
                 <p class="lead mb-4 fw-light" style="opacity: 0.95; max-width: 95%; border-left: 4px solid var(--primary-red); padding-left: 20px;">
@@ -88,7 +89,7 @@
                     <h4>PENYELENGGARA</h4>
                     <p class="text-muted small mb-2">Kompetisi ini diselenggarakan secara profesional oleh:</p>
                     <p class="fw-bold mb-0 text-dark fs-5 text-uppercase">
-                        <?= ci3_config_item('event_host', 'pendaftaran/profil_kejuaraan') ?>
+                        <?= esc((string) (get_setting('event_host') ?? '')) ?>
                     </p>
                 </div>
             </div>
@@ -101,10 +102,10 @@
                     <h4>WAKTU & TEMPAT</h4>
                     <p class="text-muted small mb-2">Pelaksanaan pertandingan pada tanggal:</p>
                     <p class="fw-bold text-danger mb-1">
-                        <?= ci3_config_item('date_start', 'pendaftaran/profil_kejuaraan') . ' - ' . ci3_config_item('date_end', 'pendaftaran/profil_kejuaraan') ?>
+                        <?= esc((string) (get_setting('date_start') ?? '')) . ' - ' . esc((string) (get_setting('date_end') ?? '')) ?>
                     </p>
                     <p class="fw-bold text-dark mb-0">
-                        <i class="fa-solid fa-location-dot me-1"></i> <?= ci3_config_item('event_location', 'pendaftaran/profil_kejuaraan') ?>
+                        <i class="fa-solid fa-location-dot me-1"></i> <?= esc((string) (get_setting('event_location') ?? '')) ?>
                     </p>
                 </div>
             </div>
@@ -117,10 +118,10 @@
                     <h4>TECHNICAL MEETING</h4>
                     <p class="text-muted small mb-2">Sinkronisasi regulasi & pengundian bagan:</p>
                     <p class="fw-bold mb-1 text-dark fs-5">
-                        <?= ci3_config_item('technical_meeting_date', 'pendaftaran/profil_kejuaraan') ?>
+                        <?= esc((string) (get_setting('technical_meeting_date') ?? '')) ?>
                     </p>
                     <p class="text-secondary small">
-                        <i class="fa-solid fa-map-pin me-1"></i> <?= ci3_config_item('technical_meeting_location', 'pendaftaran/profil_kejuaraan') ?>
+                        <i class="fa-solid fa-map-pin me-1"></i> <?= esc((string) (get_setting('technical_meeting_location') ?? '')) ?>
                     </p>
                 </div>
             </div>
@@ -234,14 +235,14 @@
     <div class="container py-5">
         <div class="section-title reveal">
             <h2>KATEGORI PERTANDINGAN</h2>
-            <p class="text-muted">Kelas yang diperlombakan untuk <?= ci3_config_item('fight_category', 'pendaftaran/profil_kejuaraan') ?></p>
+            <p class="text-muted">Kelas yang diperlombakan untuk <?= esc((string) (get_setting('fight_category') ?? '')) ?></p>
         </div>
 
         <div class="row g-4">
             <div class="col-md-6 col-lg-3 reveal">
                 <div class="category-card">
                     <!-- Tanding Image: Action kick -->
-                    <img src="<?= base_url('assets/images/brand/' . strtolower(ci3_config_item('brand_abbreviation', 'pendaftaran/profil_kejuaraan')) . '/ilustrasi/tanding.jpg') ?>" class="category-img" alt="Kategori Tanding">
+                    <img src="<?= base_url('assets/images/brand/' . $brand . '/ilustrasi/tanding.jpg') ?>" class="category-img" alt="Kategori Tanding">
                     <div class="category-overlay">
                         <i class="fa-solid fa-hand-fist category-icon"></i>
                         <h4 class="font-oswald">TANDING</h4>
@@ -252,7 +253,7 @@
             <div class="col-md-6 col-lg-3 reveal">
                 <div class="category-card">
                     <!-- Tunggal Image: Solo focus/stance -->
-                    <img src="<?= base_url('assets/images/brand/' . strtolower(ci3_config_item('brand_abbreviation', 'pendaftaran/profil_kejuaraan')) . '/ilustrasi/tunggal.jpg') ?>" class="category-img" alt="Kategori Tunggal">
+                    <img src="<?= base_url('assets/images/brand/' . $brand . '/ilustrasi/tunggal.jpg') ?>" class="category-img" alt="Kategori Tunggal">
                     <div class="category-overlay">
                         <i class="fa-solid fa-user category-icon"></i>
                         <h4 class="font-oswald">TUNGGAL</h4>
@@ -263,7 +264,7 @@
             <div class="col-md-6 col-lg-3 reveal">
                 <div class="category-card">
                     <!-- Ganda Image: Intense duo -->
-                    <img src="<?= base_url('assets/images/brand/' . strtolower(ci3_config_item('brand_abbreviation', 'pendaftaran/profil_kejuaraan')) . '/ilustrasi/ganda.jpg') ?>" class="category-img" alt="Kategori Ganda">
+                    <img src="<?= base_url('assets/images/brand/' . $brand . '/ilustrasi/ganda.jpg') ?>" class="category-img" alt="Kategori Ganda">
                     <div class="category-overlay">
                         <i class="fa-solid fa-users category-icon"></i>
                         <h4 class="font-oswald">GANDA</h4>
@@ -274,7 +275,7 @@
             <div class="col-md-6 col-lg-3 reveal">
                 <div class="category-card">
                     <!-- Regu Image: Group training/formation -->
-                    <img src="<?= base_url('assets/images/brand/' . strtolower(ci3_config_item('brand_abbreviation', 'pendaftaran/profil_kejuaraan')) . '/ilustrasi/beregu.jpg') ?>" class="category-img" alt="Kategori Regu">
+                    <img src="<?= base_url('assets/images/brand/' . $brand . '/ilustrasi/beregu.jpg') ?>" class="category-img" alt="Kategori Regu">
                     <div class="category-overlay">
                         <i class="fa-solid fa-users-viewfinder category-icon"></i>
                         <h4 class="font-oswald">REGU</h4>
@@ -297,7 +298,7 @@
             <!-- Timeline Item 1 -->
             <div class="timeline-container left reveal">
                 <div class="timeline-content">
-                    <span class="timeline-date"><?= ci3_config_item('registration_start', 'pendaftaran/profil_kejuaraan') . ' - ' . ci3_config_item('registration_end', 'pendaftaran/profil_kejuaraan') ?> </span>
+                    <span class="timeline-date"><?= esc((string) (get_setting('registration_start') ?? '')) . ' - ' . esc((string) (get_setting('registration_end') ?? '')) ?> </span>
                     <h4 class="fw-bold">Pendaftaran Online</h4>
                     <p class="text-muted small">Via Website Resmi</p>
                     <p class="mb-2">Pendaftaran dibuka untuk seluruh kontingen. Upload berkas persyaratan dan bukti transfer.</p>
@@ -308,9 +309,9 @@
             <!-- Timeline Item 2 (Former Item 3, Moved to Right) -->
             <div class="timeline-container right reveal">
                 <div class="timeline-content">
-                    <span class="timeline-date"><?= ci3_config_item('technical_meeting_date', 'pendaftaran/profil_kejuaraan') ?></span>
+                    <span class="timeline-date"><?= esc((string) (get_setting('technical_meeting_date') ?? '')) ?></span>
                     <h4 class="fw-bold">Technical Meeting</h4>
-                    <p class="text-muted small"><?= ci3_config_item('technical_meeting_location', 'pendaftaran/profil_kejuaraan') ?></p>
+                    <p class="text-muted small"><?= esc((string) (get_setting('technical_meeting_location') ?? '')) ?></p>
                     <p class="mb-0">Pembahasan aturan pertandingan, drawing undian, dan pembagian jadwal tanding.</p>
                 </div>
             </div>
@@ -318,9 +319,9 @@
             <!-- Timeline Item 3 (Former Item 4, Moved to Left) -->
             <div class="timeline-container left reveal">
                 <div class="timeline-content">
-                    <span class="timeline-date"><?= ci3_config_item('date_start', 'pendaftaran/profil_kejuaraan') . ' - ' . ci3_config_item('date_end', 'pendaftaran/profil_kejuaraan') ?> </span>
+                    <span class="timeline-date"><?= esc((string) (get_setting('date_start') ?? '')) . ' - ' . esc((string) (get_setting('date_end') ?? '')) ?> </span>
                     <h4 class="fw-bold">Pelaksanaan Pertandingan</h4>
-                    <p class="text-muted small"><?= ci3_config_item('event_location', 'pendaftaran/profil_kejuaraan') ?></p>
+                    <p class="text-muted small"><?= esc((string) (get_setting('event_location') ?? '')) ?></p>
                     <p class="mb-0">Babak penyisihan dimulai pukul 08:00 WIB setiap harinya hingga babak Final.</p>
                 </div>
             </div>

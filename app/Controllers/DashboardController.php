@@ -12,9 +12,9 @@ class DashboardController extends BaseController
         $idKontingen = (int) session()->get('id_kontingen');
         $kontingen = (new KontingenModel())->find($idKontingen);
         $summary = (new DashboardKontingenService())->summary($idKontingen);
-        $allowPeserta = (bool) (ci3_config_item('perbolehkan_kontingen_input_atlet', 'pendaftaran/akses_pendaftaran') ?? false);
-        $allowKategori = (bool) (ci3_config_item('perbolehkan_kontingen_memilih_kategori', 'pendaftaran/akses_pendaftaran') ?? false);
-        $allowPayment = (bool) (ci3_config_item('perbolehkan_kontingen_melunasi_pembayaran', 'pendaftaran/akses_pendaftaran') ?? false);
+        $allowPeserta = (string) (get_setting('perbolehkan_kontingen_input_atlet') ?? '0') === '1';
+        $allowKategori = (string) (get_setting('perbolehkan_kontingen_memilih_kategori') ?? '0') === '1';
+        $allowPayment = (string) (get_setting('perbolehkan_kontingen_melunasi_pembayaran') ?? '0') === '1';
 
         return view('kontingen/dashboard/index', [
             'title'       => 'Dashboard Kontingen',

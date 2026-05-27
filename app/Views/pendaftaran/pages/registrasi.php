@@ -1,3 +1,13 @@
+<?php
+$validation = session()->getFlashdata('errors') ?? session('errors') ?? [];
+if ($validation === [] && session()->has('validation')) {
+    $validation = session('validation')->getErrors();
+}
+
+$fieldError = static fn(string $field): ?string => isset($validation[$field]) && $validation[$field] !== '' ? (string) $validation[$field] : null;
+$fieldClass = static fn(string $field): string => $fieldError($field) !== null ? ' is-invalid' : '';
+?>
+
 <section class="py-5">
     <div class="container py-4">
         <div class="row justify-content-center mb-4">
@@ -22,55 +32,85 @@
 
                                 <div class="col-md-6">
                                     <label for="registrasi_nama_kontingen" class="form-label fw-semibold">Nama Kontingen</label>
-                                    <input type="text" id="registrasi_nama_kontingen" name="nama_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('nama_kontingen') ?>" required>
+                                    <input type="text" id="registrasi_nama_kontingen" name="nama_kontingen" class="form-control form-control-lg rounded-4<?= $fieldClass('nama_kontingen') ?>" value="<?= esc((string) old('nama_kontingen'), 'attr') ?>" required>
+                                    <?php if ($fieldError('nama_kontingen') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('nama_kontingen')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="registrasi_email_kontingen" class="form-label fw-semibold">Email Kontingen</label>
-                                    <input type="email" id="registrasi_email_kontingen" name="email_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('email_kontingen') ?>" required>
+                                    <input type="email" id="registrasi_email_kontingen" name="email_kontingen" class="form-control form-control-lg rounded-4<?= $fieldClass('email_kontingen') ?>" value="<?= esc((string) old('email_kontingen'), 'attr') ?>" required>
+                                    <?php if ($fieldError('email_kontingen') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('email_kontingen')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="registrasi_password" class="form-label fw-semibold">Password</label>
-                                    <input type="password" id="registrasi_password" name="password" class="form-control form-control-lg rounded-4" required>
+                                    <input type="password" id="registrasi_password" name="password" class="form-control form-control-lg rounded-4<?= $fieldClass('password') ?>" required>
+                                    <?php if ($fieldError('password') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('password')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="registrasi_retype_password" class="form-label fw-semibold">Ulangi Password</label>
-                                    <input type="password" id="registrasi_retype_password" name="retype_password" class="form-control form-control-lg rounded-4" required>
+                                    <input type="password" id="registrasi_retype_password" name="retype_password" class="form-control form-control-lg rounded-4<?= $fieldClass('retype_password') ?>" required>
+                                    <?php if ($fieldError('retype_password') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('retype_password')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="registrasi_jenis_kontingen" class="form-label fw-semibold">Jenis Kontingen</label>
-                                    <select name="jenis_kontingen" id="registrasi_jenis_kontingen" class="form-select form-select-lg rounded-4" required>
+                                    <select name="jenis_kontingen" id="registrasi_jenis_kontingen" class="form-select form-select-lg rounded-4<?= $fieldClass('jenis_kontingen') ?>" required>
                                         <option value="dalam_negeri" <?= old('jenis_kontingen', 'dalam_negeri') === 'dalam_negeri' ? 'selected' : '' ?>>Dalam Negeri</option>
                                         <option value="luar_negeri" <?= old('jenis_kontingen') === 'luar_negeri' ? 'selected' : '' ?>>Luar Negeri</option>
                                     </select>
+                                    <?php if ($fieldError('jenis_kontingen') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('jenis_kontingen')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="negara" class="form-label fw-semibold">Negara</label>
-                                    <select name="negara" id="negara" class="form-select form-select-lg rounded-4"></select>
+                                    <select name="negara" id="negara" class="form-select form-select-lg rounded-4<?= $fieldClass('negara') ?>"></select>
+                                    <?php if ($fieldError('negara') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('negara')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6 wilayah-dalam-negeri">
                                     <label for="provinsi" class="form-label fw-semibold">Provinsi</label>
-                                    <select name="provinsi" id="provinsi" class="form-select form-select-lg rounded-4"></select>
+                                    <select name="provinsi" id="provinsi" class="form-select form-select-lg rounded-4<?= $fieldClass('provinsi') ?>"></select>
+                                    <?php if ($fieldError('provinsi') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('provinsi')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6 wilayah-dalam-negeri">
                                     <label for="kabupaten_kota" class="form-label fw-semibold">Kabupaten / Kota</label>
-                                    <select name="kabupaten_kota" id="kabupaten_kota" class="form-select form-select-lg rounded-4"></select>
+                                    <select name="kabupaten_kota" id="kabupaten_kota" class="form-select form-select-lg rounded-4<?= $fieldClass('kabupaten_kota') ?>"></select>
+                                    <?php if ($fieldError('kabupaten_kota') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('kabupaten_kota')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6 wilayah-dalam-negeri">
                                     <label for="kecamatan" class="form-label fw-semibold">Kecamatan</label>
-                                    <select name="kecamatan" id="kecamatan" class="form-select form-select-lg rounded-4"></select>
+                                    <select name="kecamatan" id="kecamatan" class="form-select form-select-lg rounded-4<?= $fieldClass('kecamatan') ?>"></select>
+                                    <?php if ($fieldError('kecamatan') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('kecamatan')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6 wilayah-dalam-negeri">
                                     <label for="kelurahan" class="form-label fw-semibold">Kelurahan</label>
-                                    <select name="kelurahan" id="kelurahan" class="form-select form-select-lg rounded-4"></select>
+                                    <select name="kelurahan" id="kelurahan" class="form-select form-select-lg rounded-4<?= $fieldClass('kelurahan') ?>"></select>
+                                    <?php if ($fieldError('kelurahan') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('kelurahan')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-12 d-none" id="wilayahErrorWrap">
@@ -81,27 +121,42 @@
 
                                 <div class="col-md-6">
                                     <label for="registrasi_nama_penanggungjawab" class="form-label fw-semibold">Nama Penanggung Jawab</label>
-                                    <input type="text" id="registrasi_nama_penanggungjawab" name="nama_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('nama_penanggungjawab') ?>" required>
+                                    <input type="text" id="registrasi_nama_penanggungjawab" name="nama_penanggungjawab" class="form-control form-control-lg rounded-4<?= $fieldClass('nama_penanggungjawab') ?>" value="<?= esc((string) old('nama_penanggungjawab'), 'attr') ?>" required>
+                                    <?php if ($fieldError('nama_penanggungjawab') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('nama_penanggungjawab')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="registrasi_jabatan_penanggungjawab" class="form-label fw-semibold">Jabatan Penanggung Jawab</label>
-                                    <input type="text" id="registrasi_jabatan_penanggungjawab" name="jabatan_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('jabatan_penanggungjawab', 'Manager Kontingen') ?>" required>
+                                    <input type="text" id="registrasi_jabatan_penanggungjawab" name="jabatan_penanggungjawab" class="form-control form-control-lg rounded-4<?= $fieldClass('jabatan_penanggungjawab') ?>" value="<?= esc((string) old('jabatan_penanggungjawab', 'Manager Kontingen'), 'attr') ?>" required>
+                                    <?php if ($fieldError('jabatan_penanggungjawab') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('jabatan_penanggungjawab')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="registrasi_nomor_telepon_penanggungjawab" class="form-label fw-semibold">Nomor Telepon Penanggung Jawab</label>
-                                    <input type="text" id="registrasi_nomor_telepon_penanggungjawab" name="nomor_telepon_penanggungjawab" class="form-control form-control-lg rounded-4" value="<?= old('nomor_telepon_penanggungjawab') ?>" required>
+                                    <input type="text" id="registrasi_nomor_telepon_penanggungjawab" name="nomor_telepon_penanggungjawab" class="form-control form-control-lg rounded-4<?= $fieldClass('nomor_telepon_penanggungjawab') ?>" value="<?= esc((string) old('nomor_telepon_penanggungjawab'), 'attr') ?>" required>
+                                    <?php if ($fieldError('nomor_telepon_penanggungjawab') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('nomor_telepon_penanggungjawab')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="registrasi_nomor_telepon_kontingen" class="form-label fw-semibold">Nomor Telepon Kontingen</label>
-                                    <input type="text" id="registrasi_nomor_telepon_kontingen" name="nomor_telepon_kontingen" class="form-control form-control-lg rounded-4" value="<?= old('nomor_telepon_kontingen') ?>">
+                                    <input type="text" id="registrasi_nomor_telepon_kontingen" name="nomor_telepon_kontingen" class="form-control form-control-lg rounded-4<?= $fieldClass('nomor_telepon_kontingen') ?>" value="<?= esc((string) old('nomor_telepon_kontingen'), 'attr') ?>">
+                                    <?php if ($fieldError('nomor_telepon_kontingen') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('nomor_telepon_kontingen')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-12">
                                     <label for="registrasi_alamat_lengkap" class="form-label fw-semibold">Alamat Lengkap</label>
-                                    <textarea id="registrasi_alamat_lengkap" name="alamat_lengkap" rows="4" class="form-control rounded-4" required><?= old('alamat_lengkap') ?></textarea>
+                                    <textarea id="registrasi_alamat_lengkap" name="alamat_lengkap" rows="4" class="form-control rounded-4<?= $fieldClass('alamat_lengkap') ?>" required><?= esc((string) old('alamat_lengkap')) ?></textarea>
+                                    <?php if ($fieldError('alamat_lengkap') !== null) : ?>
+                                        <div class="invalid-feedback"><?= esc($fieldError('alamat_lengkap')) ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="col-12 d-flex flex-wrap gap-3 pt-2">
@@ -145,6 +200,7 @@
         const wilayahErrorWrap = document.getElementById('wilayahErrorWrap');
         const wilayahErrorMessage = document.getElementById('wilayahErrorMessage');
         const wilayahSelects = [provinsi, kabupaten, kecamatan, kelurahan];
+        const firstInvalidField = form.querySelector('.is-invalid');
         let wilayahLoadFailed = false;
 
         if (!form || !jenisKontingen || !negara || !provinsi || !kabupaten || !kecamatan || !kelurahan || !submitButton) {
@@ -334,5 +390,9 @@
                 }
             }
         });
+
+        if (firstInvalidField) {
+            firstInvalidField.focus();
+        }
     });
 </script>

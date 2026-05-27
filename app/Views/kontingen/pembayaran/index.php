@@ -55,12 +55,21 @@
                     <div class="vstack gap-4">
                         <?php if ($tanding !== []) : ?>
                             <div>
-                                <h4 class="h6 fw-bold mb-3">Kategori Tanding</h4>
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                    <h4 class="h6 fw-bold mb-0">Kategori Tanding</h4>
+                                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" id="selectAllTanding">
+                                            <label class="form-check-label small fw-semibold" for="selectAllTanding">Pilih semua tanding</label>
+                                        </div>
+                                        <span class="small text-muted" id="selectedTandingCount">0/<?= count($tanding) ?> item dipilih</span>
+                                    </div>
+                                </div>
                                 <div class="vstack gap-2">
                                     <?php foreach ($tanding as $item) : ?>
                                         <?php $nominal = $item->jenis_kontingen === 'dalam_negeri' ? (int) $item->biaya_pendaftaran_dn : (int) $item->biaya_pendaftaran_ln; ?>
                                         <label class="checkout-item-card">
-                                            <input type="checkbox" name="id_peserta_tanding[]" value="<?= $item->id_peserta_tanding ?>" data-nominal="<?= $nominal ?>">
+                                            <input type="checkbox" name="id_peserta_tanding[]" value="<?= $item->id_peserta_tanding ?>" data-nominal="<?= $nominal ?>" data-category="tanding">
                                             <div>
                                                 <strong><?= esc($item->nama_pendaftar) ?></strong>
                                                 <small><?= esc($item->nama_kategori_usia) ?> - <?= esc($item->jenis_kelamin) ?> - Kelas <?= esc($item->label) ?></small>
@@ -74,12 +83,21 @@
 
                         <?php if ($seni !== []) : ?>
                             <div>
-                                <h4 class="h6 fw-bold mb-3">Kategori Seni</h4>
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                    <h4 class="h6 fw-bold mb-0">Kategori Seni</h4>
+                                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" id="selectAllSeni">
+                                            <label class="form-check-label small fw-semibold" for="selectAllSeni">Pilih semua seni</label>
+                                        </div>
+                                        <span class="small text-muted" id="selectedSeniCount">0/<?= count($seni) ?> item dipilih</span>
+                                    </div>
+                                </div>
                                 <div class="vstack gap-2">
                                     <?php foreach ($seni as $item) : ?>
                                         <?php $nominal = $item->jenis_kontingen === 'dalam_negeri' ? (int) $item->biaya_pendaftaran_dn : (int) $item->biaya_pendaftaran_ln; ?>
                                         <label class="checkout-item-card">
-                                            <input type="checkbox" name="id_kelompok_peserta_seni[]" value="<?= $item->id_kelompok_peserta_seni ?>" data-nominal="<?= $nominal ?>">
+                                            <input type="checkbox" name="id_kelompok_peserta_seni[]" value="<?= $item->id_kelompok_peserta_seni ?>" data-nominal="<?= $nominal ?>" data-category="seni">
                                             <div>
                                                 <strong><?= esc($item->anggota_kelompok_peserta_seni ?: '-') ?></strong>
                                                 <small><?= esc($item->nama_kategori_usia) ?> - <?= esc($item->jenis_kelamin) ?> - <?= esc($item->jenis_seni) ?> <?= esc($item->nama_seni) ?></small>
@@ -100,9 +118,10 @@
                             </div>
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border-top pt-3">
                                 <div>
+                                    <div class="small text-muted" id="paymentSelectionSummary">Belum ada item yang dipilih.</div>
                                     <div class="text-muted small">Total tagihan terpilih</div>
                                     <div class="h4 fw-bold mb-0" id="totalPembayaranKontingen">Rp 0</div>
-                                    <div class="small text-muted mt-1" id="paymentSelectionHint">Pilih minimal satu item pembayaran untuk mengaktifkan tombol upload.</div>
+                                    <div class="small text-muted mt-1" id="paymentSelectionHint">Pilih minimal satu item pembayaran dan unggah bukti transfer yang valid untuk mengaktifkan tombol submit.</div>
                                 </div>
                                 <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">Upload Bukti & Buat Transaksi</button>
                             </div>
@@ -148,8 +167,16 @@
         const form = document.getElementById('formPembayaranKontingen');
         const totalEl = document.getElementById('totalPembayaranKontingen');
         const selectionHint = document.getElementById('paymentSelectionHint');
+        const selectionSummary = document.getElementById('paymentSelectionSummary');
         const proofPreview = document.getElementById('paymentProofPreview');
         const uploadInput = form?.querySelector('input[type="file"][name="foto"]');
+        const selectAllTanding = document.getElementById('selectAllTanding');
+        const selectAllSeni = document.getElementById('selectAllSeni');
+        const selectedTandingCount = document.getElementById('selectedTandingCount');
+        const selectedSeniCount = document.getElementById('selectedSeniCount');
+        const itemCheckboxes = Array.from(form.querySelectorAll('input[type="checkbox"][data-category]'));
+        const tandingCheckboxes = itemCheckboxes.filter((input) => input.dataset.category === 'tanding');
+        const seniCheckboxes = itemCheckboxes.filter((input) => input.dataset.category === 'seni');
 
         if (!form || !totalEl) {
             return;
@@ -165,6 +192,7 @@
         };
 
         const submitBtn = form.querySelector('button[type="submit"]');
+        let proofIsValid = false;
 
         const formatFileSize = (bytes) => {
             if (!Number.isFinite(bytes) || bytes <= 0) {
@@ -183,26 +211,82 @@
             }
         };
 
+        const updateSelectAllState = (master, items) => {
+            if (!master || items.length === 0) {
+                return;
+            }
+
+            const checkedCount = items.filter((input) => input.checked).length;
+            master.checked = checkedCount > 0 && checkedCount === items.length;
+            master.indeterminate = checkedCount > 0 && checkedCount < items.length;
+        };
+
+        const updateCategoryCount = (target, items) => {
+            if (!target) {
+                return;
+            }
+
+            target.textContent = `${items.filter((input) => input.checked).length}/${items.length} item dipilih`;
+        };
+
         const updateTotal = () => {
             let total = 0;
-            form.querySelectorAll('input[type="checkbox"]:checked').forEach((input) => {
+            itemCheckboxes.filter((input) => input.checked).forEach((input) => {
                 total += Number(input.dataset.nominal || 0);
             });
+
+            const tandingSelected = tandingCheckboxes.filter((input) => input.checked).length;
+            const seniSelected = seniCheckboxes.filter((input) => input.checked).length;
+            const selectedCount = tandingSelected + seniSelected;
+
             totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
-            if (submitBtn) {
-                submitBtn.disabled = (total === 0);
+            updateCategoryCount(selectedTandingCount, tandingCheckboxes);
+            updateCategoryCount(selectedSeniCount, seniCheckboxes);
+            updateSelectAllState(selectAllTanding, tandingCheckboxes);
+            updateSelectAllState(selectAllSeni, seniCheckboxes);
+
+            if (selectionSummary) {
+                selectionSummary.textContent = selectedCount === 0
+                    ? 'Belum ada item yang dipilih.'
+                    : `${selectedCount} item dipilih: ${tandingSelected} tanding, ${seniSelected} seni.`;
             }
+
+            if (submitBtn) {
+                submitBtn.disabled = (selectedCount === 0 || !proofIsValid);
+            }
+
             if (selectionHint) {
-                selectionHint.textContent = total === 0
-                    ? 'Pilih minimal satu item pembayaran untuk mengaktifkan tombol upload.'
-                    : 'Pastikan bukti transfer sesuai dengan total tagihan terpilih.';
-                selectionHint.classList.toggle('text-danger', total === 0);
-                selectionHint.classList.toggle('text-muted', total !== 0);
+                if (selectedCount === 0 && !proofIsValid) {
+                    selectionHint.textContent = 'Pilih minimal satu item pembayaran dan unggah bukti transfer yang valid untuk mengaktifkan tombol submit.';
+                } else if (selectedCount === 0) {
+                    selectionHint.textContent = 'Pilih minimal satu item pembayaran untuk melanjutkan checkout.';
+                } else if (!proofIsValid) {
+                    selectionHint.textContent = 'Unggah bukti transfer JPG, JPEG, atau PNG yang valid untuk melanjutkan checkout.';
+                } else {
+                    selectionHint.textContent = 'Siap membuat transaksi. Pastikan bukti transfer sesuai dengan total tagihan terpilih.';
+                }
+
+                selectionHint.classList.toggle('text-danger', selectedCount === 0 || !proofIsValid);
+                selectionHint.classList.toggle('text-muted', selectedCount > 0 && proofIsValid);
             }
         };
 
-        form.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+        itemCheckboxes.forEach((input) => {
             input.addEventListener('change', updateTotal);
+        });
+
+        selectAllTanding?.addEventListener('change', () => {
+            tandingCheckboxes.forEach((input) => {
+                input.checked = selectAllTanding.checked;
+            });
+            updateTotal();
+        });
+
+        selectAllSeni?.addEventListener('change', () => {
+            seniCheckboxes.forEach((input) => {
+                input.checked = selectAllSeni.checked;
+            });
+            updateTotal();
         });
 
         // Jalankan pada pemuatan pertama untuk inisialisasi status tombol submit
@@ -211,29 +295,37 @@
         uploadInput?.addEventListener('change', () => {
             const file = uploadInput.files?.[0];
             if (!file) {
+                proofIsValid = false;
                 clearProofPreview();
+                updateTotal();
                 return;
             }
 
             const validType = ['image/jpeg', 'image/png'].includes(String(file.type || '').toLowerCase()) || /\.(jpe?g|png)$/i.test(file.name || '');
             if (!validType) {
                 uploadInput.value = '';
+                proofIsValid = false;
                 clearProofPreview();
                 notifyFileError('Bukti pembayaran hanya boleh berupa gambar JPG, JPEG, atau PNG.');
+                updateTotal();
                 return;
             }
 
             const maxKb = Number(uploadInput.dataset.maxKb || 0);
             if (maxKb > 0 && file.size > (maxKb * 1024)) {
                 uploadInput.value = '';
+                proofIsValid = false;
                 clearProofPreview();
                 notifyFileError(`Ukuran file ${file.name} melebihi batas 10 MB.`);
+                updateTotal();
                 return;
             }
 
+            proofIsValid = true;
             if (proofPreview) {
                 proofPreview.textContent = `File dipilih: ${file.name} (${formatFileSize(file.size)})`;
             }
+            updateTotal();
         });
     });
 </script>

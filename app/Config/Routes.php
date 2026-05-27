@@ -114,6 +114,26 @@ $routes->group('admin/bendahara', ['filter' => 'adminrole:bendahara'], static fu
     $routes->post('kontingen/(:num)/buat-transaksi', 'Admin\\Bendahara\\PembayaranController::createForKontingen/$1');
 });
 
+$routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
+    $routes->get('/', 'Admin\\Super\\DashboardController::index');
+    $routes->get('dashboard', 'Admin\\Super\\DashboardController::index');
+    $routes->get('menu-tipe', 'Admin\\Super\\ModeController::menuTipe');
+    $routes->get('mode-pengaturan-event', 'Admin\\Super\\ModeController::pengaturanEvent');
+    $routes->get('mode-pengaturan-kategori-lomba', 'Admin\\Super\\ModeController::pengaturanKategoriLomba');
+    $routes->get('dashboard-pengaturan-event', 'Admin\\Super\\PengaturanEventController::dashboard');
+    $routes->get('kategori-usia', 'Admin\\Super\\KategoriUsiaController::index');
+    $routes->get('kategori-usia/(:num)/edit', 'Admin\\Super\\KategoriUsiaController::edit/$1');
+    $routes->post('kategori-usia', 'Admin\\Super\\KategoriUsiaController::store');
+    $routes->post('kategori-usia/(:num)/update', 'Admin\\Super\\KategoriUsiaController::update/$1');
+    $routes->post('kategori-usia/(:num)/delete', 'Admin\\Super\\KategoriUsiaController::delete/$1');
+    $routes->get('kategori-lomba', 'Admin\\Super\\KategoriLombaController::index');
+    $routes->get('kategori-lomba/(:num)/edit', 'Admin\\Super\\KategoriLombaController::edit/$1');
+    $routes->post('kategori-lomba', 'Admin\\Super\\KategoriLombaController::store');
+    $routes->post('kategori-lomba/(:num)/update', 'Admin\\Super\\KategoriLombaController::update/$1');
+    $routes->post('kategori-lomba/(:num)/delete', 'Admin\\Super\\KategoriLombaController::delete/$1');
+    $routes->get('sub-kategori-seni', 'Admin\\Super\\SubKategoriSeniController::index');
+});
+
 $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], static function ($routes): void {
     $routes->get('/', 'Admin\\Sekretariat\\DashboardController::index');
     $routes->get('dashboard', 'Admin\\Sekretariat\\DashboardController::index');

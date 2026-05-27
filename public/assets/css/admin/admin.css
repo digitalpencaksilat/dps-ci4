@@ -129,7 +129,17 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .admin-page-title,
 .section-title {
     font-family: 'Oswald', sans-serif;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.admin-brand-title {
+    font-size: 1.2rem;
+}
+
+.admin-page-title {
+    font-size: 1.62rem;
+    line-height: 1.15;
 }
 
 .admin-brand-subtitle,
@@ -143,7 +153,8 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .admin-section-label {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     padding: 0 14px;
@@ -158,6 +169,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     border-radius: 14px;
     color: rgba(255, 255, 255, 0.92);
     text-decoration: none;
+    font-weight: 600;
     transition: 0.2s ease;
     border: 1px solid transparent;
 }
@@ -270,8 +282,9 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 
 .eyebrow {
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    font-size: 0.78rem;
+    font-weight: 700;
     color: var(--admin-accent);
     margin-bottom: 6px;
 }
@@ -818,14 +831,22 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .admin-footer {
-    margin-top: 24px;
-    padding: 0 4px;
-    color: var(--admin-muted);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    font-size: 0.95rem;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--admin-muted);
+    font-size: 0.9rem;
+}
+
+.admin-footer .footer-version {
+    font-weight: 700;
+    color: var(--admin-accent);
 }
 
 .admin-mobile-toggle {

@@ -74,7 +74,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <?php if ($adminRole === 'bendahara') : ?>
                     <div>
                         <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembayaran' ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminPembayaranSubmenu" role="button" aria-expanded="<?= ($activeMenu ?? '') === 'pembayaran' ? 'true' : 'false' ?>" aria-controls="adminPembayaranSubmenu">
-                            <span class="label-block"><i class="fas fa-wallet"></i><span>Pembayaran</span></span>
+                            <span class="label-block"><i class="fas fa-wallet"></i><span>Transaksi Pembayaran</span></span>
                             <i class="fas fa-chevron-right chevron"></i>
                         </a>
                         <div class="admin-submenu collapse <?= ($activeMenu ?? '') === 'pembayaran' ? 'show' : '' ?>" id="adminPembayaranSubmenu">
@@ -90,14 +90,14 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     </div>
 
                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'kontingen' ? 'active' : '' ?>" href="<?= base_url('admin/bendahara/kontingen') ?>">
-                        <span class="label-block"><i class="fas fa-people-group"></i><span>Kontingen</span></span>
+                        <span class="label-block"><i class="fas fa-people-group"></i><span>Data Kontingen</span></span>
                     </a>
                     <?php endif; ?>
 
                     <?php if ($adminRole === 'sekretariat') : ?>
                     <div>
                         <a class="admin-nav-link <?= ($activeMenu ?? '') === 'kontingen' ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminKontingenSubmenu" role="button" aria-expanded="<?= ($activeMenu ?? '') === 'kontingen' ? 'true' : 'false' ?>" aria-controls="adminKontingenSubmenu">
-                            <span class="label-block"><i class="fas fa-people-group"></i><span>Kontingen</span></span>
+                            <span class="label-block"><i class="fas fa-people-group"></i><span>Data Kontingen</span></span>
                             <i class="fas fa-chevron-right chevron"></i>
                         </a>
                         <div class="admin-submenu collapse <?= ($activeMenu ?? '') === 'kontingen' ? 'show' : '' ?>" id="adminKontingenSubmenu">
@@ -118,7 +118,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'data_atlet' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/data-atlet') ?>">Data Atlet</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'data_bpjs' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/data-bpjs') ?>">Data BPJS</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'peserta_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/peserta-tanding') ?>">Peserta Tanding</a>
-                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kelompok_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kelompok-seni') ?>">Peserta Seni</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kelompok_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kelompok-seni') ?>">Kelompok Seni</a>
                             </div>
                         </div>
                     </div>
@@ -258,8 +258,8 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
             <?= $this->renderSection('content') ?>
 
             <footer class="admin-footer">
-                <span><?= esc($adminPanel['footer']) ?></span>
-                <span class="footer-version"><?= esc(app_version()) ?></span>
+                <span>&copy; 2026 Digital Pencak Silat. All Rights Reserved.</span>
+                <span class="footer-version">Version <?= esc(app_version()) ?></span>
             </footer>
         </main>
     </div>

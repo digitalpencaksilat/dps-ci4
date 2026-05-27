@@ -9,5 +9,5 @@ class KategoriLombaModel extends Model
     protected $table = 'kategori_lomba';
     protected $primaryKey = 'id_kategori_lomba';
     protected $returnType = 'object';
-    protected $allowedFields = ['id_kategori_usia', 'jenis_perlombaan', 'kuota_peserta'];
+    protected $allowedFields = ['id_kategori_usia', 'nama_kategori_lomba', 'peraturan_pertandingan', 'jenis_perlombaan', 'jumlah_juri', 'semua_dapat_medali', 'kuota_peserta'];
 }

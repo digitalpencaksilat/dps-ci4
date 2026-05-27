@@ -37,6 +37,8 @@ Related migration docs:
 | Admin sekretariat pesilat terbaik | Present | Present | Partial | Present | N/A | Missing/Manual | Partial | CI4 now includes Urutan Poin Tanding, Urutan Poin Battle Seni, and Urutan Poin Pool; manual QA and focused tests still pending. |
 | Admin sekretariat statistik | Present | Present | Partial | Present | N/A | Missing/Manual | Partial | CI4 now includes Progress Pendaftaran, Statistik Tanding, and Statistik Seni with ApexCharts; lint and route/manual QA still required before completion. |
 | Admin super | Present | Minimal | Needs Review | Needs Review | Needs Review | Missing/Manual | Partial | Confirm intended feature scope. |
+| Admin super pengaturan event | Partial | Partial | Partial | Partial | Needs Review | Syntax OK/Manual Missing | Partial | Stage 1 started: CI4 now has `admin/super` routes, mode selection, and initial dashboard pengaturan event view. CI3 dashboard summary data, side nav detail, and manual QA still pending. |
+| Admin super pengaturan kategori lomba | Partial | Partial | Partial | Partial | Needs Review | Syntax OK/Manual Missing | Partial | Stage 3 started: mode pengaturan kategori lomba can be selected with historical session value `perngaturan_kategori_lomba`; kategori usia and kategori lomba now have create/edit/delete UI under `admin/super`. Sub kategori seni remains read-only; otomatis pool is not migrated yet. |
 | Location helpers | Present | Present | Needs Review | N/A | Needs Review | Missing/Manual | Needs Review | Verify country/province/regency/district/village JSON outputs. |
 
 ## Completion Checklist

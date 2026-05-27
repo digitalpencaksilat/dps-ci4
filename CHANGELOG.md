@@ -25,6 +25,31 @@ Format changelog ini mengikuti gaya sederhana berbasis versi.
 
 - File upload bukti pembayaran baru tidak lagi muncul sebagai kandidat commit karena rule ignore diperketat.
 
+## v0.4.0 - 2026-05-27
+
+### Added
+
+- Modul super admin tahap lanjut untuk pemilihan mode, dashboard pengaturan event, CRUD kategori usia, CRUD kategori lomba, dan tabel read-only sub kategori seni.
+- Route admin super baru untuk mode pengaturan event dan pengaturan kategori lomba.
+- Feedback inline per field pada registrasi publik dan modal peserta kontingen.
+- Select all, count per kategori, dan ringkasan item terpilih pada checkout pembayaran kontingen.
+- Badge risiko `Read-only`, `Sensitive`, dan `Destructive` pada dashboard development.
+
+### Changed
+
+- Label navigasi admin distandarkan agar lebih konsisten antara bendahara, sekretariat, dan kontingen.
+- Footer admin diselaraskan dengan gaya kontingen termasuk copy hak cipta dan tampilan versi aplikasi.
+- Tipografi area admin dirapikan agar lebih selaras dengan area kontingen.
+- Status tracker migrasi CI4 diperbarui untuk modul admin super pengaturan kategori lomba.
+
+### Fixed
+
+- Link arsip peserta di modal kontingen tidak lagi dirender dengan `innerHTML`.
+- `old()` value registrasi publik kini di-escape dengan aman untuk mencegah markup rusak.
+- Validasi registrasi publik kini tampil dekat field yang salah dan fokus ke error pertama.
+- Slot arsip wajib peserta kini benar-benar `required` saat create dan kondisional saat edit.
+- Tombol submit checkout kontingen kini menunggu item terpilih dan bukti transfer valid.
+
 ## v0.2.0 - 2026-05-24
 
 ### Added

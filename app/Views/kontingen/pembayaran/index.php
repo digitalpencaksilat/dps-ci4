@@ -11,6 +11,65 @@
     <p class="text-muted mb-0">Pilih item tanding atau seni yang belum dibayar, lalu unggah bukti transfer untuk membuat transaksi pembayaran.</p>
 </section>
 
+<?php
+$biayaKontingen = $biayaKontingen ?? null;
+$biayaEnabled = is_array($biayaKontingen) && !empty($biayaKontingen['enabled']);
+$biayaCanPay = is_array($biayaKontingen) && !empty($biayaKontingen['can_pay']);
+$biayaNominal = is_array($biayaKontingen) ? (int) ($biayaKontingen['nominal'] ?? 0) : 0;
+$biayaStatus = is_array($biayaKontingen) ? (string) ($biayaKontingen['status'] ?? '') : '';
+?>
+
+<?php if ($biayaEnabled) : ?>
+    <section class="panel-card mb-4">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow mb-1">Biaya Kontingen</p>
+                <h3 class="panel-title mb-0">Tagihan Biaya Kontingen</h3>
+            </div>
+            <?php if ($biayaStatus !== '') : ?>
+                <span class="status-badge <?= $biayaStatus === 'lunas' ? 'success' : ($biayaStatus === 'menunggu' ? 'warning' : 'neutral') ?>">
+                    <?= esc(ucwords(str_replace('_', ' ', $biayaStatus))) ?>
+                </span>
+            <?php endif; ?>
+        </div>
+
+        <?php if ($biayaNominal <= 0) : ?>
+            <div class="empty-state-box">
+                <p class="mb-0">Biaya kontingen bernilai 0 (gratis).</p>
+            </div>
+        <?php elseif (! $allowPayment) : ?>
+            <div class="alert alert-warning border-0 rounded-4 mb-0">Akses pembayaran sedang ditutup.</div>
+        <?php elseif ($biayaCanPay) : ?>
+            <form method="post" action="<?= base_url('kontingen/pembayaran/biaya-kontingen') ?>" enctype="multipart/form-data" class="row g-3">
+                <?= csrf_field() ?>
+                <div class="col-12 col-xl-7">
+                    <label class="form-label fw-semibold">Upload Bukti Pembayaran Biaya Kontingen</label>
+                    <input type="file" name="foto" class="form-control rounded-4" accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-max-kb="10240" required>
+                    <div class="small text-muted mt-2">Total tagihan: <strong>Rp <?= number_format($biayaNominal, 0, ',', '.') ?></strong></div>
+                </div>
+                <div class="col-12 col-xl-5 d-flex align-items-end">
+                    <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4 w-100">Upload Bukti Biaya Kontingen</button>
+                </div>
+            </form>
+        <?php elseif (is_array($biayaKontingen) && !empty($biayaKontingen['payment'])) : ?>
+            <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+                <div>
+                    <div class="small text-muted">Nominal</div>
+                    <div class="h5 fw-bold mb-0">Rp <?= number_format($biayaNominal, 0, ',', '.') ?></div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <?php if (!empty($biayaKontingen['payment']->id_pembayaran)) : ?>
+                        <a href="<?= base_url('kontingen/pembayaran/' . $biayaKontingen['payment']->id_pembayaran) ?>" class="btn btn-outline-danger rounded-pill">Lihat Transaksi</a>
+                    <?php endif; ?>
+                    <?php if (!empty($biayaKontingen['payment']->foto)) : ?>
+                        <a href="<?= base_url('uploads/bukti-pembayaran/' . $biayaKontingen['payment']->foto) ?>" target="_blank" class="btn btn-outline-secondary rounded-pill">Lihat Bukti</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </section>
+<?php endif; ?>
+
 <section class="row g-4">
     <div class="col-xl-8">
         <div class="panel-card h-100">

@@ -4,6 +4,29 @@ Semua perubahan penting pada project ini akan dicatat di file ini.
 
 Format changelog ini mengikuti gaya sederhana berbasis versi.
 
+## v0.5.0 - 2026-05-28
+
+### Added
+
+- Modul pengaturan kontingen baru di super admin untuk toggle `aktifkan_tagihan_biaya_kontingen`, biaya kontingen DN/LN, dan max atlet per kontingen.
+- Service `KontingenSettingsService` + model `SiteBuilderSettingModel` untuk baca/tulis setting kontingen di `site_builder_settings` dengan fallback config legacy CI3.
+- Service `PembayaranBiayaKontingenService` untuk alur tagihan biaya kontingen terpisah (tanpa tabel baru) tetap kompatibel dengan relasi `kontingen.id_pembayaran`.
+- Endpoint + route kontingen untuk upload bukti pembayaran biaya kontingen terpisah dari checkout peserta.
+- Halaman bendahara baru `Biaya Kontingen` beserta aksi konfirmasi/tolak khusus biaya kontingen.
+
+### Changed
+
+- Dashboard pengaturan event super admin kini menampilkan kartu ringkasan dan pintasan ke pengaturan kontingen.
+- Menu admin super mode pengaturan event ditambah akses `Pengaturan Kontingen`.
+- Menu bendahara transaksi pembayaran ditambah submenu `Biaya Kontingen`.
+- Form biaya kontingen di super admin kini memakai format currency project (`currency-input` + normalisasi nilai saat submit).
+- Halaman pembayaran kontingen dipisah jelas antara tagihan biaya kontingen dan tagihan peserta.
+
+### Fixed
+
+- Flow biaya kontingen tidak lagi tercampur dengan item peserta saat membuat transaksi pembayaran.
+- Penolakan biaya kontingen kini mengubah status pembayaran menjadi `ditolak` dan melepaskan relasi `kontingen.id_pembayaran` agar bisa dibayar ulang.
+
 ## v0.3.0 - 2026-05-24
 
 ### Added

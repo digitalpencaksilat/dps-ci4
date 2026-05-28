@@ -84,6 +84,7 @@ $routes->get('kontingen/pembayaran', 'PembayaranKontingenController::index', ['f
 $routes->get('kontingen/pembayaran/menunggu-konfirmasi', 'PembayaranKontingenController::waiting', ['filter' => 'kontingenauth']);
 $routes->get('kontingen/pembayaran/lunas', 'PembayaranKontingenController::paid', ['filter' => 'kontingenauth']);
 $routes->get('kontingen/pembayaran/(:num)', 'PembayaranKontingenController::show/$1', ['filter' => 'kontingenauth']);
+$routes->post('kontingen/pembayaran/biaya-kontingen', 'PembayaranKontingenController::storeBiayaKontingen', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/peserta', 'PesertaController::store', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/peserta/(:num)/update', 'PesertaController::update/$1', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/peserta/(:num)/delete', 'PesertaController::delete/$1', ['filter' => 'kontingenauth']);
@@ -107,6 +108,9 @@ $routes->group('admin/bendahara', ['filter' => 'adminrole:bendahara'], static fu
     $routes->get('pembayaran/belum-dibayar', 'Admin\\Bendahara\\PembayaranController::unpaid');
     $routes->get('pembayaran/tanding', 'Admin\\Bendahara\\PembayaranController::tanding');
     $routes->get('pembayaran/seni', 'Admin\\Bendahara\\PembayaranController::seni');
+    $routes->get('pembayaran/biaya-kontingen', 'Admin\\Bendahara\\PembayaranController::biayaKontingen');
+    $routes->post('pembayaran/biaya-kontingen/(:num)/konfirmasi', 'Admin\\Bendahara\\PembayaranController::confirmBiayaKontingen/$1');
+    $routes->post('pembayaran/biaya-kontingen/(:num)/tolak', 'Admin\\Bendahara\\PembayaranController::rejectBiayaKontingen/$1');
     $routes->get('pembayaran/(:num)', 'Admin\\Bendahara\\PembayaranController::show/$1');
     $routes->post('pembayaran/(:num)/konfirmasi', 'Admin\\Bendahara\\PembayaranController::confirm/$1');
     $routes->post('pembayaran/(:num)/tolak', 'Admin\\Bendahara\\PembayaranController::reject/$1');
@@ -137,6 +141,8 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('pengaturan-event/gambar-dan-juknis/update', 'Admin\\Super\\GambarDanJuknisController::update');
     $routes->get('pengaturan-event/rekening-pembayaran', 'Admin\\Super\\RekeningPembayaranController::edit');
     $routes->post('pengaturan-event/rekening-pembayaran/update', 'Admin\\Super\\RekeningPembayaranController::update');
+    $routes->get('pengaturan-event/pengaturan-kontingen', 'Admin\\Super\\KontingenSettingsController::edit');
+    $routes->post('pengaturan-event/pengaturan-kontingen/update', 'Admin\\Super\\KontingenSettingsController::update');
 
     // Pengaturan Arsip Pendaftar (CI3: pengaturan_arsip_pendaftar)
     $routes->get('pengaturan-event/arsip-pendaftar', 'Admin\\Super\\ArsipPendaftarSettingsController::index');

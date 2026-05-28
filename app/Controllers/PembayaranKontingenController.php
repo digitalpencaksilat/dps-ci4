@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Services\PembayaranKontingenService;
+use App\Services\PembayaranBiayaKontingenService;
 use App\Services\UploadedFilePayload;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
@@ -15,6 +16,7 @@ class PembayaranKontingenController extends BaseController
         $pending = $service->pendingItems($idKontingen);
         $waitingTransactions = $service->transactionsByStatus($idKontingen, 'menunggu');
         $paidTransactions = $service->transactionsByStatus($idKontingen, 'lunas');
+        $biayaKontingen = (new PembayaranBiayaKontingenService())->detail($idKontingen);
 
         return view('kontingen/pembayaran/index', [
             'title'        => 'Pembayaran',
@@ -29,7 +31,28 @@ class PembayaranKontingenController extends BaseController
             'waitingTransactions' => $waitingTransactions,
             'paidTransactions' => $paidTransactions,
             'allowPayment' => (string) (get_setting('perbolehkan_kontingen_melunasi_pembayaran') ?? '0') === '1',
+            'biayaKontingen' => $biayaKontingen,
         ]);
+    }
+
+    public function storeBiayaKontingen()
+    {
+        if ((string) (get_setting('perbolehkan_kontingen_melunasi_pembayaran') ?? '0') !== '1') {
+            return redirect()->to(base_url('kontingen/pembayaran'))->with('status', false)->with('message', 'Akses pembayaran sedang ditutup.');
+        }
+
+        $file = $this->request->getFile('foto');
+        if (! $this->validate(['foto' => 'uploaded[foto]|is_image[foto]|max_size[foto,10240]'])) {
+            return redirect()->to(base_url('kontingen/pembayaran'))->with('status', false)->with('message', $this->validator->getErrors());
+        }
+
+        try {
+            (new PembayaranBiayaKontingenService())->createForKontingen((int) session()->get('id_kontingen'), $file);
+        } catch (\RuntimeException $e) {
+            return redirect()->to(base_url('kontingen/pembayaran'))->with('status', false)->with('message', $e->getMessage());
+        }
+
+        return redirect()->to(base_url('kontingen/pembayaran/menunggu-konfirmasi'))->with('status', true)->with('message', 'Bukti pembayaran biaya kontingen berhasil diunggah.');
     }
 
     public function store()

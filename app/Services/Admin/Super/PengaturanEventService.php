@@ -39,6 +39,7 @@ class PengaturanEventService
             'data_kategori_lomba_berdasarkan_semua_dapat_medali' => $this->groupByField($kategoriLombaRows, 'semua_dapat_medali'),
             'data_max_peserta_tanding_per_kategori' => $this->maxPesertaTandingPerKategori(),
             'data_max_peserta_seni_per_kategori' => $this->maxPesertaSeniPerKategori(),
+            'kontingen_settings' => (new KontingenSettingsService())->currentValues(),
             'default_currency' => (string) (get_setting('default_currency') ?? 'Rp.'),
         ];
     }

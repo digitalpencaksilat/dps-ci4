@@ -59,6 +59,12 @@ $renderMaxPesertaRows = static function (array $rows, string $badgeClass): strin
             'label' => 'Profil Kejuaraan',
             'class' => 'btn-danger',
         ],
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/pengaturan-event/pengaturan-kontingen'),
+            'label' => 'Pengaturan Kontingen',
+            'class' => 'btn-outline-secondary',
+        ],
     ],
     'meta' => '<span class="status-badge ' . (($activeMode ?? '') === 'pengaturan_event' ? 'success' : 'warning') . '">' . esc(($activeMode ?? '') === 'pengaturan_event' ? 'pengaturan_event' : 'belum aktif') . '</span>',
 ]) ?>
@@ -119,17 +125,20 @@ $renderMaxPesertaRows = static function (array $rows, string $badgeClass): strin
         </section>
     </div>
     <div class="col-12 col-md-6 col-lg-4">
-        <section class="admin-card h-100 d-flex flex-column justify-content-between">
-            <div>
-                <p class="eyebrow mb-1">Keamanan</p>
-                <h3 class="h5 mb-2">Role Super Admin</h3>
-                <p class="muted-copy mb-0">Akses halaman ini tetap dilindungi filter <code>adminrole:super_admin</code>.</p>
+        <section class="admin-card h-100">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                <div>
+                    <p class="eyebrow mb-1">Kontingen</p>
+                    <h3 class="h5 mb-2">Biaya & Batas Atlet</h3>
+                    <p class="muted-copy mb-0">Shortcut ke modul migrasi pengaturan biaya kontingen dan max atlet per kontingen.</p>
+                </div>
+                <a href="<?= base_url('admin/super/pengaturan-event/pengaturan-kontingen') ?>" class="btn btn-sm btn-outline-secondary rounded-pill">Buka</a>
             </div>
-            <div class="d-flex flex-wrap gap-2 mt-3">
-                <span class="status-badge neutral">Kategori Usia: <?= esc((string) count($data_kategori_usia ?? [])) ?></span>
-                <span class="status-badge neutral">Kelas Tanding: <?= esc((string) count($data_kelas_tanding ?? [])) ?></span>
-                <span class="status-badge neutral">Sub Kategori Seni: <?= esc((string) count($data_sub_kategori_seni ?? [])) ?></span>
-            </div>
+            <div class="admin-table-wrap"><div class="table-shell"><table class="table admin-table align-middle mb-0"><tbody>
+                <tr><th>Biaya DN</th><td class="text-end"><?= esc($currency . number_format((float) (($kontingen_settings['biaya_pendaftaran_kontingen_dalam_negeri'] ?? 0)), 0, ',', '.')) ?></td></tr>
+                <tr><th>Biaya LN</th><td class="text-end"><?= esc($currency . number_format((float) (($kontingen_settings['biaya_pendaftaran_kontingen_luar_negeri'] ?? 0)), 0, ',', '.')) ?></td></tr>
+                <tr><th>Max Atlet</th><td class="text-end"><?= esc((string) (($kontingen_settings['max_atlet_per_kontingen'] ?? 0))) ?></td></tr>
+            </tbody></table></div></div>
         </section>
     </div>
 </div>

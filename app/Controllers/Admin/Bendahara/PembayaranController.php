@@ -4,6 +4,7 @@ namespace App\Controllers\Admin\Bendahara;
 
 use App\Controllers\BaseController;
 use App\Services\PembayaranAdminService;
+use App\Services\PembayaranBiayaKontingenService;
 use App\Services\PembayaranKontingenService;
 use App\Services\Pdf\NotaPembayaranPdfService;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -48,6 +49,19 @@ class PembayaranController extends BaseController
             'eventLogo'      => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
             'adminName'      => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Bendahara'),
             'rows'           => (new PembayaranAdminService())->seniPaymentHistory(),
+        ]);
+    }
+
+    public function biayaKontingen(): string
+    {
+        return view('admin/bendahara/pembayaran/biaya_kontingen', [
+            'title'          => 'Tagihan Biaya Kontingen',
+            'activeMenu'     => 'pembayaran',
+            'paymentSubmenu' => 'biaya_kontingen',
+            'eventName'      => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'),
+            'eventLogo'      => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
+            'adminName'      => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Bendahara'),
+            'rows'           => (new PembayaranBiayaKontingenService())->listForBendahara(),
         ]);
     }
 
@@ -107,6 +121,36 @@ class PembayaranController extends BaseController
         return redirect()->to(base_url('admin/bendahara/pembayaran'))
             ->with('status', $result)
             ->with('message', $result ? 'Pembayaran ditolak. Relasi item dan bukti pembayaran sudah dibersihkan.' : 'Penolakan pembayaran gagal diproses.');
+    }
+
+    public function confirmBiayaKontingen(int $id)
+    {
+        try {
+            $result = (new PembayaranBiayaKontingenService())->confirm($id);
+        } catch (\RuntimeException $e) {
+            return redirect()->to(base_url('admin/bendahara/pembayaran/biaya-kontingen'))
+                ->with('status', false)
+                ->with('message', $e->getMessage());
+        }
+
+        return redirect()->to(base_url('admin/bendahara/pembayaran/biaya-kontingen'))
+            ->with('status', $result)
+            ->with('message', $result ? 'Pembayaran biaya kontingen berhasil dikonfirmasi.' : 'Konfirmasi pembayaran biaya kontingen gagal.');
+    }
+
+    public function rejectBiayaKontingen(int $id)
+    {
+        try {
+            $result = (new PembayaranBiayaKontingenService())->reject($id);
+        } catch (\RuntimeException $e) {
+            return redirect()->to(base_url('admin/bendahara/pembayaran/biaya-kontingen'))
+                ->with('status', false)
+                ->with('message', $e->getMessage());
+        }
+
+        return redirect()->to(base_url('admin/bendahara/pembayaran/biaya-kontingen'))
+            ->with('status', $result)
+            ->with('message', $result ? 'Pembayaran biaya kontingen ditolak.' : 'Penolakan pembayaran biaya kontingen gagal.');
     }
 
     public function notaPdf(int $id)

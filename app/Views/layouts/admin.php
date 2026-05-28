@@ -96,6 +96,9 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/rekening-pembayaran') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/rekening-pembayaran') ?>">
                         <span class="label-block"><i class="fas fa-building-columns"></i><span>Rekening Pembayaran</span></span>
                     </a>
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/pengaturan-kontingen') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/pengaturan-kontingen') ?>">
+                        <span class="label-block"><i class="fas fa-people-group"></i><span>Pengaturan Kontingen</span></span>
+                    </a>
 
                     <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/arsip-pendaftar') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/arsip-pendaftar') ?>">
                         <span class="label-block"><i class="fas fa-folder-open"></i><span>Arsip Pendaftar</span></span>
@@ -136,6 +139,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                                 <a class="admin-submenu-link <?= ($paymentSubmenu ?? '') === 'unpaid' ? 'active' : '' ?>" href="<?= base_url('admin/bendahara/pembayaran/belum-dibayar') ?>">Belum Dibayar</a>
                                 <a class="admin-submenu-link <?= ($paymentSubmenu ?? '') === 'tanding' ? 'active' : '' ?>" href="<?= base_url('admin/bendahara/pembayaran/tanding') ?>">Riwayat Tanding</a>
                                 <a class="admin-submenu-link <?= ($paymentSubmenu ?? '') === 'seni' ? 'active' : '' ?>" href="<?= base_url('admin/bendahara/pembayaran/seni') ?>">Riwayat Seni</a>
+                                <a class="admin-submenu-link <?= ($paymentSubmenu ?? '') === 'biaya_kontingen' ? 'active' : '' ?>" href="<?= base_url('admin/bendahara/pembayaran/biaya-kontingen') ?>">Biaya Kontingen</a>
                             </div>
                         </div>
                     </div>
@@ -439,6 +443,20 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     try { config = JSON.parse(configAttr); } catch(e) { console.warn('Invalid data-export-config JSON:', e); }
                 }
                 window.initAdminExportTable('#' + table.id, config);
+            });
+
+            document.querySelectorAll('.setting-card-input').forEach((input) => {
+                input.addEventListener('change', () => {
+                    const card = input.closest('.setting-card');
+                    const badge = card?.querySelector('.setting-status-badge');
+                    card?.classList.toggle('is-active', input.checked);
+                    card?.classList.toggle('is-inactive', !input.checked);
+                    if (badge) {
+                        badge.textContent = input.checked ? 'Aktif' : 'Nonaktif';
+                        badge.classList.toggle('active', input.checked);
+                        badge.classList.toggle('inactive', !input.checked);
+                    }
+                });
             });
         });
     </script>

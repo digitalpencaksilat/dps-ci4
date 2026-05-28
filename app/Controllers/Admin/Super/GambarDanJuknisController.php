@@ -34,7 +34,32 @@ class GambarDanJuknisController extends BaseController
 
         foreach ($defs as $key => $def) {
             $uploaded = $this->request->getFile($key);
-            if ($uploaded && $uploaded->isValid() && ! $uploaded->hasMoved()) {
+            if ($uploaded === null || $uploaded->getError() === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+
+            if (! $uploaded->isValid()) {
+                $errorCode = $uploaded->getError();
+
+                log_message('warning', sprintf(
+                    'GambarDanJuknis upload gagal. key=%s, error=%s, error_string=%s, ini_upload_max=%s, ini_post_max=%s',
+                    $key,
+                    (string) $errorCode,
+                    $uploaded->getErrorString(),
+                    (string) ini_get('upload_max_filesize'),
+                    (string) ini_get('post_max_size')
+                ));
+
+                if ($errorCode === UPLOAD_ERR_INI_SIZE || $errorCode === UPLOAD_ERR_FORM_SIZE) {
+                    $errors[$key] = 'Ukuran file melebihi batas server (upload_max_filesize=' . ini_get('upload_max_filesize') . ', post_max_size=' . ini_get('post_max_size') . ').';
+                } else {
+                    $errors[$key] = $uploaded->getErrorString() ?: 'File upload tidak valid.';
+                }
+
+                continue;
+            }
+
+            if (! $uploaded->hasMoved()) {
                 try {
                     $this->fileSetting->storePublicFile($key, $uploaded, $def['subdir'], $def['mimes'], $def['maxKb']);
                 } catch (\Throwable $e) {

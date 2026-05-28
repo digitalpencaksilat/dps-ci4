@@ -22,13 +22,39 @@ class FileSettingService
             throw new \RuntimeException('File upload tidak valid.');
         }
 
+        $allowedMimesLower = array_map('strtolower', $allowedMimes);
         $mime = strtolower((string) $file->getMimeType());
-        if (! in_array($mime, array_map('strtolower', $allowedMimes), true)) {
-            throw new \RuntimeException('Tipe file tidak diizinkan.');
+
+        // Some browsers/servers may report generic MIME (e.g. application/octet-stream).
+        // If MIME is not in the allowlist, fall back to extension-based allow for known types.
+        if (! in_array($mime, $allowedMimesLower, true)) {
+            $ext = strtolower((string) $file->getExtension());
+            $allowedExt = [];
+            foreach ($allowedMimesLower as $m) {
+                if ($m === 'application/pdf') {
+                    $allowedExt[] = 'pdf';
+                } elseif ($m === 'application/msword') {
+                    $allowedExt[] = 'doc';
+                } elseif ($m === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                    $allowedExt[] = 'docx';
+                } elseif ($m === 'image/jpeg') {
+                    $allowedExt[] = 'jpg';
+                    $allowedExt[] = 'jpeg';
+                } elseif ($m === 'image/png') {
+                    $allowedExt[] = 'png';
+                }
+            }
+
+            if ($ext === '' || ! in_array($ext, array_unique($allowedExt), true)) {
+                throw new \RuntimeException('Tipe file tidak diizinkan.');
+            }
         }
 
-        if ($file->getSizeByUnit('kb') > $maxSizeKb) {
-            throw new \RuntimeException('Ukuran file melebihi batas.');
+        $sizeBytes = (int) $file->getSize();
+        $maxBytes = $maxSizeKb * 1024;
+        if ($sizeBytes <= 0 || $sizeBytes > $maxBytes) {
+            $sizeKb = round($sizeBytes / 1024, 2);
+            throw new \RuntimeException('Ukuran file melebihi batas. Maks ' . $maxSizeKb . ' KB, ukuran file ' . $sizeKb . ' KB.');
         }
 
         $targetDir = rtrim(FCPATH, '/') . '/uploads/' . trim($targetSubdir, '/');

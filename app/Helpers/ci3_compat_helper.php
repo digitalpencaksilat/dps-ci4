@@ -121,7 +121,19 @@ if (! function_exists('ci3_config_item')) {
         $config = [];
         require $path;
 
-        return $config[$key] ?? null;
+        if (array_key_exists($key, $config)) {
+            return $config[$key];
+        }
+
+        $value = $config;
+        foreach (explode('.', $key) as $segment) {
+            if (! is_array($value) || ! array_key_exists($segment, $value)) {
+                return null;
+            }
+            $value = $value[$segment];
+        }
+
+        return $value;
     }
 }
 

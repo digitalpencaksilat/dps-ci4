@@ -13,6 +13,7 @@ Format changelog ini mengikuti gaya sederhana berbasis versi.
 - Service `PembayaranBiayaKontingenService` untuk alur tagihan biaya kontingen terpisah (tanpa tabel baru) tetap kompatibel dengan relasi `kontingen.id_pembayaran`.
 - Endpoint + route kontingen untuk upload bukti pembayaran biaya kontingen terpisah dari checkout peserta.
 - Halaman bendahara baru `Biaya Kontingen` beserta aksi konfirmasi/tolak khusus biaya kontingen.
+- Dokumen `docs/hermes/ui-ux-deep-review-kontingen-sekretariat-bendahara-super-admin.md` untuk audit mendalam UI/UX lintas role berbasis code review.
 
 ### Changed
 

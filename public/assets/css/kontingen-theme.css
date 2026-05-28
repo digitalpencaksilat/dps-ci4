@@ -689,6 +689,52 @@ body.kontingen-sidebar-open .kontingen-sidebar-overlay {
     color: var(--brand-primary);
 }
 
+.peserta-stepper {
+    padding: 0.75rem;
+    border: 1px solid rgba(198,0,0,0.08);
+    border-radius: 18px;
+    background: #fffafa;
+}
+
+.peserta-stepper-progress {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
+    color: var(--text-soft);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.peserta-step-tabs {
+    gap: 0.5rem;
+}
+
+.peserta-step-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.step-chip {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(198,0,0,0.08);
+    color: var(--brand-primary);
+    font-size: 0.78rem;
+}
+
+.peserta-step-tabs .nav-link.active .step-chip {
+    background: var(--brand-primary);
+    color: #fff;
+}
+
 .arsip-slot-card {
     padding: 1rem;
     border: 1px solid rgba(198,0,0,0.08);
@@ -720,6 +766,35 @@ body.kontingen-sidebar-open .kontingen-sidebar-overlay {
 @media (max-width: 991.98px) {
     .kontingen-shell {
         grid-template-columns: 1fr;
+    }
+
+    #pesertaModal .modal-content {
+        border-radius: 0;
+    }
+
+    #pesertaModal .modal-header,
+    #pesertaModal .modal-footer {
+        position: sticky;
+        background: #fff;
+        z-index: 2;
+    }
+
+    #pesertaModal .modal-header {
+        top: 0;
+    }
+
+    #pesertaModal .modal-footer {
+        bottom: 0;
+    }
+
+    .peserta-stepper-progress {
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .peserta-step-tabs .nav-link {
+        width: 100%;
+        justify-content: space-between;
     }
 
     .kontingen-sidebar {

@@ -15,6 +15,51 @@
     ],
 ]) ?>
 
+<?php
+$buildAccept = static function (array $mimes): string {
+    $extra = [];
+    foreach ($mimes as $mime) {
+        if ($mime === 'application/pdf') {
+            $extra[] = '.pdf';
+        }
+        if ($mime === 'application/msword') {
+            $extra[] = '.doc';
+        }
+        if ($mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            $extra[] = '.docx';
+        }
+        if ($mime === 'image/jpeg') {
+            $extra[] = '.jpg';
+            $extra[] = '.jpeg';
+        }
+        if ($mime === 'image/png') {
+            $extra[] = '.png';
+        }
+    }
+
+    return implode(',', array_unique(array_merge($mimes, $extra)));
+};
+
+$humanFormats = static function (array $mimes): string {
+    $labels = [];
+    foreach ($mimes as $mime) {
+        if ($mime === 'application/pdf') {
+            $labels[] = 'PDF';
+        } elseif ($mime === 'application/msword') {
+            $labels[] = 'DOC';
+        } elseif ($mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            $labels[] = 'DOCX';
+        } elseif ($mime === 'image/jpeg') {
+            $labels[] = 'JPG/JPEG';
+        } elseif ($mime === 'image/png') {
+            $labels[] = 'PNG';
+        }
+    }
+
+    return implode(', ', array_unique($labels));
+};
+?>
+
 <section class="admin-card">
     <form action="<?= base_url('admin/super/pengaturan-event/gambar-dan-juknis/update') ?>" method="post" enctype="multipart/form-data" class="row g-3">
         <?= csrf_field() ?>
@@ -23,34 +68,60 @@
             <?php
             $current = (string) (($values ?? [])[$key] ?? '');
             $isImage = str_starts_with(($meta['mimes'][0] ?? ''), 'image/');
+            $fileName = $current !== '' ? basename((string) parse_url($current, PHP_URL_PATH)) : '';
             ?>
             <div class="col-12">
-                <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-                    <div class="flex-grow-1">
-                        <label for="<?= esc($key) ?>" class="form-label mb-1"><?= esc((string) ($meta['label'] ?? $key)) ?></label>
-                        <div class="muted-copy small mb-2">Max <?= esc((string) ($meta['maxKb'] ?? 0)) ?> KB</div>
-                        <input class="form-control" type="file" id="<?= esc($key) ?>" name="<?= esc($key) ?>">
-                        <?php if (! empty(($errors ?? [])[$key])) : ?>
-                            <div class="form-text text-danger mt-1"><?= esc((string) $errors[$key]) ?></div>
-                        <?php endif; ?>
-                    </div>
+                <article class="asset-setting-card">
+                    <div class="asset-setting-grid">
+                        <div>
+                            <h3 class="h5 mb-1"><?= esc((string) ($meta['label'] ?? $key)) ?></h3>
+                            <p class="muted-copy small mb-3">Format: <?= esc($humanFormats((array) ($meta['mimes'] ?? []))) ?> · Maks <?= esc((string) ($meta['maxKb'] ?? 0)) ?> KB</p>
 
-                    <div class="col-lg-auto align-self-start">
-                        <div class="muted-copy small mb-1">File saat ini</div>
-                        <?php if ($current !== '') : ?>
-                            <?php if ($isImage) : ?>
-                                <a href="<?= esc($current) ?>" target="_blank" rel="noopener">
-                                    <img src="<?= esc($current) ?>" alt="<?= esc($key) ?>" class="img-fluid rounded" style="max-height: 160px; object-fit: contain; background: rgba(255,255,255,0.05);">
-                                </a>
+                            <label for="<?= esc($key) ?>" class="form-label fw-semibold">Pilih file baru</label>
+                            <input class="form-control" type="file" id="<?= esc($key) ?>" name="<?= esc($key) ?>" accept="<?= esc($buildAccept((array) ($meta['mimes'] ?? []))) ?>">
+
+                            <?php if (! empty(($errors ?? [])[$key])) : ?>
+                                <div class="form-text text-danger mt-1"><?= esc((string) $errors[$key]) ?></div>
                             <?php else : ?>
-                                <a href="<?= esc($current) ?>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm">Lihat File</a>
+                                <div class="form-text">Biarkan kosong jika tidak ingin mengganti file saat ini.</div>
                             <?php endif; ?>
-                            <div class="small mt-2 text-break"><code><?= esc($current) ?></code></div>
-                        <?php else : ?>
-                            <div class="muted-copy">Belum ada</div>
-                        <?php endif; ?>
+                        </div>
+
+                        <div class="asset-preview-panel">
+                            <div class="asset-preview-header d-flex justify-content-between align-items-center gap-2">
+                                <span class="small text-uppercase fw-semibold text-muted">File Saat Ini</span>
+                                <span class="setting-status-badge <?= $current !== '' ? 'active' : 'inactive' ?>">
+                                    <?= $current !== '' ? 'Tersedia' : 'Kosong' ?>
+                                </span>
+                            </div>
+
+                            <div class="asset-preview-frame mt-2">
+                                <?php if ($current !== '') : ?>
+                                    <?php if ($isImage) : ?>
+                                        <a href="<?= esc($current) ?>" target="_blank" rel="noopener" class="asset-preview-link" aria-label="Lihat pratinjau penuh <?= esc((string) ($meta['label'] ?? $key), 'attr') ?>">
+                                            <img src="<?= esc($current) ?>" alt="<?= esc($key) ?>" class="asset-preview-image">
+                                        </a>
+                                    <?php else : ?>
+                                        <div class="asset-file-preview">
+                                            <i class="fas fa-file-lines"></i>
+                                            <div class="small text-muted">Dokumen siap dibuka</div>
+                                            <a href="<?= esc($current) ?>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm rounded-pill mt-2">Buka File</a>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php else : ?>
+                                    <div class="asset-file-preview empty">
+                                        <i class="fas fa-cloud-arrow-up"></i>
+                                        <div class="small text-muted">Belum ada file.</div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <?php if ($current !== '') : ?>
+                                <div class="small mt-2 text-break"><code><?= esc($fileName !== '' ? $fileName : $current) ?></code></div>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </div>
+                </article>
             </div>
         <?php endforeach; ?>
 

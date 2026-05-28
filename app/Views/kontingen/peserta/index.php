@@ -8,6 +8,14 @@ if ($validation === [] && session()->has('validation')) {
 
 $fieldError = static fn(string $field): ?string => isset($validation[$field]) && $validation[$field] !== '' ? (string) $validation[$field] : null;
 $fieldClass = static fn(string $field): string => $fieldError($field) !== null ? ' is-invalid' : '';
+$dataFields = ['nama_pendaftar', 'jenis_kelamin', 'tanggal_lahir', 'tinggi_badan', 'berat_badan', 'tempat_lahir', 'nama_sekolah', 'nomor_induk_kependudukan', 'nomor_kartu_keluarga', 'alamat'];
+$arsipFieldNames = array_map(
+    static fn($slotName, $slot): string => strtolower(preg_replace('/[^a-z0-9]+/i', '_', trim($slot['nama_arsip'] ?? $slotName)) ?? 'arsip'),
+    array_keys($arsipSlots ?? []),
+    array_values($arsipSlots ?? [])
+);
+$dataErrorCount = count(array_filter($dataFields, static fn($field): bool => isset($validation[$field]) && $validation[$field] !== ''));
+$arsipErrorCount = count(array_filter($arsipFieldNames, static fn($field): bool => isset($validation[$field]) && $validation[$field] !== ''));
 ?>
 
 <?= $this->section('content') ?>
@@ -119,7 +127,7 @@ $fieldClass = static fn(string $field): string => $fieldError($field) !== null ?
 </section>
 
 <div class="modal fade" id="pesertaModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable modal-fullscreen-md-down">
             <div class="modal-content border-0 shadow-lg rounded-4">
             <form method="post" id="pesertaForm" class="modal-form-grid" enctype="multipart/form-data">
                 <?= csrf_field() ?>
@@ -131,14 +139,28 @@ $fieldClass = static fn(string $field): string => $fieldError($field) !== null ?
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body pt-3">
-                    <ul class="nav nav-tabs modal-tabs mb-3" id="pesertaTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="data-peserta-tab" data-bs-toggle="tab" data-bs-target="#data-peserta-pane" type="button" role="tab">Data Peserta</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="arsip-peserta-tab" data-bs-toggle="tab" data-bs-target="#arsip-peserta-pane" type="button" role="tab">Arsip Peserta</button>
-                        </li>
-                    </ul>
+                    <div class="peserta-stepper mb-3">
+                        <div class="peserta-stepper-progress">
+                            <span class="peserta-stepper-label">Langkah Pengisian</span>
+                            <span class="peserta-stepper-counter" data-step-counter>1 / 2</span>
+                        </div>
+                        <ul class="nav nav-tabs modal-tabs peserta-step-tabs" id="pesertaTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="data-peserta-tab" data-bs-toggle="tab" data-bs-target="#data-peserta-pane" type="button" role="tab" data-step-index="1">
+                                    <span class="step-chip">1</span>
+                                    <span>Data Peserta</span>
+                                    <span class="badge text-bg-danger rounded-pill ms-1 peserta-step-error-badge <?= $dataErrorCount > 0 ? '' : 'd-none' ?>" data-step-error="data-peserta-pane"><?= $dataErrorCount ?></span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="arsip-peserta-tab" data-bs-toggle="tab" data-bs-target="#arsip-peserta-pane" type="button" role="tab" data-step-index="2">
+                                    <span class="step-chip">2</span>
+                                    <span>Arsip Peserta</span>
+                                    <span class="badge text-bg-danger rounded-pill ms-1 peserta-step-error-badge <?= $arsipErrorCount > 0 ? '' : 'd-none' ?>" data-step-error="arsip-peserta-pane"><?= $arsipErrorCount ?></span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
 
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="data-peserta-pane" role="tabpanel">
@@ -322,6 +344,7 @@ $fieldClass = static fn(string $field): string => $fieldError($field) !== null ?
             }
 
             setInlineError(fieldName, message, true);
+            updateStepErrorBadges?.();
         };
 
         const setRequirementHint = (fieldName, text = '', tone = 'muted') => {
@@ -445,6 +468,37 @@ $fieldClass = static fn(string $field): string => $fieldError($field) !== null ?
                 );
             });
         };
+
+        const updateStepCounter = () => {
+            const active = modalEl.querySelector('.tab-pane.active');
+            const stepIndex = active?.id === 'arsip-peserta-pane' ? 2 : 1;
+            const counter = modalEl.querySelector('[data-step-counter]');
+            if (counter) counter.textContent = `${stepIndex} / 2`;
+        };
+
+        const updateStepErrorBadges = () => {
+            const panes = ['data-peserta-pane', 'arsip-peserta-pane'];
+            panes.forEach((paneId) => {
+                const pane = modalEl.querySelector('#' + paneId);
+                const badge = modalEl.querySelector(`[data-step-error="${paneId}"]`);
+                if (!pane || !badge) return;
+
+                const invalidCount = pane.querySelectorAll('.is-invalid').length;
+                badge.textContent = String(invalidCount);
+                badge.classList.toggle('d-none', invalidCount === 0);
+            });
+        };
+
+        modalEl.addEventListener('shown.bs.modal', () => {
+            updateStepCounter();
+            updateStepErrorBadges();
+        });
+
+        modalEl.querySelectorAll('button[data-bs-toggle="tab"]').forEach((btn) => {
+            btn.addEventListener('shown.bs.tab', () => {
+                updateStepCounter();
+            });
+        });
 
         modalEl.addEventListener('show.bs.modal', (event) => {
             const trigger = event.relatedTarget;

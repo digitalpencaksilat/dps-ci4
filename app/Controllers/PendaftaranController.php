@@ -85,7 +85,21 @@ class PendaftaranController extends BaseController
 
     public function downloadJuknis()
     {
-        return $this->response->setStatusCode(501)->setBody('Not implemented');
+        $url = (string) (get_setting('technical_handbook', 'pendaftaran/gambar_dan_juknis') ?? '');
+        if ($url === '') {
+            return $this->response->setStatusCode(404)->setBody('File juknis belum tersedia');
+        }
+
+        $path = parse_url($url, PHP_URL_PATH);
+        $relative = is_string($path) ? ltrim($path, '/') : '';
+        if ($relative !== '' && str_starts_with($relative, 'uploads/')) {
+            $localPath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative);
+            if (is_file($localPath)) {
+                return $this->response->download($localPath, null);
+            }
+        }
+
+        return redirect()->to($url);
     }
 
     public function downloadFormExcel()

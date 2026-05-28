@@ -285,11 +285,10 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                 </nav>
             </div>
 
-            <div class="mt-auto admin-card">
-                <div class="small admin-section-label px-0 mb-2">Sesi Admin</div>
-                <div class="fw-semibold mb-1"><?= esc($adminName ?? $adminPanel['label']) ?></div>
-                <div class="muted-copy small">Role aktif: <?= esc((string) (session()->get('level') ?? 'unknown')) ?></div>
-                <a href="<?= base_url('admin/logout') ?>" class="btn btn-outline-light btn-sm rounded-pill mt-3">Logout</a>
+            <div class="mt-auto">
+                <a href="<?= base_url('admin/logout') ?>" class="btn btn-admin-logout w-100 rounded-pill">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
             </div>
         </aside>
 

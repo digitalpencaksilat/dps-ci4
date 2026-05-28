@@ -5,6 +5,8 @@
     --brand-secondary: #ffd700;
     --brand-dark: #1a1a1a;
     --brand-light: #f8f9fa;
+    --bg-color: #f4f6f9;
+    --sidenav-bg: #f8f9fa;
     --surface: #ffffff;
     --surface-muted: #fff8f8;
     --text-main: #222222;
@@ -18,7 +20,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, #fff7f7 0%, #f6f7fb 100%);
+    background: var(--bg-color);
     color: var(--text-main);
     overflow-x: hidden;
 }
@@ -169,11 +171,9 @@ body.kontingen-sidebar-open .kontingen-sidebar-overlay {
     flex-direction: column;
     gap: 1rem;
     padding: 1.25rem;
-    background:
-        radial-gradient(circle at top right, rgba(255, 215, 0, 0.12), transparent 25%),
-        linear-gradient(180deg, var(--brand-primary-dark) 0%, var(--brand-primary-deeper) 100%);
-    border-right: 1px solid rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.94);
+    background: var(--sidenav-bg);
+    border-right: 4px solid var(--brand-primary);
+    color: var(--brand-dark);
 }
 
 .kontingen-sidebar-head {

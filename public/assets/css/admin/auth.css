@@ -2,105 +2,134 @@ body.admin-auth-body {
     min-height: 100vh;
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: #fff;
+    background-color: #f4f6f9;
     color: var(--admin-text);
     overflow-x: hidden;
 }
 
-.admin-auth-title,
-.admin-auth-hero-title {
-    font-family: 'Oswald', sans-serif;
-    letter-spacing: 0.04em;
-}
-
-.admin-auth-card {
-    max-width: 480px;
-}
-
-.admin-auth-logo {
-    width: 88px;
-    height: 88px;
-    object-fit: contain;
-}
-
-.admin-auth-title {
-    font-size: 2.15rem;
-}
-
-.admin-auth-hero-wrap {
-    background: linear-gradient(160deg, #6b0000 0%, var(--admin-accent) 45%, #1a1a1a 100%);
-}
-
-.admin-auth-hero-card {
-    position: relative;
-    border-radius: 28px;
-    overflow: hidden;
-    min-height: calc(100vh - 3rem);
-    background:
-        radial-gradient(circle at top right, rgba(255, 215, 0, 0.25), transparent 28%),
-        linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-}
-
-.admin-auth-hero-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.22));
-    pointer-events: none;
-}
-
-.admin-auth-hero-content {
-    position: relative;
-    z-index: 1;
-    padding: 4rem;
+body.admin-auth-centered {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 100%;
-}
-
-.admin-auth-hero-title {
-    font-size: 3rem;
-    line-height: 1.15;
-    max-width: 720px;
-}
-
-.admin-auth-point-card {
-    display: flex;
-    gap: 0.9rem;
     align-items: center;
-    padding: 1rem 1.15rem;
-    border-radius: 18px;
+    justify-content: center;
+}
+
+.admin-login-wrap {
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+}
+
+.login-card {
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background: #fff;
+}
+
+.card-header-custom {
+    background-color: #fff;
+    padding: 40px 30px 20px;
+    text-align: center;
+    border-bottom: none;
+}
+
+.logo-img {
+    height: 80px;
+    width: auto;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.app-title {
+    color: var(--brand-primary);
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.app-subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 5px;
+}
+
+.card-body-custom {
+    padding: 30px 40px 50px;
+}
+
+.admin-auth-body .form-control {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    padding: 12px 15px;
+}
+
+.admin-auth-body .form-control:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 0.2rem rgba(198, 0, 0, 0.15);
+}
+
+.admin-auth-body .input-group-text {
+    border-radius: 10px;
+    background-color: transparent;
+    border: 1px solid #e0e0e0;
+    border-right: none;
+    color: var(--brand-primary);
+}
+
+.admin-auth-body .input-group .form-control {
+    border-left: none;
+}
+
+.admin-auth-body .input-group .form-control:focus {
+    border-color: #e0e0e0;
+    box-shadow: none;
+}
+
+.admin-auth-body .input-group:focus-within .input-group-text,
+.admin-auth-body .input-group:focus-within .form-control {
+    border-color: var(--brand-primary);
+}
+
+.btn-brand-login {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 50px;
+    border: 2px solid var(--brand-primary);
+    background-color: var(--brand-primary);
     color: #fff;
-    background: rgba(255, 255, 255, 0.09);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(4px);
-}
-
-.admin-auth-point-card i {
-    color: #ffd700;
-}
-
-.text-admin-brand {
-    color: var(--admin-accent) !important;
-}
-
-.btn-admin-brand {
-    background-color: var(--admin-accent);
-    border-color: var(--admin-accent);
-    color: #fff;
+    font-family: 'Oswald', sans-serif;
     font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s;
 }
 
-.btn-admin-brand:hover,
-.btn-admin-brand:focus {
-    background-color: #a80000;
-    border-color: #a80000;
+.btn-brand-login:hover,
+.btn-brand-login:focus {
+    background-color: #a00000;
+    border-color: #a00000;
     color: #fff;
+    box-shadow: 0 5px 15px rgba(198, 0, 0, 0.3);
 }
 
-@media (max-width: 991.98px) {
-    .admin-auth-title {
-        font-size: 1.85rem;
+@media (max-width: 575.98px) {
+    .admin-login-wrap {
+        padding: 1rem;
+    }
+
+    .card-header-custom {
+        padding: 32px 24px 18px;
+    }
+
+    .card-body-custom {
+        padding: 24px 26px 36px;
     }
 }

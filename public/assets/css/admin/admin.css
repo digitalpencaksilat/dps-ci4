@@ -1,13 +1,27 @@
 :root {
-    --admin-bg: #fff6f7;
+    /* Brand theme (DPS) */
+    --brand-primary: #c60000;
+    --brand-secondary: #c5a017;
+    --brand-dark: #212529;
+    --corner-blue: #1565c0;
+    --corner-red: #c62828;
+    --bg-color: #f4f6f9;
+
+    /* UI surfaces */
+    --sidenav-bg: #f8f9fa;
+    --sidenav-border: var(--brand-primary);
+    --sidenav-hover: rgba(198, 0, 0, 0.06);
+
+    /* Admin tokens (kept for existing selectors) */
+    --admin-bg: var(--bg-color);
     --admin-bg-soft: #f6f7fb;
     --admin-surface: #ffffff;
     --admin-surface-soft: #fff0f1;
-    --admin-surface-strong: #6f1018;
+    --admin-surface-strong: var(--brand-dark);
     --admin-border: rgba(198, 0, 0, 0.08);
     --admin-text: #20161a;
     --admin-muted: #7d6670;
-    --admin-accent: #c60000;
+    --admin-accent: var(--brand-primary);
     --admin-accent-dark: #8f0b14;
     --admin-accent-soft: rgba(198, 0, 0, 0.08);
     --admin-success: #0f9f6e;
@@ -20,9 +34,7 @@ body.admin-body {
     min-height: 100vh;
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background:
-        radial-gradient(circle at top right, rgba(255, 215, 0, 0.12), transparent 24%),
-        linear-gradient(180deg, var(--admin-bg) 0%, var(--admin-bg-soft) 100%);
+    background: var(--bg-color);
     color: var(--admin-text);
     overflow-x: hidden;
 }
@@ -57,10 +69,8 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 .admin-sidebar {
     width: 280px;
     padding: 24px 18px;
-    background:
-        radial-gradient(circle at top right, rgba(255, 215, 0, 0.16), transparent 26%),
-        linear-gradient(180deg, #7b0f17 0%, #510b11 100%);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--sidenav-bg);
+    border-right: 4px solid var(--sidenav-border);
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -71,7 +81,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.34) transparent;
+    scrollbar-color: rgba(198, 0, 0, 0.22) transparent;
     z-index: 1030;
 }
 
@@ -84,7 +94,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .admin-sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.28);
+    background: rgba(198, 0, 0, 0.22);
     border-radius: 999px;
 }
 
@@ -94,9 +104,9 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     gap: 12px;
     padding: 14px;
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: #ffffff;
+    border: 1px solid rgba(198, 0, 0, 0.08);
+    color: var(--brand-dark);
 }
 
 .admin-sidebar-head {
@@ -112,8 +122,8 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     height: 42px;
     border: 0;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: #ffffff;
+    color: var(--brand-primary);
 }
 
 .admin-brand img {
@@ -121,7 +131,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     height: 50px;
     object-fit: contain;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.94);
+    background: #ffffff;
     padding: 7px;
 }
 
@@ -135,6 +145,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 
 .admin-brand-title {
     font-size: 1.2rem;
+    color: var(--brand-primary);
 }
 
 .admin-page-title {
@@ -142,9 +153,12 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     line-height: 1.15;
 }
 
-.admin-brand-subtitle,
+.admin-brand-subtitle {
+    color: var(--brand-dark);
+}
+
 .admin-section-label {
-    color: rgba(255, 255, 255, 0.68);
+    color: var(--brand-primary);
 }
 
 .admin-topbar-meta,
@@ -158,6 +172,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     text-transform: uppercase;
     letter-spacing: 0.14em;
     padding: 0 14px;
+    color: var(--brand-primary);
 }
 
 .admin-nav-link {
@@ -167,7 +182,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     gap: 10px;
     padding: 10px 12px;
     border-radius: 14px;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--brand-dark);
     text-decoration: none;
     font-weight: 600;
     transition: 0.2s ease;
@@ -176,9 +191,9 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 
 .admin-nav-link:hover,
 .admin-nav-link.active {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(198, 0, 0, 0.08);
+    color: var(--brand-primary);
+    border-color: rgba(198, 0, 0, 0.12);
 }
 
 .admin-nav-link .label-block {
@@ -200,7 +215,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     margin-top: 8px;
     margin-left: 16px;
     padding-left: 14px;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 1px solid rgba(198, 0, 0, 0.12);
 }
 
 .admin-submenu-inner {
@@ -213,13 +228,13 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     padding: 10px 12px;
     border-radius: 12px;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.74);
+    color: #5c616b;
 }
 
 .admin-submenu-link:hover,
 .admin-submenu-link.active {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.08);
+    color: var(--brand-primary);
+    background: rgba(198, 0, 0, 0.06);
 }
 
 .setting-card {
@@ -375,6 +390,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     margin-left: 280px;
     padding: 20px;
     overflow-x: hidden;
+    background: var(--bg-color);
 }
 
 .admin-topbar,
@@ -392,6 +408,7 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     justify-content: space-between;
     align-items: center;
     gap: 12px;
+    border-top: 3px solid var(--brand-primary);
 }
 
 .admin-card {
@@ -399,9 +416,9 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .admin-sidebar .admin-card {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: #ffffff;
+    border-color: rgba(198, 0, 0, 0.08);
+    color: var(--brand-dark);
     box-shadow: none;
 }
 
@@ -889,6 +906,20 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     background: var(--admin-surface-strong) !important;
     border-color: var(--admin-surface-strong) !important;
     color: #fff !important;
+}
+
+.btn-admin-logout {
+    background: var(--brand-primary);
+    border: 1px solid var(--brand-primary);
+    color: #fff;
+    font-weight: 700;
+}
+
+.btn-admin-logout:hover,
+.btn-admin-logout:focus {
+    background: #a80000;
+    border-color: #a80000;
+    color: #fff;
 }
 
 .info-grid {

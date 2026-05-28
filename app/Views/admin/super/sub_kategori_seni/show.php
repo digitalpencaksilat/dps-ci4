@@ -1,17 +1,26 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-        <div>
-            <p class="eyebrow mb-1">Detail Sub Kategori Seni</p>
-            <h3 class="section-title h4 mb-0"><?= esc(trim(($row->nama_kategori_usia ?? '-') . ' ' . ($row->jenis_kelamin ?? '') . ' - ' . ($row->jenis_seni ?? '-') . ' ' . ($row->nama_seni ?? '-'))) ?></h3>
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-outline-light rounded-pill" href="<?= base_url('admin/super/sub-kategori-seni/' . $row->id_sub_kategori_seni . '/edit') ?>">Edit</a>
-            <a class="btn btn-outline-secondary rounded-pill" href="<?= base_url('admin/super/sub-kategori-seni') ?>">Kembali</a>
-        </div>
-    </div>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Detail Sub Kategori Seni',
+    'title' => trim(($row->nama_kategori_usia ?? '-') . ' ' . ($row->jenis_kelamin ?? '') . ' - ' . ($row->jenis_seni ?? '-') . ' ' . ($row->nama_seni ?? '-')),
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/sub-kategori-seni'),
+            'label' => 'Kembali',
+            'class' => 'btn-outline-secondary',
+        ],
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/sub-kategori-seni/' . $row->id_sub_kategori_seni . '/edit'),
+            'label' => 'Edit',
+            'class' => 'btn-danger',
+        ],
+    ],
+]) ?>
+
+<section class="admin-card">
     <div class="row g-3">
         <?php foreach ([
             'Kategori Usia' => $row->nama_kategori_usia ?? '-',

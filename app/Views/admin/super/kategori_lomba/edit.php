@@ -1,16 +1,19 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card admin-landing-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-        <div>
-            <p class="eyebrow mb-1">Pengaturan Kategori Lomba</p>
-            <h2 class="section-title h3 mb-3">Edit Kategori Lomba</h2>
-            <p class="muted-copy mb-0">Perubahan dapat memengaruhi kelas tanding, sub kategori seni, dan flow pendaftaran.</p>
-        </div>
-        <a href="<?= base_url('admin/super/kategori-lomba') ?>" class="btn btn-outline-light rounded-pill align-self-start">Kembali</a>
-    </div>
-</section>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Pengaturan Kategori Lomba',
+    'title' => 'Edit Kategori Lomba',
+    'description' => 'Perubahan dapat memengaruhi kelas tanding, sub kategori seni, dan flow pendaftaran.',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/kategori-lomba'),
+            'label' => 'Kembali',
+            'class' => 'btn-outline-secondary',
+        ],
+    ],
+]) ?>
 
 <section class="admin-card">
     <form action="<?= base_url('admin/super/kategori-lomba/' . $row->id_kategori_lomba . '/update') ?>" method="post" class="row g-3">
@@ -36,7 +39,7 @@
         </div>
         <div class="col-12 col-lg-6">
             <label for="peraturan_pertandingan" class="form-label">Peraturan Pertandingan</label>
-            <input type="text" class="form-control" id="peraturan_pertandingan" value="PERSILAT" disabled>
+            <input type="text" class="form-control" id="peraturan_pertandingan" value="PERSILAT" readonly>
             <div class="form-text">Dikunci untuk menjaga format kategori dan penilaian tetap konsisten.</div>
         </div>
         <div class="col-12 col-md-4">
@@ -56,8 +59,8 @@
             <input type="number" min="0" class="form-control" id="kuota_peserta" name="kuota_peserta" value="<?= esc((string) old('kuota_peserta', $row->kuota_peserta ?? '')) ?>">
         </div>
         <div class="col-12 d-flex flex-wrap gap-2">
-            <button type="submit" class="btn btn-primary rounded-pill">Simpan Perubahan</button>
-            <a href="<?= base_url('admin/super/kategori-lomba') ?>" class="btn btn-outline-light rounded-pill">Batal</a>
+            <button type="submit" class="btn btn-danger rounded-pill">Simpan Perubahan</button>
+            <a href="<?= base_url('admin/super/kategori-lomba') ?>" class="btn btn-outline-secondary rounded-pill">Batal</a>
         </div>
     </form>
 </section>

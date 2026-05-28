@@ -1,14 +1,20 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Edit Sub Kategori Seni',
+    'title' => trim(($row->nama_kategori_usia ?? '-') . ' ' . ($row->jenis_kelamin ?? '') . ' - ' . ($row->jenis_seni ?? '-') . ' ' . ($row->nama_seni ?? '-')),
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/sub-kategori-seni'),
+            'label' => 'Kembali',
+            'class' => 'btn-outline-secondary',
+        ],
+    ],
+]) ?>
+
 <section class="admin-card">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-        <div>
-            <p class="eyebrow mb-1">Edit Sub Kategori Seni</p>
-            <h3 class="section-title h4 mb-0"><?= esc(trim(($row->nama_kategori_usia ?? '-') . ' ' . ($row->jenis_kelamin ?? '') . ' - ' . ($row->jenis_seni ?? '-') . ' ' . ($row->nama_seni ?? '-'))) ?></h3>
-        </div>
-        <a class="btn btn-outline-secondary rounded-pill" href="<?= base_url('admin/super/sub-kategori-seni') ?>">Kembali</a>
-    </div>
     <form action="<?= base_url('admin/super/sub-kategori-seni/' . $row->id_sub_kategori_seni . '/update') ?>" method="post" class="row g-3">
         <?= csrf_field() ?>
         <div class="col-12 col-lg-6">
@@ -56,7 +62,7 @@
             <textarea class="form-control" id="keterangan" name="keterangan" rows="2"><?= esc((string) old('keterangan', $row->keterangan ?? '')) ?></textarea>
         </div>
         <div class="col-12">
-            <button type="submit" class="btn btn-primary rounded-pill">Simpan Perubahan</button>
+            <button type="submit" class="btn btn-danger rounded-pill">Simpan Perubahan</button>
         </div>
     </form>
 </section>

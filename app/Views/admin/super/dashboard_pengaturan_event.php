@@ -42,22 +42,26 @@ $renderMaxPesertaRows = static function (array $rows, string $badgeClass): strin
 };
 ?>
 
-<section class="admin-card admin-landing-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-        <div>
-            <p class="eyebrow mb-1">Pengaturan Event</p>
-            <h2 class="section-title h3 mb-3">Dashboard Pengaturan Event</h2>
-            <p class="muted-copy mb-0">Ringkasan ini mengikuti dashboard CI3 untuk memeriksa konfigurasi medali, peraturan, pool, biaya, dan harga kategori usia.</p>
-        </div>
-        <div class="d-flex flex-wrap align-items-start gap-2">
-            <span class="status-badge <?= ($activeMode ?? '') === 'pengaturan_event' ? 'success' : 'warning' ?>">
-                Mode: <?= esc(($activeMode ?? '') === 'pengaturan_event' ? 'pengaturan_event' : 'belum aktif') ?>
-            </span>
-            <a href="<?= base_url('admin/super/pengaturan-event/profil-kejuaraan') ?>" class="btn btn-primary rounded-pill">Profil Kejuaraan</a>
-            <a href="<?= base_url('admin/super/menu-utama') ?>" class="btn btn-outline-light rounded-pill">Menu Utama</a>
-        </div>
-    </div>
-</section>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Pengaturan Event',
+    'title' => 'Dashboard Pengaturan Event',
+    'description' => 'Ringkasan ini mengikuti dashboard CI3 untuk memeriksa konfigurasi medali, peraturan, pool, biaya, dan harga kategori usia.',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/menu-utama'),
+            'label' => 'Menu Utama',
+            'class' => 'btn-outline-secondary',
+        ],
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/pengaturan-event/profil-kejuaraan'),
+            'label' => 'Profil Kejuaraan',
+            'class' => 'btn-danger',
+        ],
+    ],
+    'meta' => '<span class="status-badge ' . (($activeMode ?? '') === 'pengaturan_event' ? 'success' : 'warning') . '">' . esc(($activeMode ?? '') === 'pengaturan_event' ? 'pengaturan_event' : 'belum aktif') . '</span>',
+]) ?>
 
 <div class="row g-3 mb-4">
     <div class="col-12 col-md-6 col-lg-4">

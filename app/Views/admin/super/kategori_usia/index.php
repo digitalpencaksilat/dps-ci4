@@ -1,20 +1,32 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-        <div>
-            <p class="eyebrow mb-1">Master Data</p>
-            <h3 class="section-title h4 mb-0">Daftar Kategori Usia</h3>
-            <p class="muted-copy mb-0 mt-2">Create mendukung pilihan putra dan putri sekaligus seperti flow CI3.</p>
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalTambahKategoriUsia">Tambah Kategori Usia</button>
-            <a href="<?= base_url('admin/super/kategori-lomba') ?>" class="btn btn-outline-light rounded-pill">Kategori Lomba</a>
-            <span class="status-badge neutral">Total: <?= esc((string) count($rows ?? [])) ?></span>
-        </div>
-    </div>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Master Data',
+    'title' => 'Daftar Kategori Usia',
+    'description' => 'Create mendukung pilihan putra dan putri sekaligus seperti flow CI3.',
+    'toolbarClass' => 'mb-4',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/kategori-lomba'),
+            'label' => 'Kategori Lomba',
+            'class' => 'btn-outline-secondary',
+        ],
+        [
+            'tag' => 'button',
+            'label' => 'Tambah Kategori Usia',
+            'class' => 'btn-danger',
+            'attrs' => [
+                'data-bs-toggle' => 'modal',
+                'data-bs-target' => '#modalTambahKategoriUsia',
+            ],
+        ],
+    ],
+    'meta' => '<span class="status-badge neutral">Total: ' . esc((string) count($rows ?? [])) . '</span>',
+]) ?>
 
+<section class="admin-card">
     <div class="admin-table-wrap">
         <div class="table-shell admin-table-scroller">
             <table class="table admin-table admin-datatable-export align-middle mb-0">
@@ -41,7 +53,7 @@
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2">
                                     <a href="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia) ?>" class="btn btn-sm btn-outline-secondary rounded-pill">Detail</a>
-                                    <a href="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/edit') ?>" class="btn btn-sm btn-outline-light rounded-pill">Edit</a>
+                                    <a href="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/edit') ?>" class="btn btn-sm btn-outline-secondary rounded-pill">Edit</a>
                                     <form action="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/delete') ?>" method="post" onsubmit="return confirmAdminAction(this, 'Hapus kategori usia?', 'Data kategori yang sudah dipakai lomba atau peserta mungkin tidak dapat dihapus.', 'Hapus')">
                                         <?= csrf_field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Hapus</button>
@@ -95,7 +107,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary rounded-pill">Simpan Kategori Usia</button>
+                <button type="submit" class="btn btn-danger rounded-pill">Simpan Kategori Usia</button>
             </div>
         </form>
     </div>

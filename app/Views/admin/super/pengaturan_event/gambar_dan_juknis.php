@@ -1,21 +1,22 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card admin-landing-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-        <div>
-            <p class="eyebrow mb-1">Pengaturan Event</p>
-            <h2 class="section-title h3 mb-3">Gambar dan Juknis</h2>
-            <p class="muted-copy mb-0">Upload poster, logo, dan technical handbook. File disimpan di folder <code>public/uploads</code> dan URL-nya disimpan ke <code>site_builder_settings</code>.</p>
-        </div>
-        <div class="d-flex flex-wrap gap-2 align-self-start">
-            <a href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>" class="btn btn-outline-light rounded-pill">Kembali ke Dashboard</a>
-        </div>
-    </div>
-</section>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Pengaturan Event',
+    'title' => 'Gambar dan Juknis',
+    'description' => 'Upload poster, logo, dan technical handbook. File disimpan di folder <code>public/uploads</code> dan URL-nya disimpan ke <code>site_builder_settings</code>.',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/dashboard-pengaturan-event'),
+            'label' => 'Kembali ke Dashboard',
+            'class' => 'btn-outline-secondary',
+        ],
+    ],
+]) ?>
 
 <section class="admin-card">
-    <form action="<?= base_url('admin/super/pengaturan-event/gambar-dan-juknis/update') ?>" method="post" enctype="multipart/form-data" class="row g-4">
+    <form action="<?= base_url('admin/super/pengaturan-event/gambar-dan-juknis/update') ?>" method="post" enctype="multipart/form-data" class="row g-3">
         <?= csrf_field() ?>
 
         <?php foreach (($files ?? []) as $key => $meta) : ?>
@@ -34,7 +35,7 @@
                         <?php endif; ?>
                     </div>
 
-                    <div style="min-width: 220px;" class="align-self-start">
+                    <div class="col-lg-auto align-self-start">
                         <div class="muted-copy small mb-1">File saat ini</div>
                         <?php if ($current !== '') : ?>
                             <?php if ($isImage) : ?>
@@ -54,7 +55,7 @@
         <?php endforeach; ?>
 
         <div class="col-12 d-flex flex-wrap gap-2">
-            <button type="submit" class="btn btn-primary rounded-pill">Simpan</button>
+            <button type="submit" class="btn btn-danger rounded-pill">Simpan</button>
             <a href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>" class="btn btn-outline-secondary rounded-pill">Batal</a>
         </div>
     </form>

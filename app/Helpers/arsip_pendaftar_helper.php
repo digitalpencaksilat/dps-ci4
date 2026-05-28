@@ -61,3 +61,55 @@ if (! function_exists('url_arsip_pendaftar_ci4')) {
         return base_url('uploads/peserta/arsip/' . $namaArsip);
     }
 }
+
+if (! function_exists('validate_arsip_upload_ci4')) {
+    function validate_arsip_upload_ci4(string $slotName, $file): array
+    {
+        $slots = get_arsip_pendaftar_config_ci4();
+        
+        if (!isset($slots[$slotName])) {
+            return [
+                'valid' => false,
+                'message' => 'Slot arsip tidak ditemukan'
+            ];
+        }
+        
+        $slot = $slots[$slotName];
+        
+        try {
+            (new \App\Services\ArsipPendaftarService())->validateUpload($file, $slot, $slot['nama_arsip'] ?? $slotName);
+            return ['valid' => true, 'message' => 'Valid'];
+        } catch (\RuntimeException $e) {
+            return ['valid' => false, 'message' => $e->getMessage()];
+        }
+    }
+}
+
+if (! function_exists('get_slot_config_ci4')) {
+    function get_slot_config_ci4(string $slotName): ?array
+    {
+        $slots = get_arsip_pendaftar_config_ci4();
+        return $slots[$slotName] ?? null;
+    }
+}
+
+if (! function_exists('count_active_arsip_pendaftar_ci4')) {
+    function count_active_arsip_pendaftar_ci4(): int
+    {
+        return count(get_active_arsip_pendaftar_ci4());
+    }
+}
+
+if (! function_exists('get_max_arsip_slot_ci4')) {
+    function get_max_arsip_slot_ci4(): int
+    {
+        $slots = get_arsip_pendaftar_config_ci4();
+        $max = 0;
+        foreach (array_keys($slots) as $key) {
+            if (preg_match('/^slot_(\d+)$/', (string) $key, $m)) {
+                $max = max($max, (int) $m[1]);
+            }
+        }
+        return $max;
+    }
+}

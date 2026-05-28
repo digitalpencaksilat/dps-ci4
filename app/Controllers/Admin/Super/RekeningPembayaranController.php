@@ -25,33 +25,8 @@ class RekeningPembayaranController extends BaseController
 
     public function update(): RedirectResponse
     {
-        if (! $this->validate($this->service->rules())) {
-            return redirect()->back()->withInput()->with('status', false)->with('message', $this->validator->getErrors())->with('errors', $this->validator->getErrors());
-        }
-
-        $errors = [];
-        $accounts = [];
-        for ($i = 1; $i <= 5; $i++) {
-            $key = 'account_' . $i;
-            $accounts[] = [
-                'key' => $key,
-                'bank_name' => (string) $this->request->getPost($key . '_bank_name'),
-                'bank_account_name' => (string) $this->request->getPost($key . '_bank_account_name'),
-                'bank_account_number' => (string) $this->request->getPost($key . '_bank_account_number'),
-                'active' => $this->request->getPost($key . '_active') !== null,
-                'display_qrcode' => $this->request->getPost($key . '_display_qrcode') !== null,
-            ];
-
-            $qr = $this->request->getFile($key . '_qrcode');
-            if ($qr && $qr->isValid() && ! $qr->hasMoved()) {
-                try {
-                    $this->service->storeQr($key, $qr);
-                } catch (\Throwable $e) {
-                    $errors[$key . '_qrcode'] = $e->getMessage();
-                }
-            }
-        }
-
+        $accounts = $this->normalizeAccounts($this->request->getPost('accounts'));
+        $errors = $this->validateAccounts($accounts);
         if ($errors !== []) {
             return redirect()->back()->withInput()->with('status', false)->with('message', $errors)->with('errors', $errors);
         }
@@ -61,6 +36,55 @@ class RekeningPembayaranController extends BaseController
         return redirect()->to(base_url('admin/super/pengaturan-event/rekening-pembayaran'))
             ->with('status', true)
             ->with('message', 'Rekening pembayaran berhasil diperbarui.');
+    }
+
+    /**
+     * @param mixed $accounts
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizeAccounts($accounts): array
+    {
+        if (! is_array($accounts)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($accounts as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $normalized[] = [
+                'bank_name' => trim((string) ($row['bank_name'] ?? '')),
+                'bank_account_name' => trim((string) ($row['bank_account_name'] ?? '')),
+                'bank_account_number' => trim((string) ($row['bank_account_number'] ?? '')),
+                'active' => ! empty($row['active']),
+            ];
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $accounts
+     * @return array<string, string>
+     */
+    private function validateAccounts(array $accounts): array
+    {
+        $errors = [];
+        foreach ($accounts as $index => $row) {
+            if (mb_strlen((string) $row['bank_name']) > 50) {
+                $errors['accounts.' . $index . '.bank_name'] = 'Nama bank maksimal 50 karakter.';
+            }
+            if (mb_strlen((string) $row['bank_account_name']) > 100) {
+                $errors['accounts.' . $index . '.bank_account_name'] = 'Nama pemilik maksimal 100 karakter.';
+            }
+            if (mb_strlen((string) $row['bank_account_number']) > 50) {
+                $errors['accounts.' . $index . '.bank_account_number'] = 'Nomor rekening maksimal 50 karakter.';
+            }
+        }
+
+        return $errors;
     }
 
     /**

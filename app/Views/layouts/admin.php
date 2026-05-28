@@ -103,16 +103,19 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <?php endif; ?>
 
                     <?php if ($superMode === 'perngaturan_kategori_lomba') : ?>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'kategori-usia') ? 'active' : '' ?>" href="<?= base_url('admin/super/kategori-usia') ?>">
-                        <span class="label-block"><i class="fas fa-users-between-lines"></i><span>Kategori Usia</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'kategori-lomba') ? 'active' : '' ?>" href="<?= base_url('admin/super/kategori-lomba') ?>">
-                        <span class="label-block"><i class="fas fa-medal"></i><span>Kategori Lomba</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'sub-kategori-seni') ? 'active' : '' ?>" href="<?= base_url('admin/super/sub-kategori-seni') ?>">
-                        <span class="label-block"><i class="fas fa-masks-theater"></i><span>Sub Kategori Seni</span></span>
-                    </a>
-                    <?php endif; ?>
+                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'kategori-usia') ? 'active' : '' ?>" href="<?= base_url('admin/super/kategori-usia') ?>">
+                         <span class="label-block"><i class="fas fa-users-between-lines"></i><span>Kategori Usia</span></span>
+                     </a>
+                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'kategori-lomba') ? 'active' : '' ?>" href="<?= base_url('admin/super/kategori-lomba') ?>">
+                         <span class="label-block"><i class="fas fa-medal"></i><span>Kategori Lomba</span></span>
+                     </a>
+                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'kelas-tanding') ? 'active' : '' ?>" href="<?= base_url('admin/super/kelas-tanding') ?>">
+                         <span class="label-block"><i class="fas fa-hand-fist"></i><span>Kelas Tanding</span></span>
+                     </a>
+                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_kategori_lomba' && str_contains(uri_string(), 'sub-kategori-seni') ? 'active' : '' ?>" href="<?= base_url('admin/super/sub-kategori-seni') ?>">
+                         <span class="label-block"><i class="fas fa-masks-theater"></i><span>Sub Kategori Seni</span></span>
+                     </a>
+                     <?php endif; ?>
                     <?php else : ?>
                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'dashboard' ? 'active' : '' ?>" href="<?= base_url($adminPanel['home']) ?>">
                         <span class="label-block"><i class="fas fa-chart-line"></i><span>Dashboard</span></span>

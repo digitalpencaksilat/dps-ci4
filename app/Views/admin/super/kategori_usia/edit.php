@@ -1,16 +1,19 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card admin-landing-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-        <div>
-            <p class="eyebrow mb-1">Pengaturan Kategori Lomba</p>
-            <h2 class="section-title h3 mb-3">Edit Kategori Usia</h2>
-            <p class="muted-copy mb-0">Perbarui satu kategori usia. Perubahan dapat memengaruhi kategori lomba yang terkait.</p>
-        </div>
-        <a href="<?= base_url('admin/super/kategori-usia') ?>" class="btn btn-outline-light rounded-pill align-self-start">Kembali</a>
-    </div>
-</section>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Pengaturan Kategori Lomba',
+    'title' => 'Edit Kategori Usia',
+    'description' => 'Perbarui satu kategori usia. Perubahan dapat memengaruhi kategori lomba yang terkait.',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/kategori-usia'),
+            'label' => 'Kembali',
+            'class' => 'btn-outline-secondary',
+        ],
+    ],
+]) ?>
 
 <section class="admin-card">
     <form action="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/update') ?>" method="post" class="row g-3">
@@ -40,8 +43,8 @@
             <input type="date" class="form-control" id="acuan_tanggal" name="acuan_tanggal" value="<?= esc((string) old('acuan_tanggal', $row->acuan_tanggal ?? '')) ?>">
         </div>
         <div class="col-12 d-flex flex-wrap gap-2">
-            <button type="submit" class="btn btn-primary rounded-pill">Simpan Perubahan</button>
-            <a href="<?= base_url('admin/super/kategori-usia') ?>" class="btn btn-outline-light rounded-pill">Batal</a>
+            <button type="submit" class="btn btn-danger rounded-pill">Simpan Perubahan</button>
+            <a href="<?= base_url('admin/super/kategori-usia') ?>" class="btn btn-outline-secondary rounded-pill">Batal</a>
         </div>
     </form>
 </section>

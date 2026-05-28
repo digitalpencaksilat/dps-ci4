@@ -1,21 +1,38 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-        <div>
-            <p class="eyebrow mb-1">Master Data</p>
-            <h3 class="section-title h4 mb-0">Daftar Sub Kategori Seni</h3>
-            <p class="muted-copy mb-0 mt-2">Create mendukung beberapa kategori lomba seni sekaligus dan otomatis membuat pool pertama.</p>
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalTambahSubKategoriSeni">Tambah Sub Kategori Seni</button>
-            <a href="<?= base_url('admin/super/kategori-usia') ?>" class="btn btn-outline-light rounded-pill">Kategori Usia</a>
-            <a href="<?= base_url('admin/super/kategori-lomba') ?>" class="btn btn-outline-light rounded-pill">Kategori Lomba</a>
-            <span class="status-badge neutral">Total: <?= esc((string) count($rows ?? [])) ?></span>
-        </div>
-    </div>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Master Data',
+    'title' => 'Daftar Sub Kategori Seni',
+    'description' => 'Create mendukung beberapa kategori lomba seni sekaligus dan otomatis membuat pool pertama.',
+    'toolbarClass' => 'mb-4',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/kategori-usia'),
+            'label' => 'Kategori Usia',
+            'class' => 'btn-outline-secondary',
+        ],
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/kategori-lomba'),
+            'label' => 'Kategori Lomba',
+            'class' => 'btn-outline-secondary',
+        ],
+        [
+            'tag' => 'button',
+            'label' => 'Tambah Sub Kategori Seni',
+            'class' => 'btn-danger',
+            'attrs' => [
+                'data-bs-toggle' => 'modal',
+                'data-bs-target' => '#modalTambahSubKategoriSeni',
+            ],
+        ],
+    ],
+    'meta' => '<span class="status-badge neutral">Total: ' . esc((string) count($rows ?? [])) . '</span>',
+]) ?>
 
+<section class="admin-card">
     <div class="admin-table-wrap">
         <div class="table-shell admin-table-scroller">
             <table class="table admin-table admin-datatable-export align-middle mb-0">
@@ -57,8 +74,8 @@
                             <td><?= esc($row->keterangan ?? '-') ?></td>
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2">
-                                    <a href="<?= base_url('admin/super/sub-kategori-seni/' . $row->id_sub_kategori_seni) ?>" class="btn btn-sm btn-outline-light rounded-pill">Detail</a>
-                                    <a href="<?= base_url('admin/super/sub-kategori-seni/' . $row->id_sub_kategori_seni . '/edit') ?>" class="btn btn-sm btn-outline-light rounded-pill">Edit</a>
+                                    <a href="<?= base_url('admin/super/sub-kategori-seni/' . $row->id_sub_kategori_seni) ?>" class="btn btn-sm btn-outline-secondary rounded-pill">Detail</a>
+                                    <a href="<?= base_url('admin/super/sub-kategori-seni/' . $row->id_sub_kategori_seni . '/edit') ?>" class="btn btn-sm btn-outline-secondary rounded-pill">Edit</a>
                                     <form action="<?= base_url('admin/super/sub-kategori-seni/' . $row->id_sub_kategori_seni . '/delete') ?>" method="post" onsubmit="return confirmAdminAction(this, 'Hapus sub kategori seni?', 'Data pool, kelompok peserta, jadwal, dan penilaian terkait mungkin membuat hapus gagal.', 'Hapus')">
                                         <?= csrf_field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Hapus</button>
@@ -94,7 +111,7 @@
                 <div class="row g-2" style="max-height: 250px; overflow-y: auto; overflow-x: hidden;">
                     <?php foreach (($kategoriLombaRows ?? []) as $kategoriLomba) : ?>
                         <div class="col-12 col-md-6 col-xl-4">
-                            <label class="form-check-label admin-card w-100 py-2 px-3">
+                            <label class="form-check-label w-100 py-2 px-3">
                                 <input type="checkbox" class="form-check-input me-1" name="id_kategori_lomba[]" value="<?= esc((string) $kategoriLomba->id_kategori_lomba) ?>">
                                 <?= esc($kategoriLomba->nama_kategori_usia ?? '-') ?>
                                 <span class="muted-copy small text-capitalize">/ <?= esc($kategoriLomba->jenis_kelamin ?? '-') ?> / <?= esc($kategoriLomba->peraturan_pertandingan ?? '-') ?></span>
@@ -164,7 +181,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary rounded-pill" <?= empty($kategoriLombaRows) ? 'disabled' : '' ?>>Simpan Sub Kategori Seni</button>
+                <button type="submit" class="btn btn-danger rounded-pill" <?= empty($kategoriLombaRows) ? 'disabled' : '' ?>>Simpan Sub Kategori Seni</button>
             </div>
         </form>
     </div>

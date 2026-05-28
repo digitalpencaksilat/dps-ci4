@@ -28,6 +28,11 @@ class SettingWriterService
         $this->upsert($key, $value ? '1' : '0', 0);
     }
 
+    public function setArray(string $key, array $value): void
+    {
+        $this->upsert($key, json_encode($value, JSON_UNESCAPED_UNICODE), 1);
+    }
+
     private function upsert(string $key, string $value, int $isArray): void
     {
         $existing = $this->db->table('site_builder_settings')->where('setting', $key)->get()->getRow();

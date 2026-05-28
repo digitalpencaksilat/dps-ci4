@@ -1,19 +1,28 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3">
-        <div>
-            <p class="eyebrow mb-1">Pengaturan Event</p>
-            <h2 class="section-title h4 mb-2">Pengaturan Arsip Pendaftar</h2>
-            <p class="muted-copy mb-0">Kelola slot arsip yang dibutuhkan untuk pendaftaran peserta. Data disimpan ke <code>site_builder_settings</code> dengan key <code>arsip_pendaftar_slots</code>.</p>
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-            <a href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>" class="btn btn-outline-light rounded-pill">Kembali</a>
-            <button type="button" class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalTambahSlot">Tambah Slot</button>
-        </div>
-    </div>
-</section>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Pengaturan Event',
+    'title' => 'Pengaturan Arsip Pendaftar',
+    'description' => 'Kelola slot arsip yang dibutuhkan untuk pendaftaran peserta. Data disimpan ke <code>site_builder_settings</code> dengan key <code>arsip_pendaftar_slots</code>.',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/dashboard-pengaturan-event'),
+            'label' => 'Kembali',
+            'class' => 'btn-outline-secondary',
+        ],
+        [
+            'tag' => 'button',
+            'label' => 'Tambah Slot',
+            'class' => 'btn-danger',
+            'attrs' => [
+                'data-bs-toggle' => 'modal',
+                'data-bs-target' => '#modalTambahSlot',
+            ],
+        ],
+    ],
+]) ?>
 
 <section class="admin-card">
     <div class="admin-table-wrap">
@@ -41,12 +50,20 @@
                             <td class="text-center"><?= esc((string) $no++) ?></td>
                             <td>
                                 <div class="fw-semibold"><?= esc((string) ($slot['nama_arsip'] ?? $slotName)) ?></div>
-                                <div class="small text-muted"><?= esc((string) $slotName) ?></div>
+                                <div class="small muted-copy"><?= esc((string) $slotName) ?></div>
                             </td>
                             <td class="text-center"><span class="status-badge neutral"><?= esc((string) ($slot['allowed_types'] ?? '')) ?></span></td>
                             <td class="text-center"><?= esc((string) ((int) ($slot['max_size'] ?? 0))) ?></td>
                             <td class="text-center"><span class="status-badge <?= !empty($slot['required']) ? 'danger' : 'neutral' ?>"><?= !empty($slot['required']) ? 'Ya' : 'Tidak' ?></span></td>
-                            <td class="text-center"><span class="status-badge <?= !empty($slot['active']) ? 'success' : 'warning' ?>"><?= !empty($slot['active']) ? 'Aktif' : 'Nonaktif' ?></span></td>
+                            <td class="text-center">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input toggle-active" 
+                                           type="checkbox" 
+                                           data-slot-name="<?= esc((string) $slotName, 'attr') ?>"
+                                           data-active="<?= !empty($slot['active']) ? '1' : '0' ?>"
+                                           <?= !empty($slot['active']) ? 'checked' : '' ?>>
+                                </div>
+                            </td>
                             <td class="text-center">
                                 <button type="button"
                                         class="btn btn-sm btn-outline-danger rounded-pill"
@@ -81,16 +98,16 @@
                     <?= csrf_field() ?>
                     <div class="mb-3">
                         <label class="form-label">Nama Arsip</label>
-                        <input type="text" class="form-control rounded-4" name="nama_arsip" required>
+                        <input type="text" class="form-control" name="nama_arsip" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Allowed Types (ext)</label>
-                        <input type="text" class="form-control rounded-4" name="allowed_types" value="png|jpg|jpeg" placeholder="png|jpg|jpeg">
+                        <input type="text" class="form-control" name="allowed_types" value="png|jpg|jpeg" placeholder="png|jpg|jpeg">
                         <div class="form-text">Pisahkan dengan tanda pipe (|)</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Max Size (KB)</label>
-                        <input type="number" class="form-control rounded-4" name="max_size" value="5000" min="1">
+                        <input type="number" class="form-control" name="max_size" value="5000" min="1">
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="required" value="1" id="addRequired">
@@ -105,7 +122,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary rounded-pill" id="btnTambahSlot">Simpan</button>
+                <button type="button" class="btn btn-danger rounded-pill" id="btnTambahSlot">Simpan</button>
             </div>
         </div>
     </div>
@@ -124,15 +141,15 @@
                     <input type="hidden" name="slot_name">
                     <div class="mb-3">
                         <label class="form-label">Nama Arsip</label>
-                        <input type="text" class="form-control rounded-4" name="nama_arsip" required>
+                        <input type="text" class="form-control" name="nama_arsip" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Allowed Types (ext)</label>
-                        <input type="text" class="form-control rounded-4" name="allowed_types">
+                        <input type="text" class="form-control" name="allowed_types">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Max Size (KB)</label>
-                        <input type="number" class="form-control rounded-4" name="max_size" min="1">
+                        <input type="number" class="form-control" name="max_size" min="1">
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="required" value="1" id="editRequired">
@@ -146,7 +163,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary rounded-pill" id="btnUpdateSlot">Update</button>
+                <button type="button" class="btn btn-danger rounded-pill" id="btnUpdateSlot">Update</button>
             </div>
         </div>
     </div>
@@ -161,7 +178,6 @@
             try {
                 return await response.json();
             } catch (e) {
-                // Common case: redirected to HTML error/login page.
                 const text = await response.text();
                 return {status: false, message: 'Response bukan JSON. ' + String(text).slice(0, 200)};
             }
@@ -199,7 +215,6 @@
                     return;
                 }
 
-                // Fallback: Bootstrap JS not loaded. Try opening modal via basic class toggles.
                 if (modalEditEl) {
                     modalEditEl.classList.add('show');
                     modalEditEl.style.display = 'block';
@@ -228,7 +243,34 @@
             });
         });
 
-        // Fallback close handler when Bootstrap JS is missing.
+        document.querySelectorAll('.toggle-active').forEach((checkbox) => {
+            checkbox.addEventListener('change', async () => {
+                const slotName = checkbox.dataset.slotName || '';
+                const active = checkbox.checked ? 1 : 0;
+                
+                const form = document.createElement('form');
+                form.innerHTML = <?= json_encode(csrf_field()) ?>;
+                
+                const slotInput = document.createElement('input');
+                slotInput.type = 'hidden';
+                slotInput.name = 'slot_name';
+                slotInput.value = slotName;
+                form.appendChild(slotInput);
+                
+                const activeInput = document.createElement('input');
+                activeInput.type = 'hidden';
+                activeInput.name = 'active';
+                activeInput.value = active;
+                form.appendChild(activeInput);
+                
+                const res = await postJson(<?= json_encode(base_url('admin/super/pengaturan-event/arsip-pendaftar/toggle')) ?>, form);
+                if (!res.status) {
+                    checkbox.checked = !active;
+                    return alert(res.message || 'Gagal mengubah status.');
+                }
+            });
+        });
+
         document.querySelectorAll('[data-bs-dismiss="modal"]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const modal = btn.closest('.modal');

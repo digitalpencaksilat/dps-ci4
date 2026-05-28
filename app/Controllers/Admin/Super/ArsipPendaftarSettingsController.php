@@ -92,4 +92,28 @@ class ArsipPendaftarSettingsController extends BaseController
         (new SettingWriterService())->setString('arsip_pendaftar_slots', json_encode($slots));
         return $this->response->setJSON(['status' => true, 'message' => 'Slot arsip berhasil dihapus']);
     }
+
+    public function toggleActive()
+    {
+        $slotName = trim((string) $this->request->getPost('slot_name'));
+        $active = (bool) ((int) ($this->request->getPost('active') ?? 0));
+
+        if ($slotName === '') {
+            return $this->response->setJSON(['status' => false, 'message' => 'Slot name tidak boleh kosong']);
+        }
+
+        $slots = get_arsip_pendaftar_config_ci4();
+        if (! array_key_exists($slotName, $slots)) {
+            return $this->response->setJSON(['status' => false, 'message' => 'Slot arsip tidak ditemukan']);
+        }
+
+        $slots[$slotName]['active'] = $active;
+        (new SettingWriterService())->setString('arsip_pendaftar_slots', json_encode($slots));
+
+        return $this->response->setJSON([
+            'status' => true,
+            'message' => 'Status slot berhasil diubah',
+            'active' => $active,
+        ]);
+    }
 }

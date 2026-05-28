@@ -116,4 +116,29 @@ class ArsipPendaftarService
             ->where('jenis_arsip', $jenisArsip)
             ->first();
     }
+
+    public function deleteArchive(int $idArsip): bool
+    {
+        $arsip = (new ArsipPendaftarModel())->find($idArsip);
+        if ($arsip === null) {
+            throw new \RuntimeException('Arsip tidak ditemukan.');
+        }
+
+        $this->deletePhysicalFile($arsip->nama_arsip);
+        return (new ArsipPendaftarModel())->delete($idArsip);
+    }
+
+    public function validateSlotExists(string $slotName): bool
+    {
+        $slots = get_arsip_pendaftar_config_ci4();
+        return isset($slots[$slotName]) && !empty($slots[$slotName]['active']);
+    }
+
+    public function getArchivesByPeserta(int $idPendaftar): array
+    {
+        return (new ArsipPendaftarModel())
+            ->where('id_pendaftar', $idPendaftar)
+            ->orderBy('nama_arsip', 'ASC')
+            ->findAll();
+    }
 }

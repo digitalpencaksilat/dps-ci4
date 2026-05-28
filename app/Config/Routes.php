@@ -87,6 +87,9 @@ $routes->get('kontingen/pembayaran/(:num)', 'PembayaranKontingenController::show
 $routes->post('kontingen/peserta', 'PesertaController::store', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/peserta/(:num)/update', 'PesertaController::update/$1', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/peserta/(:num)/delete', 'PesertaController::delete/$1', ['filter' => 'kontingenauth']);
+$routes->post('kontingen/peserta/(:num)/arsip', 'ArsipPendaftarController::create/$1', ['filter' => 'kontingenauth']);
+$routes->post('kontingen/peserta/(:num)/arsip/(:num)/update', 'ArsipPendaftarController::update/$1/$2', ['filter' => 'kontingenauth']);
+$routes->post('kontingen/peserta/(:num)/arsip/(:num)/delete', 'ArsipPendaftarController::delete/$1/$2', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/tanding', 'KategoriTandingController::store', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/tanding/(:num)/update', 'KategoriTandingController::update/$1', ['filter' => 'kontingenauth']);
 $routes->post('kontingen/tanding/(:num)/delete', 'KategoriTandingController::delete/$1', ['filter' => 'kontingenauth']);
@@ -140,6 +143,7 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('pengaturan-event/arsip-pendaftar', 'Admin\\Super\\ArsipPendaftarSettingsController::store');
     $routes->post('pengaturan-event/arsip-pendaftar/update', 'Admin\\Super\\ArsipPendaftarSettingsController::update');
     $routes->post('pengaturan-event/arsip-pendaftar/delete', 'Admin\\Super\\ArsipPendaftarSettingsController::delete');
+    $routes->post('pengaturan-event/arsip-pendaftar/toggle', 'Admin\\Super\\ArsipPendaftarSettingsController::toggleActive');
     $routes->get('kategori-usia', 'Admin\\Super\\KategoriUsiaController::index');
     $routes->get('kategori-usia/(:num)', 'Admin\\Super\\KategoriUsiaController::show/$1');
     $routes->get('kategori-usia/(:num)/edit', 'Admin\\Super\\KategoriUsiaController::edit/$1');
@@ -157,6 +161,15 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('sub-kategori-seni', 'Admin\\Super\\SubKategoriSeniController::store');
     $routes->post('sub-kategori-seni/(:num)/update', 'Admin\\Super\\SubKategoriSeniController::update/$1');
     $routes->post('sub-kategori-seni/(:num)/delete', 'Admin\\Super\\SubKategoriSeniController::delete/$1');
+    $routes->get('kelas-tanding', 'Admin\\Super\\KelasTandingController::index');
+    $routes->get('kelas-tanding/(:num)', 'Admin\\Super\\KelasTandingController::show/$1');
+    $routes->get('kelas-tanding/(:num)/edit', 'Admin\\Super\\KelasTandingController::edit/$1');
+    $routes->post('kelas-tanding', 'Admin\\Super\\KelasTandingController::store');
+    $routes->post('kelas-tanding/create-multiple', 'Admin\\Super\\KelasTandingController::storeMultiple');
+    $routes->post('kelas-tanding/(:num)/update', 'Admin\\Super\\KelasTandingController::update/$1');
+    $routes->post('kelas-tanding/(:num)/delete', 'Admin\\Super\\KelasTandingController::delete/$1');
+    $routes->post('kelas-tanding/(:num)/otomatis-tambah-pool', 'Admin\\Super\\KelasTandingController::autoTambahPool/$1');
+    $routes->post('kelas-tanding/update-jumlah-peserta-per-pool', 'Admin\\Super\\KelasTandingController::updateJumlahPesertaPerPool');
 });
 
 $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], static function ($routes): void {
@@ -172,10 +185,13 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->post('kontingen/(:num)/update', 'Admin\\Sekretariat\\KontingenController::update/$1');
     $routes->post('kontingen/(:num)/reset-password', 'Admin\\Sekretariat\\KontingenController::resetPassword/$1');
     $routes->post('kontingen/(:num)/delete', 'Admin\\Sekretariat\\KontingenController::delete/$1');
-    $routes->post('kontingen/(:num)/pendaftar', 'Admin\\Sekretariat\\KontingenController::storePendaftar/$1');
-    $routes->post('kontingen/(:num)/pendaftar/(:num)/update', 'Admin\\Sekretariat\\KontingenController::updatePendaftar/$1/$2');
-    $routes->post('kontingen/(:num)/pendaftar/(:num)/delete', 'Admin\\Sekretariat\\KontingenController::deletePendaftar/$1/$2');
-    $routes->post('kontingen/(:num)/peserta-tanding', 'Admin\\Sekretariat\\KontingenController::storePesertaTanding/$1');
+     $routes->post('kontingen/(:num)/pendaftar', 'Admin\\Sekretariat\\KontingenController::storePendaftar/$1');
+     $routes->post('kontingen/(:num)/pendaftar/(:num)/update', 'Admin\\Sekretariat\\KontingenController::updatePendaftar/$1/$2');
+     $routes->post('kontingen/(:num)/pendaftar/(:num)/delete', 'Admin\\Sekretariat\\KontingenController::deletePendaftar/$1/$2');
+     $routes->post('kontingen/(:num)/pendaftar/(:num)/arsip', 'ArsipPendaftarController::create/$1', ['filter' => 'adminrole:sekretariat']);
+     $routes->post('kontingen/(:num)/pendaftar/(:num)/arsip/(:num)/update', 'ArsipPendaftarController::update/$1/$3', ['filter' => 'adminrole:sekretariat']);
+     $routes->post('kontingen/(:num)/pendaftar/(:num)/arsip/(:num)/delete', 'ArsipPendaftarController::delete/$1/$3', ['filter' => 'adminrole:sekretariat']);
+     $routes->post('kontingen/(:num)/peserta-tanding', 'Admin\\Sekretariat\\KontingenController::storePesertaTanding/$1');
     $routes->post('kontingen/(:num)/kelompok-seni', 'Admin\\Sekretariat\\KontingenController::storeKelompokSeni/$1');
     $routes->get('data-atlet', 'Admin\\Sekretariat\\PendaftarController::index');
     $routes->get('data-bpjs', 'Admin\\Sekretariat\\DataBpjsController::index');

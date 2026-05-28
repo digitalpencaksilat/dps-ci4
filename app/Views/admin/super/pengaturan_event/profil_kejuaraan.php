@@ -1,18 +1,19 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card admin-landing-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-        <div>
-            <p class="eyebrow mb-1">Pengaturan Event</p>
-            <h2 class="section-title h3 mb-3">Profil Kejuaraan</h2>
-            <p class="muted-copy mb-0">Form ini merupakan migrasi native CodeIgniter 4 untuk pengaturan profil dasar kejuaraan.</p>
-        </div>
-        <div class="d-flex flex-wrap gap-2 align-self-start">
-            <a href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>" class="btn btn-outline-light rounded-pill">Kembali ke Dashboard</a>
-        </div>
-    </div>
-</section>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Pengaturan Event',
+    'title' => 'Profil Kejuaraan',
+    'description' => 'Form ini merupakan migrasi native CodeIgniter 4 untuk pengaturan profil dasar kejuaraan.',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/dashboard-pengaturan-event'),
+            'label' => 'Kembali ke Dashboard',
+            'class' => 'btn-outline-secondary',
+        ],
+    ],
+]) ?>
 
 <section class="admin-card">
     <form action="<?= base_url('admin/super/pengaturan-event/profil-kejuaraan/update') ?>" method="post" class="row g-3">
@@ -35,7 +36,7 @@
             </div>
         <?php endforeach; ?>
         <div class="col-12 d-flex flex-wrap gap-2">
-            <button type="submit" class="btn btn-primary rounded-pill">Simpan Profil Kejuaraan</button>
+            <button type="submit" class="btn btn-danger rounded-pill">Simpan Profil Kejuaraan</button>
             <a href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>" class="btn btn-outline-secondary rounded-pill">Batal</a>
         </div>
     </form>

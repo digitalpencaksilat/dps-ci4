@@ -1,18 +1,19 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card admin-landing-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-        <div>
-            <p class="eyebrow mb-1">Pengaturan Event</p>
-            <h2 class="section-title h3 mb-3">Akses Pemilihan Kategori Perlombaan</h2>
-            <p class="muted-copy mb-0">Pengaturan ini menentukan apakah atlet boleh memilih kategori usia dan kelas tanding secara manual, serta aturan kontingen yang sama.</p>
-        </div>
-        <div class="d-flex flex-wrap gap-2 align-self-start">
-            <a href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>" class="btn btn-outline-light rounded-pill">Kembali ke Dashboard</a>
-        </div>
-    </div>
-</section>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Pengaturan Event',
+    'title' => 'Akses Pemilihan Kategori Perlombaan',
+    'description' => 'Pengaturan ini menentukan apakah atlet boleh memilih kategori usia dan kelas tanding secara manual, serta aturan kontingen yang sama.',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/dashboard-pengaturan-event'),
+            'label' => 'Kembali ke Dashboard',
+            'class' => 'btn-outline-secondary',
+        ],
+    ],
+]) ?>
 
 <section class="admin-card">
     <form action="<?= base_url('admin/super/pengaturan-event/akses-pemilihan-kategori/update') ?>" method="post" class="row g-3">
@@ -34,7 +35,7 @@
         <?php endforeach; ?>
 
         <div class="col-12 d-flex flex-wrap gap-2">
-            <button type="submit" class="btn btn-primary rounded-pill">Simpan Pengaturan</button>
+            <button type="submit" class="btn btn-danger rounded-pill">Simpan Pengaturan</button>
             <a href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>" class="btn btn-outline-secondary rounded-pill">Batal</a>
         </div>
     </form>

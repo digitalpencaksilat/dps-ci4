@@ -235,51 +235,30 @@ class PembayaranKontingenService
 
     public function accounts(): array
     {
-        // Prefer DB settings written by super admin module. Fallback to CI3 config if DB not configured.
         try {
             $accounts = [];
-            for ($i = 1; $i <= 5; $i++) {
-                $key = 'account_' . $i;
-                $activeRaw = get_setting($key . '_active', 'pendaftaran/rekening_pembayaran');
-                if ($activeRaw === null) {
-                    // If no DB record, we will fallback later.
-                    $accounts = [];
-                    break;
-                }
+            $raw = get_setting('rekening_pembayaran_accounts');
+            if (! is_array($raw)) {
+                return [];
+            }
 
-                if ((string) $activeRaw !== '1') {
+            foreach ($raw as $item) {
+                if (! is_array($item) || empty($item['active'])) {
                     continue;
                 }
 
                 $accounts[] = [
-                    'bank_name' => (string) (get_setting($key . '_bank_name', 'pendaftaran/rekening_pembayaran') ?? ''),
-                    'bank_account_name' => (string) (get_setting($key . '_bank_account_name', 'pendaftaran/rekening_pembayaran') ?? ''),
-                    'bank_account_number' => (string) (get_setting($key . '_bank_account_number', 'pendaftaran/rekening_pembayaran') ?? ''),
-                    'file_name' => (string) (get_setting($key . '_qrcode', 'pendaftaran/rekening_pembayaran') ?? ''),
+                    'bank_name' => trim((string) ($item['bank_name'] ?? '')),
+                    'bank_account_name' => trim((string) ($item['bank_account_name'] ?? '')),
+                    'bank_account_number' => trim((string) ($item['bank_account_number'] ?? '')),
                     'active' => true,
-                    'display_qrcode' => (string) (get_setting($key . '_display_qrcode', 'pendaftaran/rekening_pembayaran') ?? '0') === '1',
                 ];
             }
 
-            if ($accounts !== []) {
-                return $accounts;
-            }
+            return $accounts;
         } catch (\Throwable) {
-            // fall back
+            return [];
         }
-
-        $config = [];
-        $path = APPPATH . 'Config/ci3/pendaftaran/rekening_pembayaran.php';
-
-        if (is_file($path)) {
-            if (! defined('BASEPATH')) {
-                define('BASEPATH', APPPATH);
-            }
-
-            require $path;
-        }
-
-        return array_values(array_filter($config, static fn ($item) => ! empty($item['active'])));
     }
 }
 

@@ -1,19 +1,25 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card admin-landing-card mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-        <div>
-            <p class="eyebrow mb-1">Pengaturan Kategori Lomba</p>
-            <h2 class="section-title h3 mb-3">Detail Kategori Usia</h2>
-            <p class="muted-copy mb-0">Ringkasan data kategori usia untuk verifikasi sebelum edit atau hapus.</p>
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-            <a href="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/edit') ?>" class="btn btn-outline-light rounded-pill align-self-start">Edit</a>
-            <a href="<?= base_url('admin/super/kategori-usia') ?>" class="btn btn-outline-secondary rounded-pill align-self-start">Kembali</a>
-        </div>
-    </div>
-</section>
+<?= view('admin/super/_action_toolbar', [
+    'eyebrow' => 'Pengaturan Kategori Lomba',
+    'title' => 'Detail Kategori Usia',
+    'description' => 'Ringkasan data kategori usia untuk verifikasi sebelum edit atau hapus.',
+    'actions' => [
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/kategori-usia'),
+            'label' => 'Kembali',
+            'class' => 'btn-outline-secondary',
+        ],
+        [
+            'tag' => 'a',
+            'href' => base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/edit'),
+            'label' => 'Edit',
+            'class' => 'btn-danger',
+        ],
+    ],
+]) ?>
 
 <section class="admin-card">
     <div class="row g-3">

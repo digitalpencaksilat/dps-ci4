@@ -1,7 +1,7 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="admin-card admin-landing-card mb-4">
+<section class="admin-card mb-4">
     <p class="eyebrow mb-1">Mode Super Admin</p>
     <h2 class="section-title h3 mb-3">Pilih Mode Pengaturan</h2>
     <p class="muted-copy mb-0">Halaman ini menjadi entry point awal untuk cross-check migrasi mode pengaturan event dan kategori lomba.</p>
@@ -20,7 +20,7 @@
                     <span class="status-badge success">Aktif</span>
                 <?php endif; ?>
             </div>
-            <a href="<?= base_url('admin/super/mode-pengaturan-event') ?>" class="btn btn-primary rounded-pill">Masuk Mode Ini</a>
+            <a href="<?= base_url('admin/super/mode-pengaturan-event') ?>" class="btn btn-danger rounded-pill">Masuk Mode Ini</a>
         </section>
     </div>
 
@@ -37,10 +37,10 @@
                 <?php endif; ?>
             </div>
             <div class="d-flex flex-wrap gap-2">
-                <a href="<?= base_url('admin/super/mode-pengaturan-kategori-lomba') ?>" class="btn btn-primary rounded-pill">Masuk Mode Ini</a>
-                <a href="<?= base_url('admin/super/kategori-usia') ?>" class="btn btn-outline-light rounded-pill">Lihat Kategori Usia</a>
-                <a href="<?= base_url('admin/super/kategori-lomba') ?>" class="btn btn-outline-light rounded-pill">Lihat Kategori Lomba</a>
-                <a href="<?= base_url('admin/super/sub-kategori-seni') ?>" class="btn btn-outline-light rounded-pill">Lihat Sub Kategori Seni</a>
+                <a href="<?= base_url('admin/super/mode-pengaturan-kategori-lomba') ?>" class="btn btn-danger rounded-pill">Masuk Mode Ini</a>
+                <a href="<?= base_url('admin/super/kategori-usia') ?>" class="btn btn-outline-secondary rounded-pill">Lihat Kategori Usia</a>
+                <a href="<?= base_url('admin/super/kategori-lomba') ?>" class="btn btn-outline-secondary rounded-pill">Lihat Kategori Lomba</a>
+                <a href="<?= base_url('admin/super/sub-kategori-seni') ?>" class="btn btn-outline-secondary rounded-pill">Lihat Sub Kategori Seni</a>
             </div>
         </section>
     </div>

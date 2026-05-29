@@ -5,7 +5,8 @@
     <div class="col-12 px-0 px-md-2">
         <div class="admin-card mb-3">
             <div class="card-header pb-0 border-bottom-0 bg-transparent px-0">
-                <a href="<?= base_url('admin/sekretariat/jadwal-seni') ?>" class="text-decoration-none muted-copy small mb-2 d-block">
+                <?php $routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-seni'); ?>
+                <a href="<?= base_url($routePrefix) ?>" class="text-decoration-none muted-copy small mb-2 d-block">
                     <i class="fas fa-arrow-left me-1"></i> Kembali ke Jadwal Seni
                 </a>
                 <h6 class="card-title">Artistic Arena Schedule <?= esc($jadwal->nama_gelanggang ?? '-') ?></h6>

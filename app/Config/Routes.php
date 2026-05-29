@@ -128,7 +128,52 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->get('menu-utama', 'Admin\\Super\\ModeController::menuUtama');
     $routes->get('mode-pengaturan-event', 'Admin\\Super\\ModeController::pengaturanEvent');
     $routes->get('mode-pengaturan-kategori-lomba', 'Admin\\Super\\ModeController::pengaturanKategoriLomba');
+    $routes->get('mode-pembuatan-jadwal', 'Admin\\Super\\ModeController::pembuatanJadwal');
     $routes->get('dashboard-pengaturan-event', 'Admin\\Super\\PengaturanEventController::dashboard');
+
+    // Mode: Pembuatan Jadwal
+    $routes->get('dashboard-pembuatan-jadwal', 'Admin\\Super\\PembuatanJadwalController::dashboard');
+    $routes->get('operasi-basis-data', 'Admin\\Super\\PembuatanJadwalController::operasiBasisData');
+    $routes->post('operasi-basis-data/reset-seluruh-jadwal', 'Admin\\Super\\PembuatanJadwalController::resetSeluruhJadwal');
+    $routes->get('drawing-tanding', 'Admin\\Super\\PembuatanJadwalController::drawingTanding');
+    $routes->post('drawing-tanding/distribusikan-peserta', 'Admin\\Super\\PembuatanJadwalController::distribusikanPesertaTanding');
+    $routes->post('drawing-tanding/acak-bagan', 'Admin\\Super\\PembuatanJadwalController::acakBaganTandingBulk');
+    $routes->post('drawing-tanding/distribusikan-tanpa-lawan/(:num)', 'Admin\\Super\\PembuatanJadwalController::distribusikanPesertaTandingTanpaLawan/$1');
+    $routes->post('drawing-tanding/pisahkan-kontingen-sendiri', 'Admin\\Super\\PembuatanJadwalController::pisahkanKontingenTanding');
+    $routes->get('drawing-tanding/laporan-hasil-drawing-bagan', 'Admin\\Super\\PembuatanJadwalController::laporanHasilDrawingBaganTanding');
+    $routes->get('drawing-seni', 'Admin\\Super\\PembuatanJadwalController::drawingSeni');
+    $routes->post('drawing-seni/distribusikan-kelompok', 'Admin\\Super\\PembuatanJadwalController::distribusikanKelompokPesertaSeni');
+    $routes->post('drawing-seni/acak-bagan-battle', 'Admin\\Super\\PembuatanJadwalController::acakBaganBattleSeniBulk');
+    $routes->post('drawing-seni/beri-nomor-undi', 'Admin\\Super\\PembuatanJadwalController::beriNomorUndiSeniBulk');
+    $routes->get('generate-bagan-tanding-dari-jadwal', 'Admin\\Super\\PembuatanJadwalController::generateBaganTandingDariJadwal');
+    $routes->post('generate-bagan-tanding-dari-jadwal', 'Admin\\Super\\PembuatanJadwalController::prosesGenerateBaganTandingDariJadwal');
+    $routes->get('generate-bagan-seni-battle-dari-jadwal', 'Admin\\Super\\PembuatanJadwalController::generateBaganSeniBattleDariJadwal');
+    $routes->post('generate-bagan-seni-battle-dari-jadwal', 'Admin\\Super\\PembuatanJadwalController::prosesGenerateBaganSeniBattleDariJadwal');
+    $routes->get('jadwal-tanding', 'Admin\\Super\\PembuatanJadwalController::jadwalTanding');
+    // Penjadwalan Otomatis Tanding (parity CI3)
+    $routes->get('jadwal-tanding/penjadwalan-otomatis', 'Admin\\Super\\PenjadwalanTandingOtomatisController::index');
+    $routes->post('jadwal-tanding/buat-jadwal-tanding-otomatis', 'Admin\\Super\\PenjadwalanTandingOtomatisController::store');
+
+    $routes->get('jadwal-tanding/diagnosis', 'Admin\\Super\\PembuatanJadwalController::diagnosisTanding');
+    $routes->get('jadwal-tanding/overview', 'Admin\\Super\\PembuatanJadwalController::overviewTanding');
+    $routes->get('jadwal-tanding/(:num)', 'Admin\\Super\\PembuatanJadwalController::showJadwalTanding/$1');
+    $routes->post('jadwal-tanding/create', 'Admin\\Super\\PembuatanJadwalController::createJadwalTanding');
+    $routes->post('jadwal-tanding/(:num)/update-keterangan', 'Admin\\Super\\PembuatanJadwalController::updateKeteranganJadwalTanding/$1');
+    $routes->post('jadwal-tanding/(:num)/delete', 'Admin\\Super\\PembuatanJadwalController::deleteJadwalTanding/$1');
+    $routes->post('jadwal-tanding/create-pdf-ajax/(:num)/(:num)', 'Admin\\Super\\PembuatanJadwalController::createPdfJadwalTandingAjax/$1/$2');
+    $routes->get('jadwal-tanding/get-all-ids-ajax', 'Admin\\Super\\PembuatanJadwalController::getAllIdsJadwalTandingAjax');
+    $routes->post('jadwal-tanding/tukar-atlet', 'Admin\\Super\\PembuatanJadwalController::tukarAtletJadwalTanding');
+    $routes->post('jadwal-tanding/sortir-ulang/(:num)', 'Admin\\Super\\PembuatanJadwalController::sortirUlangJadwalTanding/$1');
+    $routes->post('jadwal-tanding/pola-penjadwalan/(:num)', 'Admin\\Super\\PembuatanJadwalController::polaPenjadwalanJadwalTanding/$1');
+    $routes->get('jadwal-seni', 'Admin\\Super\\PembuatanJadwalController::jadwalSeni');
+    $routes->get('jadwal-seni/diagnosis', 'Admin\\Super\\PembuatanJadwalController::diagnosisSeni');
+    $routes->get('jadwal-seni/overview', 'Admin\\Super\\PembuatanJadwalController::overviewSeni');
+    $routes->get('jadwal-seni/(:num)', 'Admin\\Super\\PembuatanJadwalController::showJadwalSeni/$1');
+    $routes->post('jadwal-seni/create', 'Admin\\Super\\PembuatanJadwalController::createJadwalSeni');
+    $routes->post('jadwal-seni/(:num)/update-keterangan', 'Admin\\Super\\PembuatanJadwalController::updateKeteranganJadwalSeni/$1');
+    $routes->post('jadwal-seni/(:num)/delete', 'Admin\\Super\\PembuatanJadwalController::deleteJadwalSeni/$1');
+    $routes->post('jadwal-seni/create-pdf-ajax/(:num)/(:num)', 'Admin\\Super\\PembuatanJadwalController::createPdfJadwalSeniAjax/$1/$2');
+    $routes->get('jadwal-seni/get-all-ids-ajax', 'Admin\\Super\\PembuatanJadwalController::getAllIdsJadwalSeniAjax');
     $routes->get('pengaturan-event/profil-kejuaraan', 'Admin\\Super\\EventProfileController::edit');
     $routes->post('pengaturan-event/profil-kejuaraan/update', 'Admin\\Super\\EventProfileController::update');
     $routes->get('pengaturan-event/akses-pendaftaran', 'Admin\\Super\\AksesPendaftaranController::edit');

@@ -8,7 +8,10 @@
     <div class="card-body px-0">
         <?php if (in_array(session()->get('level'), ['super_admin', 'sekretariat'], true)): ?>
             <div class="mb-3 d-flex flex-wrap gap-2">
-                <?= view('shared_components/jadwal_seni/modal_insert', ['data_gelanggang' => $gelanggang]) ?>
+                <?= view('shared_components/jadwal_seni/modal_insert', [
+                    'data_gelanggang' => $gelanggang,
+                    'routePrefix' => $routePrefix ?? 'admin/sekretariat/jadwal-seni',
+                ]) ?>
             </div>
         <?php endif; ?>
 
@@ -33,7 +36,10 @@
             </div>
         <?php endif; ?>
 
-        <?= view('shared_components/jadwal_seni/tabel', ['data_jadwal_seni' => $rows]) ?>
+        <?= view('shared_components/jadwal_seni/tabel', [
+            'data_jadwal_seni' => $rows,
+            'routePrefix' => $routePrefix ?? 'admin/sekretariat/jadwal-seni',
+        ]) ?>
     </div>
 </section>
 
@@ -96,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 const pdfLibrary = document.querySelector('input[name="global_pdf_library_seni"]:checked').value;
-                const url = '<?= base_url("admin/sekretariat/jadwal-seni/create-pdf-ajax/") ?>' + jadwal.id + '/' + (withScore ? '1' : '0');
+                const url = '<?= base_url(($routePrefix ?? "admin/sekretariat/jadwal-seni") . "/create-pdf-ajax/") ?>' + jadwal.id + '/' + (withScore ? '1' : '0');
                 const pdfResponse = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -140,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
         progressModal.show();
 
         try {
-            const response = await fetch('<?= base_url("admin/sekretariat/jadwal-seni/get-all-ids-ajax") ?>');
+            const response = await fetch('<?= base_url(($routePrefix ?? "admin/sekretariat/jadwal-seni") . "/get-all-ids-ajax") ?>');
             const data = await response.json();
             if (!data.status) throw new Error(data.message || 'Gagal memuat daftar jadwal');
             await processPDFSequential(data.data, withScore);

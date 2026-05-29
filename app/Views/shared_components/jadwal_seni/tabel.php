@@ -32,10 +32,16 @@
                 <td class="text-end"><?= esc((string) ($data->nomor_partai_akhir ?? '-')) ?></td>
                 <td><?= esc($data->keterangan_jadwal ?? $data->keterangan ?? '-') ?></td>
                 <td class="text-end">
-                    <?= view('shared_components/jadwal_seni/tombol_tabel', ['jadwal' => $data]) ?>
+                    <?= view('shared_components/jadwal_seni/tombol_tabel', [
+                        'jadwal' => $data,
+                        'routePrefix' => $routePrefix ?? 'admin/sekretariat/jadwal-seni',
+                    ]) ?>
                 </td>
             </tr>
-            <?= view('shared_components/jadwal_seni/modal_ubah_keterangan', ['jadwal' => $data]) ?>
+            <?= view('shared_components/jadwal_seni/modal_ubah_keterangan', [
+                'jadwal' => $data,
+                'routePrefix' => $routePrefix ?? 'admin/sekretariat/jadwal-seni',
+            ]) ?>
         <?php endforeach; ?>
     </tbody>
 </table>

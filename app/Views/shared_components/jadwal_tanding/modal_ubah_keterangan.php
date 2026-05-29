@@ -1,7 +1,8 @@
+<?php $routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding'); ?>
 <div class="modal fade" id="modalUbahKeteranganTanding<?= esc((string) $jadwal->id_jadwal_tanding) ?>" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?= base_url('admin/sekretariat/jadwal-tanding/' . $jadwal->id_jadwal_tanding . '/update-keterangan') ?>" method="post">
+            <form action="<?= base_url($routePrefix . '/' . $jadwal->id_jadwal_tanding . '/update-keterangan') ?>" method="post">
                 <?= csrf_field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Schedule Notes</h5>

@@ -1,6 +1,7 @@
+<?php $routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding'); ?>
 <div class="modal fade" id="modalTukarAtlet" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
-        <form action="<?= base_url('admin/sekretariat/jadwal-tanding/tukar-atlet') ?>" method="post" id="formTukarAtlet">
+        <form action="<?= base_url($routePrefix . '/tukar-atlet') ?>" method="post" id="formTukarAtlet">
             <?= csrf_field() ?>
             <div class="modal-content">
                 <div class="modal-header">

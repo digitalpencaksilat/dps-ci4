@@ -1,0 +1,181 @@
+{
+    "metadata" : {
+		"nama": "PERSILAT",
+		"jumlah_rangkaian_gerak": 12,
+		"jumlah_gerakan": 100
+    },
+    "penilaian" : {
+        "unsur_nilai": {
+            "kebenaran": {
+                "metadata":{
+                    "step" : 0.01,
+                    "pointer_jurus" : "beregu",
+                    "pointer_rangkaian_gerak" : 1,
+                    "pointer_gerakan" : 1
+                },
+                "jurus":{
+                    "beregu" : {
+                        "metadata" : {
+                            "lebar_kolom" : 100
+                        },
+                        "rangkaian_gerak" : {
+                            "1": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan" : 9,
+                                "nilai_diperoleh": 0.09,
+                                "nilai_maksimal": 0.09,
+                                "nomor_gerakan_akhir": 9
+                            },
+                            "2": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan" : 9,
+                                "nilai_diperoleh": 0.09,
+                                "nilai_maksimal": 0.09,
+                                "nomor_gerakan_akhir": 18
+                            },
+                            "3": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan" : 10,
+                                "nilai_diperoleh": 0.10,
+                                "nilai_maksimal": 0.10,
+                                "nomor_gerakan_akhir": 28
+                            },
+                            "4": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 9,
+                                "nilai_diperoleh": 0.09,
+                                "nilai_maksimal": 0.09,
+                                "nomor_gerakan_akhir": 37
+                            },
+                            "5": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 7,
+                                "nilai_diperoleh": 0.07,
+                                "nilai_maksimal": 0.07,
+                                "nomor_gerakan_akhir": 44
+                            },
+                            "6": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 8,
+                                "nilai_diperoleh": 0.08,
+                                "nilai_maksimal": 0.08,
+                                "nomor_gerakan_akhir": 52
+                            },
+                            "7": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 9,
+                                "nilai_diperoleh": 0.09,
+                                "nilai_maksimal": 0.09,
+                                "nomor_gerakan_akhir": 61
+                            },
+                            "8": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 11,
+                                "nilai_diperoleh": 0.11,
+                                "nilai_maksimal": 0.11,
+                                "nomor_gerakan_akhir": 72
+                            },
+                            "9": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 9,
+                                "nilai_diperoleh": 0.09,
+                                "nilai_maksimal": 0.09,
+                                "nomor_gerakan_akhir": 81
+                            },
+                            "10": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 4,
+                                "nilai_diperoleh": 0.04,
+                                "nilai_maksimal": 0.04,
+                                "nomor_gerakan_akhir": 85
+                            },
+                            "11": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 8,
+                                "nilai_diperoleh": 0.08,
+                                "nilai_maksimal": 0.08,
+                                "nomor_gerakan_akhir": 93
+                            },
+                            "12": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 7,
+                                "nilai_diperoleh": 0.07,
+                                "nilai_maksimal": 0.07,
+                                "nomor_gerakan_akhir": 100
+                            }
+                        }
+                    }
+                },
+                "nilai_minimal": 0,
+                "total_kesalahan_gerak": 0,
+                "total_gerakan": 100,
+				"nilai_diperoleh": 9.90,
+				"nilai_maksimal": 9.90
+            },
+            "kemantapan": {
+                "metadata" : {
+                    "label" : "firmness and harmony",
+                    "step" : 0.01
+                },
+				"nilai_minimal": 0.00,
+				"nilai_diperoleh": 0.00,
+				"nilai_maksimal": 0.1
+            }
+        },
+        "hukuman": {
+			"waktu": {
+				"tipe": "pilihan ganda",
+				"metadata":{
+					"label" : "Time Perfomance"
+				},
+				"detail_hukuman": {
+					"pilihan": {
+						"> 5 - 10 seconds": 0.5,
+                        "> 10 - 15 seconds": "disk"
+					},
+					"terpilih": "",
+					"nilai_hukuman": 0
+				}
+			},
+			"keluar_gelanggang": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Performance exceeded the 10m  by 10m arena"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 0.5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			},
+			"pakaian_tidak_sesuai": {
+				"tipe": "satu kali",
+				"metadata":{
+					"label" : "Uniform / Dress violating rules"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 0.5,
+					"nilai_hukuman": 0
+				}
+			},  
+			"menahan_gerakan": {
+				"tipe": "repetisi",
+				"metadata":{
+					"label" : "Athlete staying at one move for more than 5 seconds"
+				},
+				"detail_hukuman": {
+					"faktor_pengali": 0.5,
+					"jumlah_repetisi": 0,
+					"nilai_hukuman": 0
+				}
+			}
+        },
+        "ringkasan": {
+			"total_nilai": 9.90,
+			"total_hukuman": 0,
+			"nilai_akhir": 9.90,
+            "nilai_minimal" : 0,
+            "nilai_maksimal" : 10
+        }
+    }
+}

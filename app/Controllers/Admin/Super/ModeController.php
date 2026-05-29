@@ -39,4 +39,11 @@ class ModeController extends BaseController
 
         return redirect()->to(base_url('admin/super/kategori-usia'));
     }
+
+    public function pembuatanJadwal(): RedirectResponse
+    {
+        session()->set('tipe_super_admin', 'pembuatan_jadwal');
+
+        return redirect()->to(base_url('admin/super/dashboard-pembuatan-jadwal'));
+    }
 }

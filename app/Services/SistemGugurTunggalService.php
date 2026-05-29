@@ -7,6 +7,7 @@ class SistemGugurTunggalService
     private const MODE_FORMULA = 'formula';
     private const MODE_FULL_RANDOM_PERSILAT = 'full_random_persilat';
     private const KAPASITAS_TEMPLATE_PERSILAT = 20;
+    private const PLACEHOLDER_NOFLAG = 'noflag';
 
     public function acakBaganTanding(int $idKompetisiTanding, string $mode = self::MODE_FULL_RANDOM_PERSILAT): array
     {
@@ -124,6 +125,62 @@ class SistemGugurTunggalService
         }
 
         return ['jumlah_kelompok' => count($kelompok), 'jumlah_battle' => count($generated['data_battle_seni']), 'bagan' => $generated['bagan']];
+    }
+
+    public function generateBaganTandingDariJadwal(int $idKompetisiTanding): array
+    {
+        $db = db_connect();
+        $kompetisi = $db->table('kompetisi_tanding')->where('id_kompetisi_tanding', $idKompetisiTanding)->get()->getRowArray();
+        if ($kompetisi === null) {
+            throw new \RuntimeException('Kompetisi tanding tidak ditemukan.');
+        }
+
+        $matches = $this->getPertandinganExisting($idKompetisiTanding);
+        if ($matches === []) {
+            throw new \RuntimeException('Tidak ada pertandingan existing untuk kompetisi ini.');
+        }
+
+        $participants = $this->participantsFromExistingMatches($matches, 'tanding');
+        if (count($participants) < 2) {
+            throw new \RuntimeException('Minimal 2 peserta diperlukan untuk membuat bagan dari jadwal.');
+        }
+
+        $generated = $this->generateBracketDanDataPertandinganTanding($participants, (int) ($kompetisi['juara_tiga_bersama'] ?? 1), true);
+        $bagan = $this->mergePertandinganExistingKeBagan($generated['bagan'], $matches);
+
+        $db->table('kompetisi_tanding')->where('id_kompetisi_tanding', $idKompetisiTanding)->update([
+            'bagan_pertandingan' => json_encode($bagan),
+        ]);
+
+        return ['jumlah_peserta' => count($participants), 'jumlah_pertandingan' => count($matches), 'bagan' => $bagan];
+    }
+
+    public function generateBaganBattleSeniDariJadwal(int $idKompetisiSeni): array
+    {
+        $db = db_connect();
+        $kompetisi = $db->table('kompetisi_seni')->where('id_kompetisi_seni', $idKompetisiSeni)->get()->getRowArray();
+        if ($kompetisi === null) {
+            throw new \RuntimeException('Kompetisi seni tidak ditemukan.');
+        }
+
+        $battles = $this->getBattleExisting($idKompetisiSeni);
+        if ($battles === []) {
+            throw new \RuntimeException('Tidak ada battle existing untuk kompetisi ini.');
+        }
+
+        $participants = $this->participantsFromExistingMatches($battles, 'battle');
+        if (count($participants) < 2) {
+            throw new \RuntimeException('Minimal 2 kelompok diperlukan untuk membuat bagan battle dari jadwal.');
+        }
+
+        $generated = $this->generateBracketDanDataBattle($participants, (int) ($kompetisi['juara_tiga_bersama'] ?? 1), true);
+        $bagan = $this->mergeBattleExistingKeBagan($generated['bagan'], $battles);
+
+        $db->table('kompetisi_seni')->where('id_kompetisi_seni', $idKompetisiSeni)->update([
+            'bagan_battle_seni' => json_encode($bagan),
+        ]);
+
+        return ['jumlah_kelompok' => count($participants), 'jumlah_battle' => count($battles), 'bagan' => $bagan];
     }
 
     public function getTemplateBagan(int $jumlahPertandinganAwal, int $jumlahPeserta, bool $encode = true): array|string
@@ -248,7 +305,7 @@ class SistemGugurTunggalService
                     'anggota_kelompok_peserta_seni' => 'Number ' . $item,
                     'nama_kontingen' => 'Team ' . $item,
                     'negara' => 'Team ' . $item,
-                    'url_bendera' => $this->flagUrl('noflag'),
+                    'url_bendera' => $this->flagUrl(self::PLACEHOLDER_NOFLAG),
                 ];
             }
             $result[] = $transformedRow;
@@ -553,9 +610,182 @@ class SistemGugurTunggalService
         return $result;
     }
 
+    private function getPertandinganExisting(int $idKompetisiTanding): array
+    {
+        return db_connect()->table('pertandingan p')
+            ->select('p.id_pertandingan, p.nomor_pertandingan, p.nomor_pertandingan_selanjutnya, p.id_atlet_merah, p.id_atlet_biru, p.id_pemenang, p.babak, p.jenis_kemenangan')
+            ->select('pm.id_pendaftar AS merah_id_pendaftar, pm.nama_pendaftar AS merah_nama_pendaftar, pm.id_kontingen AS merah_id_kontingen, km.nama_kontingen AS merah_nama_kontingen, km.negara AS merah_negara')
+            ->select('pb.id_pendaftar AS biru_id_pendaftar, pb.nama_pendaftar AS biru_nama_pendaftar, pb.id_kontingen AS biru_id_kontingen, kb.nama_kontingen AS biru_nama_kontingen, kb.negara AS biru_negara')
+            ->join('peserta_tanding ptm', 'ptm.id_peserta_tanding = p.id_atlet_merah', 'left')
+            ->join('pendaftar pm', 'pm.id_pendaftar = ptm.id_pendaftar', 'left')
+            ->join('kontingen km', 'km.id_kontingen = pm.id_kontingen', 'left')
+            ->join('peserta_tanding ptb', 'ptb.id_peserta_tanding = p.id_atlet_biru', 'left')
+            ->join('pendaftar pb', 'pb.id_pendaftar = ptb.id_pendaftar', 'left')
+            ->join('kontingen kb', 'kb.id_kontingen = pb.id_kontingen', 'left')
+            ->where('p.id_kompetisi_tanding', $idKompetisiTanding)
+            ->orderBy('p.nomor_pertandingan', 'ASC')
+            ->get()->getResultArray();
+    }
+
+    private function getBattleExisting(int $idKompetisiSeni): array
+    {
+        return db_connect()->table('battle_seni bs')
+            ->select('bs.id_battle_seni, bs.nomor_battle, bs.nomor_battle_selanjutnya, bs.id_penampilan_seni_merah, bs.id_penampilan_seni_biru, bs.id_pemenang, bs.babak, bs.jenis_kemenangan')
+            ->select('psm.id_kelompok_peserta_seni AS merah_id_kelompok, kpsm.id_kontingen AS merah_id_kontingen, km.nama_kontingen AS merah_nama_kontingen, km.negara AS merah_negara')
+            ->select('(SELECT GROUP_CONCAT(p.nama_pendaftar SEPARATOR ", ") FROM peserta_seni ps JOIN pendaftar p ON p.id_pendaftar = ps.id_pendaftar WHERE ps.id_kelompok_peserta_seni = psm.id_kelompok_peserta_seni) AS merah_anggota', false)
+            ->select('psb.id_kelompok_peserta_seni AS biru_id_kelompok, kpsb.id_kontingen AS biru_id_kontingen, kb.nama_kontingen AS biru_nama_kontingen, kb.negara AS biru_negara')
+            ->select('(SELECT GROUP_CONCAT(p.nama_pendaftar SEPARATOR ", ") FROM peserta_seni ps JOIN pendaftar p ON p.id_pendaftar = ps.id_pendaftar WHERE ps.id_kelompok_peserta_seni = psb.id_kelompok_peserta_seni) AS biru_anggota', false)
+            ->join('penampilan_seni psm', 'psm.id_penampilan_seni = bs.id_penampilan_seni_merah', 'left')
+            ->join('kelompok_peserta_seni kpsm', 'kpsm.id_kelompok_peserta_seni = psm.id_kelompok_peserta_seni', 'left')
+            ->join('kontingen km', 'km.id_kontingen = kpsm.id_kontingen', 'left')
+            ->join('penampilan_seni psb', 'psb.id_penampilan_seni = bs.id_penampilan_seni_biru', 'left')
+            ->join('kelompok_peserta_seni kpsb', 'kpsb.id_kelompok_peserta_seni = psb.id_kelompok_peserta_seni', 'left')
+            ->join('kontingen kb', 'kb.id_kontingen = kpsb.id_kontingen', 'left')
+            ->where('bs.id_kompetisi_seni', $idKompetisiSeni)
+            ->orderBy('bs.nomor_battle', 'ASC')
+            ->get()->getResultArray();
+    }
+
+    private function participantsFromExistingMatches(array $rows, string $type): array
+    {
+        $participants = [];
+        foreach ($rows as $row) {
+            if ($type === 'battle') {
+                $this->appendBattleParticipant($participants, $row, 'merah');
+                $this->appendBattleParticipant($participants, $row, 'biru');
+                continue;
+            }
+
+            $this->appendTandingParticipant($participants, $row, 'merah');
+            $this->appendTandingParticipant($participants, $row, 'biru');
+        }
+
+        return array_values($participants);
+    }
+
+    private function appendTandingParticipant(array &$participants, array $row, string $corner): void
+    {
+        $idPeserta = (int) ($row['id_atlet_' . $corner] ?? 0);
+        if ($idPeserta <= 0 || isset($participants[$idPeserta])) {
+            return;
+        }
+
+        $negara = (string) ($row[$corner . '_negara'] ?? self::PLACEHOLDER_NOFLAG);
+        $participants[$idPeserta] = [
+            'id_peserta_tanding' => $idPeserta,
+            'id_pendaftar' => $row[$corner . '_id_pendaftar'] !== null ? (int) $row[$corner . '_id_pendaftar'] : null,
+            'id_kontingen' => $row[$corner . '_id_kontingen'] !== null ? (int) $row[$corner . '_id_kontingen'] : null,
+            'nama_pendaftar' => (string) ($row[$corner . '_nama_pendaftar'] ?? '-'),
+            'nama_kontingen' => (string) ($row[$corner . '_nama_kontingen'] ?? '-'),
+            'negara' => $negara,
+            'url_bendera' => $this->flagUrl($negara),
+        ];
+    }
+
+    private function appendBattleParticipant(array &$participants, array $row, string $corner): void
+    {
+        $idKelompok = (int) ($row[$corner . '_id_kelompok'] ?? 0);
+        if ($idKelompok <= 0 || isset($participants[$idKelompok])) {
+            return;
+        }
+
+        $negara = (string) ($row[$corner . '_negara'] ?? self::PLACEHOLDER_NOFLAG);
+        $participants[$idKelompok] = [
+            'id_kelompok_peserta_seni' => $idKelompok,
+            'id_kontingen' => $row[$corner . '_id_kontingen'] !== null ? (int) $row[$corner . '_id_kontingen'] : null,
+            'anggota_kelompok_peserta_seni' => (string) ($row[$corner . '_anggota'] ?? '-'),
+            'nama_kontingen' => (string) ($row[$corner . '_nama_kontingen'] ?? '-'),
+            'negara' => $negara,
+            'url_bendera' => $this->flagUrl($negara),
+        ];
+    }
+
+    private function mergePertandinganExistingKeBagan(array $bagan, array $matches): array
+    {
+        $matchIndex = [];
+        foreach ($matches as $row) {
+            $matchIndex[(int) $row['nomor_pertandingan']] = $row;
+        }
+
+        foreach ($bagan['results'][0] as $roundIndex => $round) {
+            foreach ($round as $matchIndexRound => $result) {
+                $label = (string) ($result[2] ?? '');
+                if (! preg_match('/Match\s+(\d+)/', $label, $matchNumber)) {
+                    continue;
+                }
+
+                $nomorPertandingan = (int) $matchNumber[1];
+                if (! isset($matchIndex[$nomorPertandingan])) {
+                    continue;
+                }
+
+                $row = $matchIndex[$nomorPertandingan];
+                $bagan['results'][0][$roundIndex][$matchIndexRound][0] = $this->resolveSudutPemenang($row['id_pemenang'] ?? null, $row['id_atlet_biru'] ?? null, $row['id_atlet_merah'] ?? null);
+                $bagan['results'][0][$roundIndex][$matchIndexRound][1] = $this->labelJenisKemenangan((string) ($row['jenis_kemenangan'] ?? ''));
+            }
+        }
+
+        return $bagan;
+    }
+
+    private function mergeBattleExistingKeBagan(array $bagan, array $battles): array
+    {
+        $battleIndex = [];
+        foreach ($battles as $row) {
+            $battleIndex[(int) $row['nomor_battle']] = $row;
+        }
+
+        foreach ($bagan['results'][0] as $roundIndex => $round) {
+            foreach ($round as $matchIndexRound => $result) {
+                $label = (string) ($result[2] ?? '');
+                if (! preg_match('/Match\s+(\d+)/', $label, $matchNumber)) {
+                    continue;
+                }
+
+                $nomorBattle = (int) $matchNumber[1];
+                if (! isset($battleIndex[$nomorBattle])) {
+                    continue;
+                }
+
+                $row = $battleIndex[$nomorBattle];
+                $bagan['results'][0][$roundIndex][$matchIndexRound][0] = $this->resolveSudutPemenang($row['id_pemenang'] ?? null, $row['id_penampilan_seni_biru'] ?? null, $row['id_penampilan_seni_merah'] ?? null);
+                $bagan['results'][0][$roundIndex][$matchIndexRound][1] = $this->labelJenisKemenangan((string) ($row['jenis_kemenangan'] ?? ''));
+            }
+        }
+
+        return $bagan;
+    }
+
+    private function resolveSudutPemenang($winner, $blue, $red): ?int
+    {
+        if ($winner === null) {
+            return null;
+        }
+
+        if ((int) $winner === (int) $blue) {
+            return 0;
+        }
+
+        if ((int) $winner === (int) $red) {
+            return 1;
+        }
+
+        return null;
+    }
+
+    private function labelJenisKemenangan(string $jenisKemenangan): ?string
+    {
+        $jenisKemenangan = strtoupper(trim($jenisKemenangan));
+        if ($jenisKemenangan === '' || $jenisKemenangan === 'TBD') {
+            return null;
+        }
+
+        return $jenisKemenangan;
+    }
+
     private function flagUrl(string $negara): string
     {
-        return function_exists('bendera') ? (string) bendera($negara) : '';
+        return function_exists('bendera') ? (string) \bendera($negara) : '';
     }
 
     private function assertNoScheduledRows(string $sourceTable, string $sourceKey, string $scheduleTable, int $competitionId, string $competitionKey): void

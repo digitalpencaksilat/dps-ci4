@@ -5,7 +5,8 @@
     <div class="col-12 px-0 px-md-2">
         <div class="admin-card">
             <div class="card-header pb-0 border-bottom-0 bg-transparent px-0">
-                <a href="<?= base_url('admin/sekretariat/jadwal-tanding') ?>" class="text-decoration-none muted-copy small mb-2 d-block">
+                <?php $routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding'); ?>
+                <a href="<?= base_url($routePrefix) ?>" class="text-decoration-none muted-copy small mb-2 d-block">
                     <i class="fas fa-arrow-left me-1"></i> Kembali ke Jadwal Tanding
                 </a>
                 <h6 class="card-title">Schedule of Matches at Arena <?= esc($jadwal->nama_gelanggang ?? '-') ?> - <?= esc($jadwal->keterangan_jadwal ?? $jadwal->keterangan ?? '') ?></h6>
@@ -18,16 +19,16 @@
                                 Edit Schedule
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="<?= base_url('admin/sekretariat/jadwal-tanding/' . $jadwal->id_jadwal_tanding) ?>">Set Match Sequence</a>
+                                <a class="dropdown-item" href="<?= base_url($routePrefix . '/' . $jadwal->id_jadwal_tanding) ?>">Set Match Sequence</a>
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalSortirNomorPartai">Sort Match Numbers</button>
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalAturPolaJadwal">Set Schedule Pattern</button>
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalTukarAtlet">Swap Athletes</button>
                             </div>
                         </div>
                     </div>
-                    <?= view('shared_components/jadwal_tanding/modal_tukar_atlet', ['data_peserta_tanding' => $peserta ?? []]) ?>
-                    <?= view('shared_components/jadwal_tanding/modal_atur_pola_jadwal', ['jadwal_tanding' => $jadwal]) ?>
-                    <?= view('shared_components/jadwal_tanding/modal_sortir_ulang_nomor_partai', ['jadwal_tanding' => $jadwal]) ?>
+                    <?= view('shared_components/jadwal_tanding/modal_tukar_atlet', ['data_peserta_tanding' => $peserta ?? [], 'routePrefix' => $routePrefix]) ?>
+                    <?= view('shared_components/jadwal_tanding/modal_atur_pola_jadwal', ['jadwal_tanding' => $jadwal, 'routePrefix' => $routePrefix]) ?>
+                    <?= view('shared_components/jadwal_tanding/modal_sortir_ulang_nomor_partai', ['jadwal_tanding' => $jadwal, 'routePrefix' => $routePrefix]) ?>
                 <?php endif; ?>
 
                 <div class="admin-table-wrap">

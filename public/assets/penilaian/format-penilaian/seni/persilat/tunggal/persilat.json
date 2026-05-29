@@ -1,0 +1,220 @@
+{
+    "metadata": {
+        "nama": "Tunggal IPSI Full (Remaja & Dewasa)",
+        "jumlah_rangkaian_gerak": 14,
+        "jumlah_gerakan": 100
+    },
+    "penilaian": {
+        "unsur_nilai": {
+            "kebenaran": {
+                "metadata": {
+                    "step": 0.01,
+                    "pointer_jurus": "tangan_kosong",
+                    "pointer_rangkaian_gerak": 1,
+                    "pointer_gerakan": 1
+                },
+                "jurus": {
+                    "tangan_kosong": {
+                        "metadata": {
+                            "lebar_kolom": 100
+                        },
+                        "rangkaian_gerak": {
+                            "1": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 7,
+                                "nilai_diperoleh": 0.07,
+                                "nilai_maksimal": 0.07,
+                                "nomor_gerakan_akhir": 7
+                            },
+                            "2": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 6,
+                                "nilai_diperoleh": 0.06,
+                                "nilai_maksimal": 0.06,
+                                "nomor_gerakan_akhir": 13
+                            },
+                            "3": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 5,
+                                "nilai_diperoleh": 0.05,
+                                "nilai_maksimal": 0.05,
+                                "nomor_gerakan_akhir": 18
+                            },
+                            "4": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 7,
+                                "nilai_diperoleh": 0.07,
+                                "nilai_maksimal": 0.07,
+                                "nomor_gerakan_akhir": 25
+                            },
+                            "5": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 6,
+                                "nilai_diperoleh": 0.06,
+                                "nilai_maksimal": 0.06,
+                                "nomor_gerakan_akhir": 31
+                            },
+                            "6": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 8,
+                                "nilai_diperoleh": 0.08,
+                                "nilai_maksimal": 0.08,
+                                "nomor_gerakan_akhir": 39
+                            },
+                            "7": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 11,
+                                "nilai_diperoleh": 0.11,
+                                "nilai_maksimal": 0.11,
+                                "nomor_gerakan_akhir": 50
+                            }
+                        }
+                    },
+                    "golok": {
+                        "metadata": {
+                            "lebar_kolom": 42.58
+                        },
+                        "rangkaian_gerak": {
+                            "8": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 7,
+                                "nilai_diperoleh": 0.07,
+                                "nilai_maksimal": 0.07,
+                                "nomor_gerakan_akhir": 57
+                            },
+                            "9": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 6,
+                                "nilai_diperoleh": 0.06,
+                                "nilai_maksimal": 0.06,
+                                "nomor_gerakan_akhir": 63
+                            },
+                            "10": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 12,
+                                "nilai_diperoleh": 0.12,
+                                "nilai_maksimal": 0.12,
+                                "nomor_gerakan_akhir": 75
+                            }
+                        }
+                    },
+                    "toya": {
+                        "metadata": {
+                            "lebar_kolom": 57.14
+                        },
+                        "rangkaian_gerak": {
+                            "11": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 6,
+                                "nilai_diperoleh": 0.06,
+                                "nilai_maksimal": 0.06,
+                                "nomor_gerakan_akhir": 81
+                            },
+                            "12": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 5,
+                                "nilai_diperoleh": 0.05,
+                                "nilai_maksimal": 0.05,
+                                "nomor_gerakan_akhir": 86
+                            },
+                            "13": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 5,
+                                "nilai_diperoleh": 0.05,
+                                "nilai_maksimal": 0.05,
+                                "nomor_gerakan_akhir": 91
+                            },
+                            "14": {
+                                "jumlah_kesalahan": 0,
+                                "jumlah_gerakan": 9,
+                                "nilai_diperoleh": 0.09,
+                                "nilai_maksimal": 0.09,
+                                "nomor_gerakan_akhir": 100
+                            }
+                        }
+                    }
+                },
+                "nilai_minimal": 0,
+                "total_kesalahan_gerak": 0,
+                "total_gerakan": 100,
+                "nilai_diperoleh": 9.9,
+                "nilai_maksimal": 9.9
+            },
+            "kemantapan": {
+                "metadata": {
+                    "label": "Stamina (0.01 - 0.1)",
+                    "step": 0.01
+                },
+                "nilai_minimal": 0.0,
+                "nilai_diperoleh": 0.0,
+                "nilai_maksimal": 0.1
+            }
+        },
+        "hukuman": {
+            "waktu": {
+                "tipe": "pilihan ganda",
+                "metadata": {
+                    "label": "Time Perfomance"
+                },
+                "detail_hukuman": {
+                    "pilihan": {
+                        "> 5 - 10 seconds": 0.5,
+                        "> 10 - 15 seconds": "disk"
+                    },
+                    "terpilih": "",
+                    "nilai_hukuman": 0
+                }
+            },
+            "keluar_gelanggang": {
+                "tipe": "repetisi",
+                "metadata": {
+                    "label": "Performance exceeded the 10m  by 10m arena"
+                },
+                "detail_hukuman": {
+                    "faktor_pengali": 0.5,
+                    "jumlah_repetisi": 0,
+                    "nilai_hukuman": 0
+                }
+            },
+            "pakaian_tidak_sesuai": {
+                "tipe": "satu kali",
+                "metadata": {
+                    "label": "Uniform / Dress violating rules"
+                },
+                "detail_hukuman": {
+                    "faktor_pengali": 0.5,
+                    "nilai_hukuman": 0
+                }
+            },
+            "senjata_jatuh": {
+                "tipe": "repetisi",
+                "metadata": {
+                    "label": "Weapon fall out of arena while athelete is still required to use it"
+                },
+                "detail_hukuman": {
+                    "faktor_pengali": 0.5,
+                    "jumlah_repetisi": 0,
+                    "nilai_hukuman": 0
+                }
+            },
+            "menahan_gerakan": {
+                "tipe": "repetisi",
+                "metadata": {
+                    "label": "Athlete staying at one move for more than 5 seconds"
+                },
+                "detail_hukuman": {
+                    "faktor_pengali": 0.5,
+                    "jumlah_repetisi": 0,
+                    "nilai_hukuman": 0
+                }
+            }
+        },
+        "ringkasan": {
+            "total_nilai": 9.9,
+            "total_hukuman": 0,
+            "nilai_akhir": 9.9,
+            "nilai_minimal": 0,
+            "nilai_maksimal": 10
+        }
+    }
+}

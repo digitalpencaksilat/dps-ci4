@@ -44,5 +44,29 @@
             </div>
         </section>
     </div>
+
+    <div class="col-12 col-lg-6">
+        <a href="<?= base_url('admin/super/mode-pembuatan-jadwal') ?>" class="super-mode-card super-mode-card-jadwal text-decoration-none text-reset d-flex flex-column h-100">
+            <section class="admin-card h-100 d-flex flex-column justify-content-between super-mode-card-inner">
+                <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+                    <div class="super-mode-icon">
+                        <i class="fas fa-calendar-days"></i>
+                    </div>
+                    <?php if (($activeMode ?? '') === 'pembuatan_jadwal') : ?>
+                        <span class="status-badge success">Aktif</span>
+                    <?php endif; ?>
+                </div>
+                <div class="super-mode-copy">
+                    <p class="eyebrow mb-2">Pembuatan Jadwal</p>
+                    <h3 class="h3 section-title mb-3">Mode Pembuatan Jadwal</h3>
+                    <p class="muted-copy mb-0">Masuk ke area drawing, generate bagan, penjadwalan, dan validasi jadwal pertandingan.</p>
+                </div>
+                <div class="super-mode-link mt-4">
+                    <span>Pilih Mode</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </section>
+        </a>
+    </div>
 </div>
 <?= $this->endSection() ?>

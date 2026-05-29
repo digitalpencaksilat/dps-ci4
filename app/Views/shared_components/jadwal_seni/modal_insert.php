@@ -1,7 +1,8 @@
 <div class="modal fade" id="modalInsertJadwalSeni" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?= base_url('admin/sekretariat/jadwal-seni/create') ?>" method="post">
+            <?php $routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-seni'); ?>
+            <form action="<?= base_url($routePrefix . '/create') ?>" method="post">
                 <?= csrf_field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title">Add Artistic Schedule</h5>

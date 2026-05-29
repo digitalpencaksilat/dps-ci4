@@ -46,12 +46,16 @@ class JadwalTandingOtomatisService
             $jumlahPartai[$idGelanggang] = (int) ($jumlahPartaiInput[$index] ?? 0);
         }
 
+        log_message('debug', '[JadwalTandingOtomatisService] start jenis={jenis}', ['jenis' => $jenisPenjadwalan]);
         $this->db->transStart();
 
         $partaiTerakhirGelanggang = $this->getArrayPartaiTerakhirGelanggang($dataIdGelanggang);
+        log_message('debug', '[JadwalTandingOtomatisService] got partai terakhir');
         $matches = $jenisPenjadwalan === 'pemasalan'
             ? $this->fetchMatchesPemasalan($urutanIdKelasTanding, $babakPertandingan)
             : $this->fetchMatchesPrestasi($urutanIdKelasTanding, $babakPertandingan);
+
+        log_message('debug', '[JadwalTandingOtomatisService] matches count={n}', ['n' => count($matches)]);
 
         if ($matches === []) {
             $this->db->transComplete();
@@ -66,9 +70,13 @@ class JadwalTandingOtomatisService
 
         if ($jenisPenjadwalan === 'pemasalan') {
             $matches = $this->acakUrutanPertandingan($jumlahSelangSeling, $matches);
+            log_message('debug', '[JadwalTandingOtomatisService] after acak');
             $paketPertandingan = $this->kelompokkanPertandinganKeDalamPaket($matches);
+            log_message('debug', '[JadwalTandingOtomatisService] paket count={n}', ['n' => count($paketPertandingan)]);
             $paketPerGelanggang = $this->alokasiPaketKeGelanggang($paketPertandingan, $dataIdGelanggang, $jumlahPartai);
+            log_message('debug', '[JadwalTandingOtomatisService] after alokasiPaket');
             $result = $this->persistPaketPerGelanggang($paketPerGelanggang, $dataIdGelanggang, $tanggal, $jamMulai, $jamSelesai, $keterangan, $partaiTerakhirGelanggang);
+            log_message('debug', '[JadwalTandingOtomatisService] after persistPaket');
         } else {
             $pertandinganPerGelanggang = $this->alokasiPrestasiKeGelanggang($matches, $dataIdGelanggang, $jumlahPartai);
             $result = $this->persistPertandinganPerGelanggang($pertandinganPerGelanggang, $dataIdGelanggang, $tanggal, $jamMulai, $jamSelesai, $keterangan, $partaiTerakhirGelanggang);
@@ -331,57 +339,38 @@ class JadwalTandingOtomatisService
     private function alokasiPaketKeGelanggang(array $arrayPaketPertandingan, array $dataIdGelanggang, array $jumlahPartai): array
     {
         $paketPerGelanggang = [];
-        $jumlahPaket = count($arrayPaketPertandingan);
-        reset($dataIdGelanggang);
+        foreach ($dataIdGelanggang as $idGelanggang) {
+            $paketPerGelanggang[$idGelanggang] = [];
+        }
 
-        while ($jumlahPaket > 0) {
-            $idGelanggang = current($dataIdGelanggang);
-            if ($idGelanggang === false) {
-                reset($dataIdGelanggang);
-                $idGelanggang = current($dataIdGelanggang);
+        $sisaPaket = array_values($arrayPaketPertandingan);
+        while ($sisaPaket !== []) {
+            $adaProgress = false;
+
+            foreach ($dataIdGelanggang as $idGelanggang) {
+                $banyakPartai = $this->hitungJumlahPartai($paketPerGelanggang[$idGelanggang] ?? []);
+                $jumlahAlokasi = (int) ($jumlahPartai[$idGelanggang] ?? 0);
+
+                if ($banyakPartai >= $jumlahAlokasi) {
+                    continue;
+                }
+
+                $paket = array_shift($sisaPaket);
+                if ($paket === null) {
+                    break 2;
+                }
+
+                $paketPerGelanggang[$idGelanggang][] = $paket;
+                $adaProgress = true;
+
+                if ($sisaPaket === []) {
+                    break 2;
+                }
             }
 
-            if (! isset($paketPerGelanggang[$idGelanggang])) {
-                $paketPerGelanggang[$idGelanggang] = [];
-            }
-
-            $banyakPartai = $this->hitungJumlahPartai($paketPerGelanggang[$idGelanggang]);
-            $jumlahAlokasi = (int) ($jumlahPartai[$idGelanggang] ?? 0);
-
-            if ($banyakPartai < $jumlahAlokasi) {
-                $dataPertandingan = array_shift($arrayPaketPertandingan);
-                if ($dataPertandingan === null) {
-                    break;
-                }
-
-                $paketPerGelanggang[$idGelanggang][] = $dataPertandingan;
-
-                if (next($dataIdGelanggang) === false) {
-                    reset($dataIdGelanggang);
-                }
-
-                $jumlahPaket--;
-            } else {
-                // parity CI3: cari gelanggang lain yang masih punya kapasitas.
-                reset($dataIdGelanggang);
-                foreach ($dataIdGelanggang as $candidate) {
-                    if (! isset($paketPerGelanggang[$candidate])) {
-                        $paketPerGelanggang[$candidate] = [];
-                    }
-
-                    $banyakPartaiCandidate = $this->hitungJumlahPartai($paketPerGelanggang[$candidate]);
-                    $kapasitasSisa = ((int) ($jumlahPartai[$candidate] ?? 0)) - $banyakPartaiCandidate;
-                    if ($kapasitasSisa > 0) {
-                        current($dataIdGelanggang);
-                        break;
-                    }
-                    next($dataIdGelanggang);
-                }
-
-                // bila semua penuh, limpahkan sisa paket ke gelanggang pertama.
-                if (current($dataIdGelanggang) === false) {
-                    reset($dataIdGelanggang);
-                }
+            // Semua gelanggang sudah penuh; hentikan agar tidak infinite loop.
+            if (! $adaProgress) {
+                break;
             }
         }
 

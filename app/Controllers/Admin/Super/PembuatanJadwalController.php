@@ -342,7 +342,8 @@ class PembuatanJadwalController extends BaseController
             'activeMenu' => 'pembuatan_jadwal_jadwal_tanding',
             'jadwal'     => $jadwal,
             'details'    => $model->get_detail_jadwal($id),
-            'peserta'    => (new \App\Models\PesertaTandingModel())->findAll(),
+            // Needed by modal_tukar_atlet: include pendaftar + kontingen fields (nama_pendaftar, nama_kontingen).
+            'peserta'    => (new \App\Models\PesertaTandingModel())->baseSekretariatQuery()->get()->getResult(),
             'routePrefix' => 'admin/super/jadwal-tanding',
         ], 'Schedule Arena ' . esc($jadwal->nama_gelanggang ?? 'Arena ' . $id)));
     }
@@ -497,7 +498,7 @@ class PembuatanJadwalController extends BaseController
             return $this->response->setJSON(['status' => false, 'message' => 'Generate PDF jadwal tanding gagal.']);
         }
 
-        $model->update($id, ['pdf_path' => $path]);
+        $model->update($id, ['nama_file' => $path]);
 
         return $this->response->setJSON(['status' => true, 'message' => 'PDF jadwal tanding berhasil dibuat.', 'path' => $path, 'url' => base_url($path)]);
     }
@@ -628,7 +629,7 @@ class PembuatanJadwalController extends BaseController
             return $this->response->setJSON(['status' => false, 'message' => 'Generate PDF jadwal seni gagal.']);
         }
 
-        $model->update($id, ['pdf_path' => $path]);
+        $model->update($id, ['nama_file' => $path]);
 
         return $this->response->setJSON(['status' => true, 'message' => 'PDF jadwal seni berhasil dibuat.', 'path' => $path, 'url' => base_url($path)]);
     }

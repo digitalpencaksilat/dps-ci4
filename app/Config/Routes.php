@@ -166,6 +166,10 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('jadwal-tanding/sortir-ulang/(:num)', 'Admin\\Super\\PembuatanJadwalController::sortirUlangJadwalTanding/$1');
     $routes->post('jadwal-tanding/pola-penjadwalan/(:num)', 'Admin\\Super\\PembuatanJadwalController::polaPenjadwalanJadwalTanding/$1');
     $routes->get('jadwal-seni', 'Admin\\Super\\PembuatanJadwalController::jadwalSeni');
+    // Penjadwalan Otomatis Seni (parity CI3: resources/Jadwal_seni::buat_jadwal_seni_sistem_pool_otomatis + buat_jadwal_seni_battle_otomatis)
+    $routes->get('jadwal-seni/penjadwalan-otomatis', 'Admin\\Super\\PenjadwalanSeniOtomatisController::index');
+    $routes->post('jadwal-seni/buat-jadwal-seni-pool-otomatis', 'Admin\\Super\\PenjadwalanSeniOtomatisController::storePool');
+    $routes->post('jadwal-seni/buat-jadwal-seni-battle-otomatis', 'Admin\\Super\\PenjadwalanSeniOtomatisController::storeBattle');
     $routes->get('jadwal-seni/diagnosis', 'Admin\\Super\\PembuatanJadwalController::diagnosisSeni');
     $routes->get('jadwal-seni/overview', 'Admin\\Super\\PembuatanJadwalController::overviewSeni');
     $routes->get('jadwal-seni/(:num)', 'Admin\\Super\\PembuatanJadwalController::showJadwalSeni/$1');

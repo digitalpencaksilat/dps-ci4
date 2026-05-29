@@ -14,7 +14,7 @@
                         <select class="form-select" name="id_atlet_1">
                             <?php foreach (($data_peserta_tanding ?? []) as $peserta_tanding): ?>
                                 <option value="<?= esc((string) $peserta_tanding->id_peserta_tanding) ?>">
-                                    <?= esc($peserta_tanding->nama_pendaftar . ' - ' . ($peserta_tanding->nama_kontingen ?? '')) ?>
+                                    <?= esc(($peserta_tanding->nama_pendaftar ?? ('Peserta #' . ($peserta_tanding->id_peserta_tanding ?? '-'))) . ' - ' . ($peserta_tanding->nama_kontingen ?? '')) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -24,7 +24,7 @@
                         <select class="form-select" name="id_atlet_2">
                             <?php foreach (($data_peserta_tanding ?? []) as $peserta_tanding): ?>
                                 <option value="<?= esc((string) $peserta_tanding->id_peserta_tanding) ?>">
-                                    <?= esc($peserta_tanding->nama_pendaftar . ' - ' . ($peserta_tanding->nama_kontingen ?? '')) ?>
+                                    <?= esc(($peserta_tanding->nama_pendaftar ?? ('Peserta #' . ($peserta_tanding->id_peserta_tanding ?? '-'))) . ' - ' . ($peserta_tanding->nama_kontingen ?? '')) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

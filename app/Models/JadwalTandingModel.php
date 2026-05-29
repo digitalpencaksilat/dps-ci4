@@ -15,10 +15,9 @@ class JadwalTandingModel extends Model
         'jam_mulai',
         'jam_selesai',
         'keterangan',
-        'nomor_partai_awal',
-        'nomor_partai_akhir',
-        'jumlah_partai',
-        'pdf_path',
+
+        // db_testing_event schema still uses CI3 legacy field name.
+        'nama_file',
     ];
     protected $useTimestamps = true;
 
@@ -29,8 +28,8 @@ class JadwalTandingModel extends Model
                 jt.*,
                 g.nama_gelanggang,
                 g.nomor_gelanggang,
-                (SELECT nomor_partai FROM detail_jadwal_tanding WHERE detail_jadwal_tanding.id_jadwal_tanding = jt.id_jadwal_tanding ORDER BY nomor_partai ASC LIMIT 1) as partai_awal,
-                (SELECT nomor_partai FROM detail_jadwal_tanding WHERE detail_jadwal_tanding.id_jadwal_tanding = jt.id_jadwal_tanding ORDER BY nomor_partai DESC LIMIT 1) as partai_akhir,
+                (SELECT nomor_partai FROM detail_jadwal_tanding WHERE detail_jadwal_tanding.id_jadwal_tanding = jt.id_jadwal_tanding ORDER BY nomor_partai ASC LIMIT 1) as nomor_partai_awal,
+                (SELECT nomor_partai FROM detail_jadwal_tanding WHERE detail_jadwal_tanding.id_jadwal_tanding = jt.id_jadwal_tanding ORDER BY nomor_partai DESC LIMIT 1) as nomor_partai_akhir,
                 (SELECT COUNT(*) FROM detail_jadwal_tanding WHERE id_jadwal_tanding = jt.id_jadwal_tanding) as jumlah_partai,
                 jt.keterangan as keterangan_jadwal
             ")

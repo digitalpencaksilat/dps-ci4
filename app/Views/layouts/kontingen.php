@@ -98,8 +98,8 @@
             <?= $this->renderSection('content') ?>
 
             <footer class="kontingen-content-footer">
-                <span>Digital Pencak Silat Kontingen Panel</span>
-                <span class="footer-version"><?= esc(app_version()) ?></span>
+                <span>&copy; <?= date('Y') ?> Digital Pencak Silat. All Rights Reserved.</span>
+                <span class="footer-version">Version <?= esc(app_version()) ?></span>
             </footer>
         </main>
     </div>

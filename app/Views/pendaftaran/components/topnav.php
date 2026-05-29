@@ -3,7 +3,6 @@
         <a class="navbar-brand d-flex align-items-center" href="<?= base_url('/') ?>">
             <img src="<?= get_instance()->get_setting('event_logo', 'pendaftaran/gambar_dan_juknis') ?>"
                 alt="Logo" width="45" class="me-2 h-auto">
-            <span><?= esc($event['brand_abbreviation'] ?: 'DPS') ?></span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

@@ -18,8 +18,10 @@ class KontingenRegistrationService
         $jenisKontingen = $payload['jenis_kontingen'] ?? 'dalam_negeri';
         $namaKontingen = trim((string) ($payload['nama_kontingen'] ?? ''));
         $nomorPj = $this->normalizePhone((string) ($payload['nomor_telepon_penanggungjawab'] ?? ''));
-        $nomorKontingen = $this->normalizePhone((string) ($payload['nomor_telepon_kontingen'] ?? $nomorPj));
-        $jabatanPj = trim((string) ($payload['jabatan_penanggungjawab'] ?? 'Manager Kontingen'));
+        $nomorKontingenInput = trim((string) ($payload['nomor_telepon_kontingen'] ?? ''));
+        $nomorKontingen = $nomorKontingenInput !== '' ? $this->normalizePhone($nomorKontingenInput) : $nomorPj;
+        $jabatanPj = trim((string) ($payload['jabatan_penanggungjawab'] ?? ''));
+        $jabatanPj = $jabatanPj !== '' ? $jabatanPj : 'Manager Kontingen';
         $alamatLengkap = trim((string) ($payload['alamat_lengkap'] ?? ''));
 
         $data = [

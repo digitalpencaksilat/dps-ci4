@@ -28,13 +28,6 @@ body.admin-auth-centered {
     background: #fff;
 }
 
-.card-header-custom {
-    background-color: #fff;
-    padding: 40px 30px 20px;
-    text-align: center;
-    border-bottom: none;
-}
-
 .logo-img {
     height: 80px;
     width: auto;
@@ -123,10 +116,6 @@ body.admin-auth-centered {
 @media (max-width: 575.98px) {
     .admin-login-wrap {
         padding: 1rem;
-    }
-
-    .card-header-custom {
-        padding: 32px 24px 18px;
     }
 
     .card-body-custom {

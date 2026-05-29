@@ -303,18 +303,12 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
-                <?php if ($adminRole !== 'super_admin') : ?>
-                <div class="admin-topbar-meta text-md-end">
-                    <div class="fw-semibold"><?= esc($adminName ?? $adminPanel['label']) ?></div>
-                    <div class="small">Versi aplikasi <?= esc(app_version()) ?></div>
-                </div>
-                <?php endif; ?>
             </header>
 
             <?= $this->renderSection('content') ?>
 
             <footer class="admin-footer">
-                <span>&copy; 2026 Digital Pencak Silat. All Rights Reserved.</span>
+                <span>&copy; <?= date('Y') ?> Digital Pencak Silat. All Rights Reserved.</span>
                 <span class="footer-version">Version <?= esc(app_version()) ?></span>
             </footer>
         </main>

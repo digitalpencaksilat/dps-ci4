@@ -9,6 +9,8 @@ Related migration docs:
 - `docs/internal/bendahara-ci3-ci4-audit.md`
 - `docs/MIGRATION_PLAN_SEKRETARIAT.md`
 - `docs/SEKRETARIAT_ATLET_FLOW_MIGRATION_PLAN.md`
+- `docs/admin-super-pengaturan-event-kategori-lomba-migration-plan.md`
+- `docs/admin-super-pembuatan-jadwal-migration-plan.md`
 
 ## Status Legend
 
@@ -37,6 +39,7 @@ Related migration docs:
 | Admin sekretariat pesilat terbaik | Present | Present | Partial | Present | N/A | Missing/Manual | Partial | CI4 now includes Urutan Poin Tanding, Urutan Poin Battle Seni, and Urutan Poin Pool; manual QA and focused tests still pending. |
 | Admin sekretariat statistik | Present | Present | Partial | Present | N/A | Missing/Manual | Partial | CI4 now includes Progress Pendaftaran, Statistik Tanding, and Statistik Seni with ApexCharts; lint and route/manual QA still required before completion. |
 | Admin super | Present | Minimal | Needs Review | Needs Review | Needs Review | Missing/Manual | Partial | Confirm intended feature scope. |
+| Admin super pembuatan jadwal | Partial | Partial | Partial | Missing | Needs Review | Missing/Manual | Partial | Planning doc dibuat di `docs/admin-super-pembuatan-jadwal-migration-plan.md`. CI3 source mode/dash sudah teridentifikasi (`mode_pembuatan_jadwal`, `dashboard_pembuatan_jadwal`), namun route/mode/dashboard CI4 khusus super admin belum tersedia penuh. Prioritas: aktivasi mode, dashboard MVP, side nav, lalu mapping modul jadwal/drawing/generate bagan. |
 | Admin super pengaturan event | Present | Present | Partial | Present | Needs Review | Syntax OK/Test Warning/Manual Missing | Partial | Dashboard pengaturan event kini menampilkan ringkasan konfigurasi CI3 untuk medali, peraturan, juara tiga bersama, format penilaian, biaya pendaftaran, sistem penampilan seni, max peserta per pool, dan detail harga per kategori usia. Migrasi lanjutan wajib native CI4, bukan membawa `Config_form_library`/writer CI3. Halaman `profil_kejuaraan` kini mulai dimigrasikan via controller, service, validation, view, dan persistence ke `site_builder_settings`; halaman aman berikutnya tetap `akses_pendaftaran`, `akses_pemilihan_kategori`, dan `konten_halaman_landing`. |
 | Admin super pengaturan arsip pendaftar | Present | Complete | Complete | Complete | Complete | Complete | Complete | Phase 1-3 complete: Settings CRUD + toggle active + upload/edit/delete controller + validation helpers. Routes, controller, service methods, helper functions, dan view toggle handler sudah implemented. Pending: Phase 4 view enhancement verification + Phase 5 testing & QA. |
 | Admin super pengaturan rekening pembayaran | Present | Complete | Complete | Complete | Complete | Syntax OK/Test Warning | Complete | Rekening pembayaran sekarang database-first via `rekening_pembayaran_accounts`, default kosong, account dinamis tambah/hapus, QR dihapus, dan landing card setting dihapus. PHPUnit filter rekening passed; warning hanya coverage driver missing. |

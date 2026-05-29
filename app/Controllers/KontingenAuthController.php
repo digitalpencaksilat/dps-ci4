@@ -3,10 +3,11 @@
 namespace App\Controllers;
 
 use App\Services\KontingenAuthService;
+use CodeIgniter\HTTP\ResponseInterface;
 
 class KontingenAuthController extends BaseController
 {
-    public function login(): string
+    public function login(): ResponseInterface|string
     {
         if (session()->get('level') === 'kontingen' && session()->get('id_kontingen')) {
             return redirect()->to(base_url('kontingen/dashboard'));
@@ -15,7 +16,7 @@ class KontingenAuthController extends BaseController
         return view('kontingen/auth/login', [
             'eventName' => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'),
             'eventLogo' => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
-            'allowLogin' => (string) (get_setting('perbolehkan_kontingen_login') ?? '1') === '1',
+            'allowLogin' => $this->isKontingenLoginAllowed(),
             'allowForgotPassword' => (string) (get_setting('perbolehkan_lupa_password') ?? '0') === '1',
         ]);
     }
@@ -31,9 +32,8 @@ class KontingenAuthController extends BaseController
             return redirect()->back()->withInput()->with('status', false)->with('message', $this->validator->getErrors());
         }
 
-        $allowLogin = (string) (get_setting('perbolehkan_kontingen_login') ?? '1') === '1';
-        if (! $allowLogin) {
-            return redirect()->to(base_url('pendaftaran/login'))->with('status', false)->with('message', 'Proses pendaftaran ditutup');
+        if (! $this->isKontingenLoginAllowed()) {
+            return redirect()->to(base_url('pendaftaran/login'))->with('status', false)->with('message', 'Akses login kontingen sedang ditutup.');
         }
 
         $auth = new KontingenAuthService();
@@ -58,5 +58,10 @@ class KontingenAuthController extends BaseController
         (new KontingenAuthService())->logout();
 
         return redirect()->to(base_url('pendaftaran/login'));
+    }
+
+    private function isKontingenLoginAllowed(): bool
+    {
+        return in_array((string) (get_setting('perbolehkan_kontingen_login') ?? '0'), ['1', 'true', 'on'], true);
     }
 }

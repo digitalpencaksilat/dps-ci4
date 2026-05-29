@@ -412,7 +412,17 @@ body.admin-sidebar-open .admin-sidebar-overlay {
 }
 
 .admin-card {
+    position: relative;
+    overflow: hidden;
     padding: 18px;
+}
+
+.admin-card::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--admin-accent-dark), var(--admin-accent), #f59e0b);
 }
 
 .admin-sidebar .admin-card {
@@ -420,6 +430,10 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     border-color: rgba(198, 0, 0, 0.08);
     color: var(--brand-dark);
     box-shadow: none;
+}
+
+.admin-sidebar .admin-card::after {
+    display: none;
 }
 
 .hero-panel {
@@ -1015,11 +1029,17 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     gap: 1rem;
     margin-top: 1.5rem;
     padding: 1rem 1.25rem;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--admin-border);
+    border-bottom: 3px solid var(--brand-primary);
+    box-shadow: var(--admin-shadow);
     color: var(--admin-muted);
     font-size: 0.9rem;
+}
+
+.admin-footer span:first-child {
+    color: var(--brand-dark);
 }
 
 .admin-footer .footer-version {

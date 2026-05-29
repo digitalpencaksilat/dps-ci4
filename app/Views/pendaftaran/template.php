@@ -175,6 +175,15 @@
             letter-spacing: 0.08em;
         }
 
+        .countdown-live-alert {
+            grid-column: 1 / -1;
+            font-size: clamp(0.95rem, 2.3vw, 1.1rem);
+            line-height: 1.45;
+            padding: 0.95rem 1rem;
+            white-space: normal;
+            word-break: break-word;
+        }
+
         .hero-cta-group .btn {
             min-height: 52px;
         }
@@ -560,7 +569,7 @@
 
                     if (distance < 0) {
                         clearInterval(timer);
-                        countdownElement.innerHTML = '<div class="alert alert-warning border-0 rounded-4 w-100 text-center mb-0">Event sedang berlangsung!</div>';
+                        countdownElement.innerHTML = '<div class="alert alert-warning border-0 rounded-4 w-100 text-center mb-0 countdown-live-alert">Event sedang berlangsung!</div>';
                         return;
                     }
 

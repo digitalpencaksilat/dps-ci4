@@ -18,15 +18,15 @@
 <body class="admin-auth-body admin-auth-centered">
     <main class="admin-login-wrap">
         <div class="login-card">
-            <div class="card-header-custom">
-                <?php if (! empty($eventLogo)) : ?>
-                    <img src="<?= esc($eventLogo) ?>" alt="<?= esc($eventName) ?>" class="logo-img">
-                <?php endif; ?>
-                <h1 class="app-title">ADMIN PANEL</h1>
-                <p class="app-subtitle"><?= esc($eventName ?? 'Digital Pencak Silat') ?></p>
-            </div>
-
             <div class="card-body-custom">
+                <div class="text-center mb-4">
+                    <?php if (! empty($eventLogo)) : ?>
+                        <img src="<?= esc($eventLogo) ?>" alt="<?= esc($eventName) ?>" class="logo-img">
+                    <?php endif; ?>
+                    <h1 class="app-title">ADMIN PANEL</h1>
+                    <p class="app-subtitle"><?= esc($eventName ?? 'Digital Pencak Silat') ?></p>
+                </div>
+
                 <?= view('shared_components/notification') ?>
 
                 <form method="post" action="<?= base_url('admin') ?>" id="loginForm">
@@ -64,7 +64,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-brand-login">
+                    <button type="submit" class="btn btn-brand-login w-100">
                         Masuk Admin <i class="fas fa-arrow-right ms-2"></i>
                     </button>
                 </form>

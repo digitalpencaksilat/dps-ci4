@@ -74,7 +74,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     </a>
 
                     <?php if ($superMode === 'pengaturan_event') : ?>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pengaturan_event' ? 'active' : '' ?>" href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>">
+                    <a class="admin-nav-link <?= uri_string() === 'admin/super/dashboard-pengaturan-event' ? 'active' : '' ?>" href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>">
                         <span class="label-block"><i class="fas fa-sliders"></i><span>Dashboard Pengaturan Event</span></span>
                     </a>
 
@@ -86,9 +86,6 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     </a>
                     <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/akses-pemilihan-kategori') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/akses-pemilihan-kategori') ?>">
                         <span class="label-block"><i class="fas fa-list-check"></i><span>Akses Pemilihan Kategori</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/konten-landing') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/konten-landing') ?>">
-                        <span class="label-block"><i class="fas fa-file-lines"></i><span>Konten Landing</span></span>
                     </a>
                     <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/super/pengaturan-event/gambar-dan-juknis') ? 'active' : '' ?>" href="<?= base_url('admin/super/pengaturan-event/gambar-dan-juknis') ?>">
                         <span class="label-block"><i class="fas fa-image"></i><span>Gambar dan Juknis</span></span>
@@ -106,48 +103,77 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <?php endif; ?>
 
                     <?php if ($superMode === 'pembuatan_jadwal') : ?>
+                    <?php
+                        $isDrawingMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_tanding'
+                            || ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_seni';
+                        $isGenerateBaganMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_generate_bagan_tanding'
+                            || ($activeMenu ?? '') === 'pembuatan_jadwal_generate_bagan_seni_battle';
+                        $isPenjadwalanOtomatisMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_tanding'
+                            || ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_seni';
+                        $isJadwalPertandinganMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_tanding'
+                            || ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_seni';
+                    ?>
+
                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_dashboard' ? 'active' : '' ?>" href="<?= base_url('admin/super/dashboard-pembuatan-jadwal') ?>">
                         <span class="label-block"><i class="fas fa-chart-bar"></i><span>Dashboard Pembuatan Jadwal</span></span>
                     </a>
+
                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_operasi_basis_data' ? 'active' : '' ?>" href="<?= base_url('admin/super/operasi-basis-data') ?>">
                         <span class="label-block"><i class="fas fa-database"></i><span>Operasi Basis Data</span></span>
                     </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-tanding') ?>">
-                        <span class="label-block"><i class="fas fa-random"></i><span>Drawing Tanding</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-seni') ?>">
-                        <span class="label-block"><i class="fas fa-random"></i><span>Drawing Seni</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_generate_bagan_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/generate-bagan-tanding-dari-jadwal') ?>">
-                        <span class="label-block"><i class="fas fa-magic"></i><span>Generate Bagan Tanding</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_generate_bagan_seni_battle' ? 'active' : '' ?>" href="<?= base_url('admin/super/generate-bagan-seni-battle-dari-jadwal') ?>">
-                        <span class="label-block"><i class="fas fa-magic"></i><span>Generate Bagan Seni Battle</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-tanding') ?>">
-                        <span class="label-block"><i class="fas fa-calendar-alt"></i><span>Jadwal Tanding</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-tanding/penjadwalan-otomatis') ?>">
-                        <span class="label-block"><i class="fas fa-wand-magic-sparkles"></i><span>Penjadwalan Otomatis Tanding</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_diagnosis_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-tanding/diagnosis') ?>">
-                        <span class="label-block"><i class="fas fa-stethoscope"></i><span>Diagnosis Jadwal Tanding</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_overview_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-tanding/overview') ?>">
-                        <span class="label-block"><i class="fas fa-table-list"></i><span>Overview Jadwal Tanding</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni') ?>">
-                        <span class="label-block"><i class="fas fa-calendar"></i><span>Jadwal Seni</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_diagnosis_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni/diagnosis') ?>">
-                        <span class="label-block"><i class="fas fa-stethoscope"></i><span>Diagnosis Jadwal Seni</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_overview_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni/overview') ?>">
-                        <span class="label-block"><i class="fas fa-table-list"></i><span>Overview Jadwal Seni</span></span>
-                    </a>
-                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>">
-                        <span class="label-block"><i class="fas fa-wand-magic-sparkles"></i><span>Penjadwalan Otomatis Seni</span></span>
-                    </a>
+
+                    <div>
+                        <a class="admin-nav-link <?= $isDrawingMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#superDrawingPertandinganSubmenu" role="button" aria-expanded="<?= $isDrawingMenu ? 'true' : 'false' ?>" aria-controls="superDrawingPertandinganSubmenu">
+                            <span class="label-block"><i class="fas fa-random"></i><span>Drawing Pertandingan</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isDrawingMenu ? 'show' : '' ?>" id="superDrawingPertandinganSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-tanding') ?>">Drawing Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-seni') ?>">Drawing Seni</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a class="admin-nav-link <?= $isGenerateBaganMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#superGenerateBaganSubmenu" role="button" aria-expanded="<?= $isGenerateBaganMenu ? 'true' : 'false' ?>" aria-controls="superGenerateBaganSubmenu">
+                            <span class="label-block"><i class="fas fa-magic"></i><span>Generate Bagan</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isGenerateBaganMenu ? 'show' : '' ?>" id="superGenerateBaganSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_generate_bagan_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/generate-bagan-tanding-dari-jadwal') ?>">Generate Bagan Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_generate_bagan_seni_battle' ? 'active' : '' ?>" href="<?= base_url('admin/super/generate-bagan-seni-battle-dari-jadwal') ?>">Generate Bagan Seni Battle</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a class="admin-nav-link <?= $isPenjadwalanOtomatisMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#superPenjadwalanOtomatisSubmenu" role="button" aria-expanded="<?= $isPenjadwalanOtomatisMenu ? 'true' : 'false' ?>" aria-controls="superPenjadwalanOtomatisSubmenu">
+                            <span class="label-block"><i class="fas fa-wand-magic-sparkles"></i><span>Penjadwalan Otomatis</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isPenjadwalanOtomatisMenu ? 'show' : '' ?>" id="superPenjadwalanOtomatisSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-tanding/penjadwalan-otomatis') ?>">Penjadwalan Otomatis Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>">Penjadwalan Otomatis Seni</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a class="admin-nav-link <?= $isJadwalPertandinganMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#superJadwalPertandinganSubmenu" role="button" aria-expanded="<?= $isJadwalPertandinganMenu ? 'true' : 'false' ?>" aria-controls="superJadwalPertandinganSubmenu">
+                            <span class="label-block"><i class="fas fa-calendar-alt"></i><span>Jadwal Pertandingan</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isJadwalPertandinganMenu ? 'show' : '' ?>" id="superJadwalPertandinganSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-tanding') ?>">Jadwal Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni') ?>">Jadwal Seni</a>
+                            </div>
+                        </div>
+                    </div>
+
                     <?php endif; ?>
 
                     <?php if ($superMode === 'perngaturan_kategori_lomba') : ?>

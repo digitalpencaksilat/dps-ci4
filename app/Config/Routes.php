@@ -170,8 +170,6 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->get('jadwal-tanding/penjadwalan-otomatis', 'Admin\\Super\\PenjadwalanTandingOtomatisController::index');
     $routes->post('jadwal-tanding/buat-jadwal-tanding-otomatis', 'Admin\\Super\\PenjadwalanTandingOtomatisController::store');
 
-    $routes->get('jadwal-tanding/diagnosis', 'Admin\\Super\\PembuatanJadwalController::diagnosisTanding');
-    $routes->get('jadwal-tanding/overview', 'Admin\\Super\\PembuatanJadwalController::overviewTanding');
     $routes->get('jadwal-tanding/(:num)', 'Admin\\Super\\PembuatanJadwalController::showJadwalTanding/$1');
     $routes->post('jadwal-tanding/create', 'Admin\\Super\\PembuatanJadwalController::createJadwalTanding');
     $routes->post('jadwal-tanding/(:num)/update-keterangan', 'Admin\\Super\\PembuatanJadwalController::updateKeteranganJadwalTanding/$1');
@@ -200,8 +198,6 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('pengaturan-event/akses-pendaftaran/update', 'Admin\\Super\\AksesPendaftaranController::update');
     $routes->get('pengaturan-event/akses-pemilihan-kategori', 'Admin\\Super\\AksesPemilihanKategoriController::edit');
     $routes->post('pengaturan-event/akses-pemilihan-kategori/update', 'Admin\\Super\\AksesPemilihanKategoriController::update');
-    $routes->get('pengaturan-event/konten-landing', 'Admin\\Super\\KontenLandingController::edit');
-    $routes->post('pengaturan-event/konten-landing/update', 'Admin\\Super\\KontenLandingController::update');
     $routes->get('pengaturan-event/gambar-dan-juknis', 'Admin\\Super\\GambarDanJuknisController::edit');
     $routes->post('pengaturan-event/gambar-dan-juknis/update', 'Admin\\Super\\GambarDanJuknisController::update');
     $routes->get('pengaturan-event/rekening-pembayaran', 'Admin\\Super\\RekeningPembayaranController::edit');

@@ -551,7 +551,25 @@ body.admin-sidebar-collapsed .btn-admin-logout {
     background: var(--admin-surface);
     border: 1px solid var(--admin-border);
     box-shadow: var(--admin-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
+
+.metric-label {
+    color: var(--admin-muted);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.metric-subcopy {
+    margin-top: auto;
+    color: rgba(125, 102, 112, 0.8);
+    font-size: 0.85rem;
+}
+
 
 .metric-card::before {
     content: '';
@@ -1204,6 +1222,95 @@ body.admin-sidebar-collapsed .btn-admin-logout {
 .super-mode-card:hover .super-mode-link,
 .super-mode-card:focus-visible .super-mode-link {
     color: var(--admin-accent-dark);
+}
+
+/* Operasi Basis Data uses the same visual language as the super-mode dashboard cards */
+.operasi-db-mode-grid {
+    max-width: 1120px;
+    margin-inline: auto;
+}
+
+.operasi-db-mode-card {
+    border-radius: 20px;
+}
+
+.operasi-db-card-inner {
+    min-height: 210px;
+    padding: 18px;
+    border-radius: 18px;
+}
+
+.operasi-db-card-inner .super-mode-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    font-size: 1.15rem;
+}
+
+.operasi-db-card-inner .super-mode-copy .section-title {
+    font-size: 1.35rem;
+    margin-bottom: 10px !important;
+}
+
+.operasi-db-card-inner .muted-copy {
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+.operasi-db-card-inner .super-mode-link {
+    margin-top: 16px !important;
+}
+
+.operasi-db-card-icon {
+    background: linear-gradient(135deg, rgba(198, 0, 0, 0.14) 0%, rgba(143, 11, 20, 0.2) 100%);
+    color: var(--admin-accent-dark);
+    box-shadow: inset 0 0 0 1px rgba(198, 0, 0, 0.1);
+}
+
+.operasi-db-card-success .operasi-db-card-icon {
+    background: linear-gradient(135deg, rgba(15, 159, 110, 0.14) 0%, rgba(15, 159, 110, 0.22) 100%);
+    color: #0b7a54;
+    box-shadow: inset 0 0 0 1px rgba(15, 159, 110, 0.16);
+}
+
+.operasi-db-card-info .operasi-db-card-icon {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(217, 119, 6, 0.22) 100%);
+    color: #9a6700;
+    box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.12);
+}
+
+.operasi-db-card-danger .operasi-db-card-icon {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.14) 0%, rgba(198, 0, 0, 0.22) 100%);
+    color: #8f0b14;
+    box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.12);
+}
+
+.operasi-db-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 1px;
+}
+
+.operasi-db-section .section-title {
+    line-height: 1.08;
+}
+
+.operasi-db-card-inner form {
+    margin: 0;
+}
+
+.operasi-db-card-inner .btn {
+    min-height: 42px;
+    font-weight: 700;
+    font-size: 0.94rem;
+}
+
+.operasi-db-card-inner code {
+    color: inherit;
+    background: rgba(255, 255, 255, 0.55);
+    padding: 0.12rem 0.38rem;
+    border-radius: 999px;
 }
 
 @media (max-width: 991.98px) {

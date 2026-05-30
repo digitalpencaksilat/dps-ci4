@@ -145,6 +145,9 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_overview_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni/overview') ?>">
                         <span class="label-block"><i class="fas fa-table-list"></i><span>Overview Jadwal Seni</span></span>
                     </a>
+                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>">
+                        <span class="label-block"><i class="fas fa-wand-magic-sparkles"></i><span>Penjadwalan Otomatis Seni</span></span>
+                    </a>
                     <?php endif; ?>
 
                     <?php if ($superMode === 'perngaturan_kategori_lomba') : ?>
@@ -328,8 +331,8 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
             </div>
 
             <div class="mt-auto">
-                <a href="<?= base_url('admin/logout') ?>" class="btn btn-admin-logout w-100 rounded-pill">
-                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                <a href="<?= base_url('admin/logout') ?>" class="btn btn-admin-logout w-100 rounded-pill" title="Logout">
+                    <i class="fas fa-sign-out-alt me-2"></i><span class="logout-label">Logout</span>
                 </a>
             </div>
         </aside>
@@ -341,6 +344,9 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         <div class="eyebrow"><?= esc($adminPanel['area']) ?></div>
                         <h1 class="admin-page-title h2 mb-0"><?= esc($title ?? 'Admin Panel') ?></h1>
                     </div>
+                    <button type="button" class="admin-collapse-toggle" data-admin-sidebar-collapse aria-label="Minimize sidebar" title="Minimize sidebar">
+                        <i class="fas fa-angles-left"></i>
+                    </button>
                     <button type="button" class="admin-mobile-toggle" data-admin-sidebar-open aria-label="Buka menu">
                         <i class="fas fa-bars"></i>
                     </button>
@@ -446,12 +452,51 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
             const body = document.body;
             const openButton = document.querySelector('[data-admin-sidebar-open]');
             const closeButtons = document.querySelectorAll('[data-admin-sidebar-close]');
+            const collapseButton = document.querySelector('[data-admin-sidebar-collapse]');
+
+            const COLLAPSE_KEY = 'dps_admin_sidebar_collapsed_v1';
+            const applyCollapsed = (collapsed) => {
+                body.classList.toggle('admin-sidebar-collapsed', collapsed);
+                if (!collapseButton) {
+                    return;
+                }
+
+                collapseButton.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+                collapseButton.title = collapsed ? 'Expand sidebar' : 'Minimize sidebar';
+                const icon = collapseButton.querySelector('i');
+                if (icon) {
+                    icon.className = collapsed ? 'fas fa-angles-right' : 'fas fa-angles-left';
+                }
+            };
+
+            const getStoredCollapsed = () => {
+                try {
+                    return window.localStorage.getItem(COLLAPSE_KEY) === '1';
+                } catch (e) {
+                    return false;
+                }
+            };
+
+            const setStoredCollapsed = (collapsed) => {
+                try {
+                    window.localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0');
+                } catch (e) {
+                    // ignore
+                }
+            };
 
             const openSidebar = () => body.classList.add('admin-sidebar-open');
             const closeSidebar = () => body.classList.remove('admin-sidebar-open');
 
             openButton?.addEventListener('click', openSidebar);
             closeButtons.forEach((button) => button.addEventListener('click', closeSidebar));
+
+            applyCollapsed(getStoredCollapsed());
+            collapseButton?.addEventListener('click', () => {
+                const next = !body.classList.contains('admin-sidebar-collapsed');
+                applyCollapsed(next);
+                setStoredCollapsed(next);
+            });
 
             document.addEventListener('keydown', (event) => {
                 if (event.key === 'Escape') {

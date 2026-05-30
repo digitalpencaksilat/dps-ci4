@@ -10,10 +10,47 @@
         </div>
         <div class="d-flex flex-wrap gap-2 align-items-start">
             <a href="<?= base_url('admin/super/jadwal-tanding') ?>" class="btn btn-danger rounded-pill">Jadwal Tanding</a>
+            <a href="<?= base_url('admin/super/jadwal-tanding/penjadwalan-otomatis') ?>" class="btn btn-danger rounded-pill">Otomatis Tanding</a>
             <a href="<?= base_url('admin/super/jadwal-seni') ?>" class="btn btn-outline-secondary rounded-pill">Jadwal Seni</a>
+            <a href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>" class="btn btn-outline-secondary rounded-pill">Otomatis Seni</a>
         </div>
     </div>
 </section>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-xl-6">
+        <section class="admin-card h-100 border border-danger-subtle">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                <div>
+                    <p class="eyebrow mb-1">Shortcut Utama</p>
+                    <h3 class="h4 section-title mb-1">Penjadwalan Otomatis Tanding</h3>
+                    <p class="muted-copy mb-0">Masuk cepat ke flow generate tanding dengan pola parity CI3 yang sudah dimigrasikan di CI4.</p>
+                </div>
+                <span class="status-badge danger"><i class="fas fa-wand-magic-sparkles"></i></span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="<?= base_url('admin/super/jadwal-tanding/penjadwalan-otomatis') ?>" class="btn btn-danger rounded-pill">Buka Otomatis Tanding</a>
+                <a href="<?= base_url('admin/super/jadwal-tanding/overview') ?>" class="btn btn-outline-danger rounded-pill">Lihat Overview Tanding</a>
+            </div>
+        </section>
+    </div>
+    <div class="col-12 col-xl-6">
+        <section class="admin-card h-100 border border-secondary-subtle">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                <div>
+                    <p class="eyebrow mb-1">Shortcut Utama</p>
+                    <h3 class="h4 section-title mb-1">Penjadwalan Otomatis Seni</h3>
+                    <p class="muted-copy mb-0">Akses cepat ke generate pool dan battle seni beserta validasi parity yang sedang dimigrasikan ke CI4.</p>
+                </div>
+                <span class="status-badge success"><i class="fas fa-masks-theater"></i></span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>" class="btn btn-secondary rounded-pill">Buka Otomatis Seni</a>
+                <a href="<?= base_url('admin/super/jadwal-seni/overview') ?>" class="btn btn-outline-secondary rounded-pill">Lihat Overview Seni</a>
+            </div>
+        </section>
+    </div>
+</div>
 
 <div class="row g-4 mb-4">
     <?php
@@ -192,7 +229,16 @@
     <div class="col-12 col-xl-7">
         <section class="admin-card h-100">
             <p class="eyebrow mb-1">Ringkasan Jadwal</p>
-            <h3 class="h4 section-title mb-3">Jadwal Tanding dan Seni</h3>
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                <div>
+                    <h3 class="h4 section-title mb-1">Jadwal Tanding dan Seni</h3>
+                    <p class="muted-copy mb-0">Akses cepat ke daftar jadwal dan form generate otomatis untuk tanding maupun seni.</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="<?= base_url('admin/super/jadwal-tanding/penjadwalan-otomatis') ?>" class="btn btn-outline-danger rounded-pill btn-sm">Buka Otomatis Tanding</a>
+                    <a href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>" class="btn btn-outline-secondary rounded-pill btn-sm">Buka Otomatis Seni</a>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table admin-table align-middle mb-0">
                     <thead>

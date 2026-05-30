@@ -391,6 +391,81 @@ body.admin-sidebar-open .admin-sidebar-overlay {
     padding: 20px;
     overflow-x: hidden;
     background: var(--bg-color);
+    transition: margin-left 0.22s ease, padding 0.22s ease;
+}
+
+.admin-collapse-toggle {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 14px;
+    background: #ffffff;
+    color: var(--brand-primary);
+    box-shadow: 0 8px 22px rgba(74, 17, 23, 0.08);
+}
+
+.admin-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-topbar-actions > div {
+    min-width: 0;
+    flex: 1;
+}
+
+body.admin-sidebar-collapsed .admin-sidebar {
+    width: 92px;
+    padding: 24px 10px;
+}
+
+body.admin-sidebar-collapsed .admin-main {
+    margin-left: 92px;
+}
+
+body.admin-sidebar-collapsed .admin-brand-title,
+body.admin-sidebar-collapsed .admin-brand-subtitle,
+body.admin-sidebar-collapsed .admin-section-label,
+body.admin-sidebar-collapsed .admin-nav-link .label-block span:last-child,
+body.admin-sidebar-collapsed .admin-nav-link .chevron,
+body.admin-sidebar-collapsed .admin-submenu,
+body.admin-sidebar-collapsed .btn-admin-logout .logout-label {
+    display: none;
+}
+
+body.admin-sidebar-collapsed .admin-nav-link {
+    justify-content: center;
+    padding: 12px;
+}
+
+body.admin-sidebar-collapsed .admin-nav-link .label-block {
+    justify-content: center;
+    width: 100%;
+}
+
+body.admin-sidebar-collapsed .admin-nav-link {
+    gap: 0;
+}
+
+body.admin-sidebar-collapsed .admin-nav-link .label-block {
+    gap: 0;
+}
+
+body.admin-sidebar-collapsed .btn-admin-logout .me-2 {
+    margin-right: 0 !important;
+}
+
+body.admin-sidebar-collapsed .admin-brand {
+    padding: 12px;
+    justify-content: center;
+}
+
+body.admin-sidebar-collapsed .btn-admin-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 0;
 }
 
 .admin-topbar,

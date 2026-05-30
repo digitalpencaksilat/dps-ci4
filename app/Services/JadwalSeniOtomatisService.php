@@ -318,7 +318,22 @@ class JadwalSeniOtomatisService
         $field = implode(',', array_map(static fn (int $id): string => (string) $id, $urutanIdSub));
 
         $builder = $this->db->table('battle_seni bs');
-        $builder->select('bs.id_battle_seni, bs.id_penampilan_seni_merah, bs.id_penampilan_seni_biru');
+        // Keep extra fields for parity ordering and selang-seling grouping.
+        $builder->select(
+            'bs.id_battle_seni, bs.id_kompetisi_seni, bs.babak, bs.nomor_battle, bs.jenis_kemenangan,'
+            . ' bs.id_penampilan_seni_merah, bs.id_penampilan_seni_biru,'
+            . ' ks.nomor_pool, kl.jumlah_juri,'
+            . ' CASE bs.babak'
+            . ' WHEN "Final" THEN 1'
+            . ' WHEN "Perebutan Juara Tiga" THEN 2/3'
+            . ' WHEN "Semi Final" THEN 1/2'
+            . ' WHEN "1/4 Final" THEN 1/4'
+            . ' WHEN "1/8 Final" THEN 1/8'
+            . ' WHEN "1/16 Final" THEN 1/16'
+            . ' WHEN "1/32 Final" THEN 1/32'
+            . ' END AS nilai_babak',
+            false
+        );
         $builder->join('kompetisi_seni ks', 'ks.id_kompetisi_seni = bs.id_kompetisi_seni');
         $builder->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = ks.id_sub_kategori_seni');
         $builder->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba');
@@ -329,12 +344,70 @@ class JadwalSeniOtomatisService
             $builder->where('kl.jenis_perlombaan', 'prestasi');
         }
 
-        // Urut: babak, urutan kategori, pool, nomor_battle (approx parity).
+        // Parity CI3: order by nilai_babak first, then sub kategori order, pool, nomor_battle.
+        $builder->orderBy('nilai_babak', 'ASC');
         $builder->orderBy("FIELD(sks.id_sub_kategori_seni, {$field})", '', false);
         $builder->orderBy('ks.nomor_pool', 'ASC');
         $builder->orderBy('bs.nomor_battle', 'ASC');
 
-        return $builder->get()->getResult();
+        $rows = $builder->get()->getResult();
+        if ($rows === []) {
+            return [];
+        }
+
+        // Parity CI3: pemasalan_seling_N limits consecutive battles per kompetisi.
+        if (str_starts_with($jenis, 'pemasalan_seling_')) {
+            $n = (int) str_replace('pemasalan_seling_', '', $jenis);
+            $n = max(1, min(10, $n));
+            return $this->distributeBattleSelangSeling($rows, $n);
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Parity CI3: _distribusi_battle_selang_seling
+     */
+    private function distributeBattleSelangSeling(array $rows, int $chunkSize): array
+    {
+        $out = [];
+        $current = [];
+        $currentKompetisi = null;
+
+        foreach ($rows as $battle) {
+            $idKompetisi = (int) ($battle->id_kompetisi_seni ?? 0);
+            if ($currentKompetisi === null || $currentKompetisi !== $idKompetisi) {
+                if ($current !== []) {
+                    usort($current, static fn ($a, $b) => ((float) ($a->nilai_babak ?? 0)) <=> ((float) ($b->nilai_babak ?? 0)));
+                    foreach ($current as $item) {
+                        $out[] = $item;
+                    }
+                }
+                $current = [$battle];
+                $currentKompetisi = $idKompetisi;
+                continue;
+            }
+
+            if (count($current) < $chunkSize) {
+                $current[] = $battle;
+                continue;
+            }
+
+            usort($current, static fn ($a, $b) => ((float) ($a->nilai_babak ?? 0)) <=> ((float) ($b->nilai_babak ?? 0)));
+            foreach ($current as $item) {
+                $out[] = $item;
+            }
+            $current = [$battle];
+        }
+
+        if ($current !== []) {
+            usort($current, static fn ($a, $b) => ((float) ($a->nilai_babak ?? 0)) <=> ((float) ($b->nilai_babak ?? 0)));
+            foreach ($current as $item) {
+                $out[] = $item;
+            }
+        }
+
+        return $out;
     }
 
     private function distributeKompetisiToGelanggang(array $kompetisi, array $idGelanggang, array $jumlahPool): array

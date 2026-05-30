@@ -198,6 +198,10 @@ h6,
     min-height: 100vh;
 }
 
+body.kontingen-sidebar-collapsed .kontingen-shell {
+    grid-template-columns: 92px minmax(0, 1fr);
+}
+
 .kontingen-sidebar-overlay {
     position: fixed;
     inset: 0;
@@ -229,6 +233,45 @@ body.kontingen-sidebar-open .kontingen-sidebar-overlay {
     background: var(--sidenav-bg);
     border-right: 4px solid var(--brand-primary);
     color: var(--brand-dark);
+}
+
+.kontingen-collapse-toggle {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 14px;
+    background: #ffffff;
+    color: var(--brand-primary);
+    box-shadow: var(--shadow-soft);
+    flex-shrink: 0;
+}
+
+body.kontingen-sidebar-collapsed .kontingen-sidebar {
+    padding-inline: 10px;
+}
+
+body.kontingen-sidebar-collapsed .brand-title,
+body.kontingen-sidebar-collapsed .brand-subtitle,
+body.kontingen-sidebar-collapsed .sidebar-section-label,
+body.kontingen-sidebar-collapsed .sidebar-link span,
+body.kontingen-sidebar-collapsed .sidebar-link small,
+body.kontingen-sidebar-collapsed .submenu-links {
+    display: none;
+}
+
+body.kontingen-sidebar-collapsed .brand-block {
+    justify-content: center;
+    padding-inline: 0;
+}
+
+body.kontingen-sidebar-collapsed .sidebar-link {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+}
+
+body.kontingen-sidebar-collapsed .sidebar-link i {
+    width: auto;
 }
 
 .kontingen-sidebar-head {
@@ -351,7 +394,8 @@ body.kontingen-sidebar-open .kontingen-sidebar-overlay {
 }
 
 .topbar-meta {
-    min-width: 200px;
+    min-width: 0;
+    flex: 1;
 }
 
 .topbar-card {
@@ -366,6 +410,43 @@ body.kontingen-sidebar-open .kontingen-sidebar-overlay {
     border-radius: 20px;
     box-shadow: var(--shadow-soft);
     border-top: 3px solid var(--brand-primary);
+}
+
+.kontingen-topnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+    margin: 0 0 18px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+}
+
+.topnav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--brand-dark);
+    font-weight: 600;
+    border: 1px solid transparent;
+    background: rgba(198, 0, 0, 0.03);
+}
+
+.topnav-link:hover {
+    border-color: rgba(198, 0, 0, 0.14);
+    background: rgba(198, 0, 0, 0.06);
+    color: var(--brand-primary);
+}
+
+.topnav-link.active {
+    background: linear-gradient(135deg, rgba(198, 0, 0, 0.12), rgba(255, 215, 0, 0.12));
+    border-color: rgba(198, 0, 0, 0.18);
+    color: var(--brand-primary);
 }
 
 .kontingen-mobile-toggle {
@@ -890,6 +971,17 @@ body.kontingen-sidebar-open .kontingen-sidebar-overlay {
     .topbar-card {
         justify-content: flex-start;
         align-items: flex-start;
+    }
+
+    .kontingen-topnav {
+        gap: 8px;
+        padding: 10px 12px;
+    }
+
+    .topnav-link {
+        flex: 1 1 calc(50% - 8px);
+        justify-content: center;
+        padding: 10px;
     }
 
     .hero-content {

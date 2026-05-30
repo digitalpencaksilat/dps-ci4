@@ -183,6 +183,23 @@ Route baru:
 - `POST admin/super/jadwal-seni/buat-jadwal-seni-pool-otomatis`
 - `POST admin/super/jadwal-seni/buat-jadwal-seni-battle-otomatis`
 
+Cara akses cepat:
+- Buka `admin/super/pembuatan-jadwal` lalu klik tombol `Otomatis Seni`
+
+Tambahan menu (CI4):
+- Sidebar `Pembuatan Jadwal` -> `Penjadwalan Otomatis Seni`
+
+## Manual QA (Spark Commands)
+
+Untuk tes end-to-end cepat tanpa UI (pakai DB lokal yang sudah terkonfigurasi), tersedia command:
+
+- Snapshot isi DB (cek readiness data pool/battle):
+  - `php spark debug:db-snapshot`
+- Test generate pool:
+  - `php spark test:penjadwalan-otomatis-seni --mode pool --gelanggang 1,2 --pool 10,10 --sub 3,4`
+- Test generate battle (butuh data `battle_seni` terisi):
+  - `php spark test:penjadwalan-otomatis-seni --mode battle --gelanggang 1 --partai 4 --sub 3 --babak "Final" --jenis prestasi`
+
 ## 2. Controller
 
 Ditambahkan controller baru:
@@ -342,13 +359,11 @@ Walau flow inti sudah dimigrasikan, masih ada beberapa catatan parity yang perlu
 
 1. **Sorting battle by nilai babak**
    - CI3 memiliki CASE khusus untuk bobot babak (`Final`, `Semi Final`, dst).
-   - CI4 saat ini masih mengurutkan terutama berdasarkan sub kategori, pool, dan nomor battle.
-   - Jika diperlukan parity penuh urutan lintas babak, service CI4 perlu ditambah CASE ranking babak yang identik.
+   - CI4: sudah ditambahkan `CASE ... AS nilai_babak` dan `ORDER BY nilai_babak ASC` di query battle.
 
 2. **Mode pemasalan battle**
-   - CI3 punya flow pemasalan dengan selang-seling yang lebih spesifik di layer model.
-   - CI4 saat ini menerima value `pemasalan_seling_1/2/3`, tetapi distribusi battle masih memakai distribusi kapasitas gelanggang generik.
-   - Jika source CI3 punya pola interleave khusus antar battle, logic itu perlu dipindahkan lebih detail.
+   - CI3 punya flow pemasalan dengan selang-seling.
+   - CI4: sudah ditambahkan grouping selang-seling berbasis `pemasalan_seling_N` (chunk per `id_kompetisi_seni`), lalu hasilnya tetap didistribusikan ke gelanggang berdasarkan `jumlah_partai`.
 
 3. **Create penampilan pool**
    - CI3 memakai helper/model method khusus `create_penampilan_seni(...)`.
@@ -409,6 +424,10 @@ File baru/diubah dalam pekerjaan ini:
 - `app/Controllers/Admin/Super/PenjadwalanSeniOtomatisController.php`
 - `app/Services/JadwalSeniOtomatisService.php`
 - `app/Services/PenilaianSeniService.php`
+- `app/Commands/TestPenjadwalanOtomatisSeniCommand.php`
+- `app/Commands/DebugDbSnapshotCommand.php`
+- `app/Views/admin/super/dashboard_pembuatan_jadwal.php`
+- `app/Views/layouts/admin.php`
 - `app/Views/admin/super/jadwal_seni/penjadwalan_seni_otomatis.php`
 - `docs/penjadwalan-seni-otomatis-pool-battle-ci4.md`
 

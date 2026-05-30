@@ -8,6 +8,7 @@ use App\Models\JadwalSeniModel;
 use App\Models\JadwalTandingModel;
 use App\Models\KelasTandingModel;
 use App\Models\KompetisiTandingModel;
+use App\Services\Admin\Super\OperasiBasisDataService;
 use App\Services\Admin\Super\PembuatanJadwalAuditService;
 use App\Services\Pdf\MpdfService;
 use App\Services\SekretariatKategoriSeniService;
@@ -35,12 +36,174 @@ class PembuatanJadwalController extends BaseController
     public function operasiBasisData(): string
     {
         $db = db_connect();
+        $service = new OperasiBasisDataService();
 
         return view('admin/super/operasi_basis_data', $this->viewData([
             'activeMenu' => 'pembuatan_jadwal_operasi_basis_data',
             'stats' => $this->scheduleDatabaseStats($db),
             'checks' => $this->scheduleDatabaseChecks($db),
+            'emptyDataPreview' => $service->previewHapusDataKosong(),
         ], 'Operasi Basis Data'));
+    }
+
+    public function backupDatabase()
+    {
+        $db = db_connect();
+        $database = $db->getDatabase();
+        $timestamp = date('Y-m-d_H-i-s');
+        $filename = 'backup_db_' . preg_replace('/[^A-Za-z0-9_-]/', '_', $database) . '_' . $timestamp . '.sql';
+
+        $dumpCommand = sprintf(
+            'mysqldump --skip-lock-tables --single-transaction --routines --triggers %s',
+            escapeshellarg($database)
+        );
+
+        try {
+            $dump = (string) shell_exec($dumpCommand);
+        } catch (\Throwable $e) {
+            $dump = '';
+        }
+
+        if (trim($dump) === '') {
+            return redirect()->back()->with('status', false)->with('message', 'Gagal membuat backup database. Pastikan mysqldump tersedia pada server.');
+        }
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/sql')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->setBody($dump);
+    }
+
+    public function hapusPoolSeniKosong()
+    {
+        $service = new OperasiBasisDataService();
+        $deleted = $service->hapusPoolSeniKosong();
+
+        return redirect()->to(base_url('admin/super/operasi-basis-data'))
+            ->with('status', true)
+            ->with('message', 'Pool seni kosong berhasil diproses. Total pool terhapus: ' . $deleted . '.');
+    }
+
+    public function hapusDataDariExcel()
+    {
+        $service = new OperasiBasisDataService();
+        $deleted = $service->hapusDataDariExcel();
+
+        return redirect()->to(base_url('admin/super/operasi-basis-data'))
+            ->with('status', true)
+            ->with('message', 'Data dari excel berhasil diproses. Total kontingen terhapus: ' . $deleted . '.');
+    }
+
+    public function hapusAtletBelumLunas()
+    {
+        $service = new OperasiBasisDataService();
+        $result = $service->hapusAtletBelumLunas();
+
+        return redirect()->to(base_url('admin/super/operasi-basis-data'))
+            ->with('status', (bool) ($result['status'] ?? false))
+            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+    }
+
+    public function buatPoolBaru()
+    {
+        $service = new OperasiBasisDataService();
+        $result = $service->buatPoolBaru();
+
+        return redirect()->to(base_url('admin/super/operasi-basis-data'))
+            ->with('status', (bool) ($result['status'] ?? false))
+            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+    }
+
+    public function buatKategoriUntukPartaiTambahan()
+    {
+        $service = new OperasiBasisDataService();
+        $result = $service->buatKategoriUntukPartaiTambahan();
+
+        return redirect()->to(base_url('admin/super/operasi-basis-data'))
+            ->with('status', (bool) ($result['status'] ?? false))
+            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+    }
+
+    public function resetDatabase()
+    {
+        if ((string) $this->request->getPost('confirm') !== 'RESET DATABASE') {
+            return redirect()->back()->with('status', false)->with('message', 'Konfirmasi tidak sesuai. Ketik RESET DATABASE untuk melanjutkan.');
+        }
+
+        $service = new OperasiBasisDataService();
+        $result = $service->resetDatabase();
+
+        return redirect()->to(base_url('admin/super/operasi-basis-data'))
+            ->with('status', (bool) ($result['status'] ?? false))
+            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+    }
+
+
+    public function hapusDataKosong(): string
+    {
+        $service = new OperasiBasisDataService();
+
+        return view('admin/super/hapus_data_kosong', $this->viewData([
+            'activeMenu' => 'pembuatan_jadwal_operasi_basis_data',
+            'preview' => $service->previewHapusDataKosong(),
+        ], 'Hapus Data Kosong'));
+    }
+
+    public function previewHapusDataKosong()
+    {
+        $service = new OperasiBasisDataService();
+
+        return $this->response->setJSON([
+            'status' => true,
+            'message' => 'Preview berhasil dibuat.',
+            'data' => $service->previewHapusDataKosong(),
+        ]);
+    }
+
+    public function prosesHapusDataKosong()
+    {
+        $mode = (string) ($this->request->getPost('mode') ?? '');
+        $service = new OperasiBasisDataService();
+        $result = $service->hapusDataKosong($mode);
+
+        return redirect()->to(base_url('admin/super/operasi-basis-data/hapus-data-kosong'))
+            ->with('status', (bool) ($result['status'] ?? false))
+            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+    }
+
+    public function hapusPesertaPerKategoriUsia(): string
+    {
+        $rows = (new \App\Models\KategoriUsiaModel())
+            ->orderBy('min_umur', 'ASC')
+            ->orderBy('jenis_kelamin', 'ASC')
+            ->findAll();
+
+        return view('admin/super/hapus_peserta_per_kategori_usia', $this->viewData([
+            'activeMenu' => 'pembuatan_jadwal_operasi_basis_data',
+            'kategoriUsiaRows' => $rows,
+        ], 'Hapus Peserta Per Kategori Usia'));
+    }
+
+    public function previewHapusPesertaBerdasarkanKategoriUsia()
+    {
+        $jenis = (string) ($this->request->getPost('jenis_peserta') ?? '');
+        $ids = $this->normalizeIds($this->request->getPost('id_kategori_usia'));
+        $service = new OperasiBasisDataService();
+        $result = $service->previewHapusPesertaBerdasarkanKategoriUsia($jenis, $ids);
+
+        return $this->response->setJSON($result);
+    }
+
+    public function hapusPesertaBerdasarkanKategoriUsia()
+    {
+        $jenis = (string) ($this->request->getPost('jenis_peserta') ?? '');
+        $ids = $this->normalizeIds($this->request->getPost('id_kategori_usia'));
+        $service = new OperasiBasisDataService();
+        $result = $service->hapusPesertaBerdasarkanKategoriUsia($jenis, $ids);
+
+        return redirect()->to(base_url('admin/super/operasi-basis-data/hapus-peserta-per-kategori-usia'))
+            ->with('status', (bool) ($result['status'] ?? false))
+            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
     }
 
     public function resetSeluruhJadwal()
@@ -854,8 +1017,13 @@ class PembuatanJadwalController extends BaseController
 
     private function normalizeIds($input): array
     {
-        if (! is_array($input)) {
+        if ($input === null) {
             return [];
+        }
+
+        // Accept scalar, array, or array-like from POST.
+        if (! is_array($input)) {
+            $input = [$input];
         }
 
         return array_values(array_unique(array_filter(array_map(static fn ($id): int => (int) $id, $input), static fn (int $id): bool => $id > 0)));

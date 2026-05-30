@@ -135,6 +135,22 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->get('dashboard-pembuatan-jadwal', 'Admin\\Super\\PembuatanJadwalController::dashboard');
     $routes->get('operasi-basis-data', 'Admin\\Super\\PembuatanJadwalController::operasiBasisData');
     $routes->post('operasi-basis-data/reset-seluruh-jadwal', 'Admin\\Super\\PembuatanJadwalController::resetSeluruhJadwal');
+    $routes->post('operasi-basis-data/backup-database', 'Admin\\Super\\PembuatanJadwalController::backupDatabase');
+    $routes->post('operasi-basis-data/hapus-pool-seni-kosong', 'Admin\\Super\\PembuatanJadwalController::hapusPoolSeniKosong');
+    $routes->post('operasi-basis-data/hapus-data-dari-excel', 'Admin\\Super\\PembuatanJadwalController::hapusDataDariExcel');
+    $routes->post('operasi-basis-data/hapus-atlet-belum-lunas', 'Admin\\Super\\PembuatanJadwalController::hapusAtletBelumLunas');
+    $routes->post('operasi-basis-data/buat-pool-baru', 'Admin\\Super\\PembuatanJadwalController::buatPoolBaru');
+    $routes->post('operasi-basis-data/buat-kategori-partai-tambahan', 'Admin\\Super\\PembuatanJadwalController::buatKategoriUntukPartaiTambahan');
+    $routes->post('operasi-basis-data/reset-database', 'Admin\\Super\\PembuatanJadwalController::resetDatabase');
+
+    $routes->get('operasi-basis-data/hapus-data-kosong', 'Admin\\Super\\PembuatanJadwalController::hapusDataKosong');
+    $routes->post('operasi-basis-data/preview-hapus-data-kosong', 'Admin\\Super\\PembuatanJadwalController::previewHapusDataKosong');
+    $routes->post('operasi-basis-data/proses-hapus-data-kosong', 'Admin\\Super\\PembuatanJadwalController::prosesHapusDataKosong');
+
+    $routes->get('operasi-basis-data/hapus-peserta-per-kategori-usia', 'Admin\\Super\\PembuatanJadwalController::hapusPesertaPerKategoriUsia');
+    $routes->post('operasi-basis-data/preview-hapus-peserta-berdasarkan-kategori-usia', 'Admin\\Super\\PembuatanJadwalController::previewHapusPesertaBerdasarkanKategoriUsia');
+    $routes->post('operasi-basis-data/hapus-peserta-berdasarkan-kategori-usia', 'Admin\\Super\\PembuatanJadwalController::hapusPesertaBerdasarkanKategoriUsia');
+
     $routes->get('drawing-tanding', 'Admin\\Super\\PembuatanJadwalController::drawingTanding');
     $routes->post('drawing-tanding/distribusikan-peserta', 'Admin\\Super\\PembuatanJadwalController::distribusikanPesertaTanding');
     $routes->post('drawing-tanding/acak-bagan', 'Admin\\Super\\PembuatanJadwalController::acakBaganTandingBulk');
@@ -322,6 +338,10 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->post('jadwal-seni/(:num)/delete', 'Admin\\Sekretariat\\JadwalSeniController::delete/$1');
     $routes->post('jadwal-seni/create-pdf-ajax/(:num)/(:num)', 'Admin\\Sekretariat\\JadwalSeniController::createPdfAjax/$1/$2');
     $routes->get('jadwal-seni/get-all-ids-ajax', 'Admin\\Sekretariat\\JadwalSeniController::getAllIdsAjax');
+});
+
+$routes->group('utilities', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
+    $routes->get('db-sync', 'Utilities\\DbSyncController::index');
 });
 
 $routes->group('development', ['filter' => 'developmentgate'], static function ($routes): void {

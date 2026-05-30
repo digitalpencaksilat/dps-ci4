@@ -89,11 +89,32 @@
                 <button type="button" class="kontingen-mobile-toggle" data-kontingen-sidebar-open aria-label="Buka menu" aria-controls="kontingenSidebar" aria-expanded="false">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div>
+                <div class="topbar-meta">
                     <p class="eyebrow mb-1">Area Kontingen</p>
                     <h1 class="page-title mb-0"><?= esc($title ?? 'Dashboard Kontingen') ?></h1>
                 </div>
+                <button type="button" class="kontingen-collapse-toggle" data-kontingen-sidebar-collapse aria-label="Minimize sidebar" title="Minimize sidebar">
+                    <i class="fas fa-angles-left"></i>
+                </button>
             </header>
+
+            <nav class="kontingen-topnav" aria-label="Navigasi utama kontingen">
+                <a class="topnav-link <?= ($activeMenu ?? '') === 'dashboard' ? 'active' : '' ?>" href="<?= base_url('kontingen/dashboard') ?>">
+                    <i class="fas fa-chart-pie"></i><span>Dashboard</span>
+                </a>
+                <a class="topnav-link <?= ($activeMenu ?? '') === 'peserta' ? 'active' : '' ?>" href="<?= base_url('kontingen/peserta') ?>">
+                    <i class="fas fa-users"></i><span>Peserta</span>
+                </a>
+                <a class="topnav-link <?= ($activeMenu ?? '') === 'tanding' ? 'active' : '' ?>" href="<?= base_url('kontingen/tanding') ?>">
+                    <i class="fas fa-fist-raised"></i><span>Tanding</span>
+                </a>
+                <a class="topnav-link <?= ($activeMenu ?? '') === 'seni' ? 'active' : '' ?>" href="<?= base_url('kontingen/seni') ?>">
+                    <i class="fas fa-drum"></i><span>Seni</span>
+                </a>
+                <a class="topnav-link <?= ($activeMenu ?? '') === 'pembayaran' ? 'active' : '' ?>" href="<?= base_url('kontingen/pembayaran') ?>">
+                    <i class="fas fa-wallet"></i><span>Pembayaran</span>
+                </a>
+            </nav>
 
             <?= $this->renderSection('content') ?>
 
@@ -169,28 +190,68 @@
         // initAdminExportTable — loaded from public/assets/js/admin-export-datatable.js
 
         (() => {
+            const body = document.body;
             const sidebar = document.getElementById('kontingenSidebar');
             const openButton = document.querySelector('[data-kontingen-sidebar-open]');
             const closeButtons = document.querySelectorAll('[data-kontingen-sidebar-close]');
+            const collapseButton = document.querySelector('[data-kontingen-sidebar-collapse]');
+
+            const COLLAPSE_KEY = 'dps_kontingen_sidebar_collapsed_v1';
+            const applyCollapsed = (collapsed) => {
+                body.classList.toggle('kontingen-sidebar-collapsed', collapsed);
+                if (!collapseButton) {
+                    return;
+                }
+
+                collapseButton.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+                collapseButton.title = collapsed ? 'Expand sidebar' : 'Minimize sidebar';
+                const icon = collapseButton.querySelector('i');
+                if (icon) {
+                    icon.className = collapsed ? 'fas fa-angles-right' : 'fas fa-angles-left';
+                }
+            };
+
+            const getStoredCollapsed = () => {
+                try {
+                    return window.localStorage.getItem(COLLAPSE_KEY) === '1';
+                } catch (e) {
+                    return false;
+                }
+            };
+
+            const setStoredCollapsed = (collapsed) => {
+                try {
+                    window.localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0');
+                } catch (e) {
+                    // ignore
+                }
+            };
 
             if (!sidebar || !openButton) {
                 return;
             }
 
             const setOpen = (open) => {
-                document.body.classList.toggle('kontingen-sidebar-open', open);
+                body.classList.toggle('kontingen-sidebar-open', open);
                 openButton.setAttribute('aria-expanded', open ? 'true' : 'false');
             };
 
             openButton.addEventListener('click', () => setOpen(true));
             closeButtons.forEach((button) => button.addEventListener('click', () => setOpen(false)));
 
+            applyCollapsed(getStoredCollapsed());
+            collapseButton?.addEventListener('click', () => {
+                const next = !body.classList.contains('kontingen-sidebar-collapsed');
+                applyCollapsed(next);
+                setStoredCollapsed(next);
+            });
+
             sidebar.querySelectorAll('a[href]:not([data-bs-toggle="collapse"])').forEach((link) => {
                 link.addEventListener('click', () => setOpen(false));
             });
 
             document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && document.body.classList.contains('kontingen-sidebar-open')) {
+                if (event.key === 'Escape' && body.classList.contains('kontingen-sidebar-open')) {
                     setOpen(false);
                     openButton.focus();
                 }

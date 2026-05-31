@@ -176,6 +176,7 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('jadwal-tanding/(:num)/delete', 'Admin\\Super\\PembuatanJadwalController::deleteJadwalTanding/$1');
     $routes->post('jadwal-tanding/create-pdf-ajax/(:num)/(:num)', 'Admin\\Super\\PembuatanJadwalController::createPdfJadwalTandingAjax/$1/$2');
     $routes->get('jadwal-tanding/get-all-ids-ajax', 'Admin\\Super\\PembuatanJadwalController::getAllIdsJadwalTandingAjax');
+    $routes->get('jadwal-tanding/tukar-atlet', 'Admin\\Super\\PembuatanJadwalController::halamanTukarAtlet');
     $routes->post('jadwal-tanding/tukar-atlet', 'Admin\\Super\\PembuatanJadwalController::tukarAtletJadwalTanding');
     $routes->post('jadwal-tanding/sortir-ulang/(:num)', 'Admin\\Super\\PembuatanJadwalController::sortirUlangJadwalTanding/$1');
     $routes->post('jadwal-tanding/pola-penjadwalan/(:num)', 'Admin\\Super\\PembuatanJadwalController::polaPenjadwalanJadwalTanding/$1');
@@ -192,6 +193,7 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('jadwal-seni/(:num)/delete', 'Admin\\Super\\PembuatanJadwalController::deleteJadwalSeni/$1');
     $routes->post('jadwal-seni/create-pdf-ajax/(:num)/(:num)', 'Admin\\Super\\PembuatanJadwalController::createPdfJadwalSeniAjax/$1/$2');
     $routes->get('jadwal-seni/get-all-ids-ajax', 'Admin\\Super\\PembuatanJadwalController::getAllIdsJadwalSeniAjax');
+    $routes->post('jadwal-seni/tukar-kelompok-peserta-seni-pool', 'Admin\\Super\\PembuatanJadwalController::tukarKelompokPesertaSeniPool');
     $routes->get('pengaturan-event/profil-kejuaraan', 'Admin\\Super\\EventProfileController::edit');
     $routes->post('pengaturan-event/profil-kejuaraan/update', 'Admin\\Super\\EventProfileController::update');
     $routes->get('pengaturan-event/akses-pendaftaran', 'Admin\\Super\\AksesPendaftaranController::edit');

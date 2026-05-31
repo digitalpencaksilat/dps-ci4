@@ -111,7 +111,8 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         $isPenjadwalanOtomatisMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_tanding'
                             || ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_seni';
                         $isJadwalPertandinganMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_tanding'
-                            || ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_seni';
+                            || ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_seni'
+                            || ($activeMenu ?? '') === 'pembuatan_jadwal_tukar_atlet';
                     ?>
 
                     <a class="admin-nav-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_dashboard' ? 'active' : '' ?>" href="<?= base_url('admin/super/dashboard-pembuatan-jadwal') ?>">
@@ -169,6 +170,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         <div class="admin-submenu collapse <?= $isJadwalPertandinganMenu ? 'show' : '' ?>" id="superJadwalPertandinganSubmenu">
                             <div class="admin-submenu-inner">
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-tanding') ?>">Jadwal Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_tukar_atlet' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-tanding/tukar-atlet') ?>">Tukar Atlet</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_jadwal_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/jadwal-seni') ?>">Jadwal Seni</a>
                             </div>
                         </div>

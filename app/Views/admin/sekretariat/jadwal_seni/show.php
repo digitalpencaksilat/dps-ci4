@@ -42,6 +42,22 @@
                 <div class="tab-pane" id="pool_seni">
                     <div class="admin-card">
                         <div class="card-body px-0">
+                            <?php if (session()->get('level') === 'super_admin' && ! empty($poolDetails ?? [])): ?>
+                                <div class="mb-3 d-flex flex-wrap gap-2 px-3 px-md-0">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary bg-dark text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Edit Schedule
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalTukarKelompokPesertaSeniPool">Swap Athletes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?= view('shared_components/detail_jadwal_seni/modal_tukar_kelompok_peserta_seni_pool', [
+                                    'poolSwapCandidates' => $poolSwapCandidates ?? [],
+                                    'routePrefix' => $routePrefix ?? 'admin/sekretariat/jadwal-seni',
+                                ]) ?>
+                            <?php endif; ?>
                             <div class="admin-table-wrap">
                                 <div class="table-shell admin-table-scroller">
                                     <?= view('shared_components/detail_jadwal_seni/tabel_pool', ['data_detail_jadwal_seni' => $poolDetails ?? []]) ?>

@@ -10,6 +10,8 @@ use App\Models\KelasTandingModel;
 use App\Models\KompetisiTandingModel;
 use App\Services\Admin\Super\OperasiBasisDataService;
 use App\Services\Admin\Super\PembuatanJadwalAuditService;
+use App\Services\JadwalSeniPoolSwapService;
+use App\Services\JadwalTandingSwapService;
 use App\Services\Pdf\MpdfService;
 use App\Services\SekretariatKategoriSeniService;
 use App\Services\SekretariatKategoriTandingService;
@@ -493,6 +495,20 @@ class PembuatanJadwalController extends BaseController
         ], 'Daftar Jadwal Tanding'));
     }
 
+    public function halamanTukarAtlet(): string
+    {
+        return view('admin/super/jadwal_tanding/tukar_atlet', $this->viewData([
+            'activeMenu' => 'pembuatan_jadwal_tukar_atlet',
+            'data_peserta_tanding' => (new \App\Models\PesertaTandingModel())->baseSekretariatQuery()
+                ->orderBy('p.nama_pendaftar', 'ASC')
+                ->get()
+                ->getResult(),
+            'poolSwapCandidates' => $this->getPoolSwapCandidates(),
+            'routePrefixTanding' => 'admin/super/jadwal-tanding',
+            'routePrefixSeni' => 'admin/super/jadwal-seni',
+        ], 'Tukar Atlet'));
+    }
+
     public function showJadwalTanding(int $id): string
     {
         $model  = new JadwalTandingModel();
@@ -588,6 +604,7 @@ class PembuatanJadwalController extends BaseController
             'details'       => $allDetails,
             'battleDetails' => $battleDetails,
             'poolDetails'   => $poolDetails,
+            'poolSwapCandidates' => $this->getPoolSwapCandidates(),
             'routePrefix'   => 'admin/super/jadwal-seni',
         ], 'Schedule Seni Arena ' . esc($jadwal->nama_gelanggang ?? 'Arena ' . $id)));
     }
@@ -685,29 +702,36 @@ class PembuatanJadwalController extends BaseController
     {
         $idAtlet1 = (int) $this->request->getPost('id_atlet_1');
         $idAtlet2 = (int) $this->request->getPost('id_atlet_2');
-        if ($idAtlet1 <= 0 || $idAtlet2 <= 0 || $idAtlet1 === $idAtlet2) {
-            return redirect()->back()->with('status', false)->with('message', 'Pilih dua atlet yang berbeda.');
-        }
 
-        if ($this->athleteHasLockedMatches($idAtlet1) || $this->athleteHasLockedMatches($idAtlet2)) {
-            return redirect()->back()->with('status', false)->with('message', 'Atlet tidak bisa ditukar karena sudah terlibat pertandingan yang memiliki skor atau pemenang.');
-        }
-
-        $db = db_connect();
-        $db->transStart();
-        foreach (['id_atlet_merah', 'id_atlet_biru'] as $field) {
-            // Swap via temp sentinel to avoid collisions.
-            $db->table('pertandingan')->where($field, $idAtlet1)->update([$field => -$idAtlet1]);
-            $db->table('pertandingan')->where($field, $idAtlet2)->update([$field => $idAtlet1]);
-            $db->table('pertandingan')->where($field, -$idAtlet1)->update([$field => $idAtlet2]);
-        }
-        $db->transComplete();
-
-        if (! $db->transStatus()) {
-            return redirect()->back()->with('status', false)->with('message', 'Gagal menukar atlet.');
+        try {
+            (new JadwalTandingSwapService())->swapPeserta($idAtlet1, $idAtlet2);
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('status', false)->with('message', $e->getMessage());
         }
 
         return redirect()->back()->with('status', true)->with('message', 'Atlet berhasil ditukar pada data pertandingan.');
+    }
+
+    public function tukarKelompokPesertaSeniPool()
+    {
+        $idPenampilan1 = (int) $this->request->getPost('id_penampilan_seni_1');
+        $idPenampilan2 = (int) $this->request->getPost('id_penampilan_seni_2');
+
+        try {
+            $jadwalIds = (new JadwalSeniPoolSwapService())->swapPenampilan($idPenampilan1, $idPenampilan2);
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('status', false)->with('message', $e->getMessage());
+        }
+
+        foreach ($jadwalIds as $idJadwal) {
+            try {
+                $this->createPdfJadwalSeniAjax((int) $idJadwal, 0);
+            } catch (\Throwable $e) {
+                log_message('warning', 'Generate PDF setelah swap seni gagal: {message}', ['message' => $e->getMessage()]);
+            }
+        }
+
+        return redirect()->back()->with('status', true)->with('message', 'Kelompok peserta seni pool berhasil ditukar.');
     }
 
     public function sortirUlangJadwalTanding(int $id)
@@ -844,21 +868,27 @@ class PembuatanJadwalController extends BaseController
 
     private function athleteHasLockedMatches(int $idAtlet): bool
     {
-        $row = db_connect()->table('pertandingan p')
-            ->select('COUNT(*) AS total')
-            ->groupStart()
-                ->where('p.id_atlet_merah', $idAtlet)
-                ->orWhere('p.id_atlet_biru', $idAtlet)
-            ->groupEnd()
-            ->groupStart()
-                ->where('p.id_pemenang IS NOT NULL', null, false)
-                ->orWhere('p.skor_merah >', 0)
-                ->orWhere('p.skor_biru >', 0)
-            ->groupEnd()
-            ->get()
-            ->getRow();
+        return (new JadwalTandingSwapService())->hasLockedMatches($idAtlet);
+    }
 
-        return (int) ($row->total ?? 0) > 0;
+    private function getPoolSwapCandidates(): array
+    {
+        return db_connect()->table('detail_jadwal_seni djs')
+            ->select('djs.id_penampilan_seni, djs.nomor_partai, js.id_jadwal_seni, g.nama_gelanggang, k.nama_kontingen, sks.nama_seni, sks.jenis_seni')
+            ->select('(SELECT GROUP_CONCAT(p.nama_pendaftar SEPARATOR ", ") FROM peserta_seni psn JOIN pendaftar p ON p.id_pendaftar = psn.id_pendaftar WHERE psn.id_kelompok_peserta_seni = kps.id_kelompok_peserta_seni) AS anggota_kelompok', false)
+            ->join('jadwal_seni js', 'js.id_jadwal_seni = djs.id_jadwal_seni')
+            ->join('gelanggang g', 'g.id_gelanggang = js.id_gelanggang')
+            ->join('penampilan_seni ps', 'ps.id_penampilan_seni = djs.id_penampilan_seni')
+            ->join('kelompok_peserta_seni kps', 'kps.id_kelompok_peserta_seni = ps.id_kelompok_peserta_seni')
+            ->join('kontingen k', 'k.id_kontingen = kps.id_kontingen')
+            ->join('kompetisi_seni ks', 'ks.id_kompetisi_seni = kps.id_kompetisi_seni')
+            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = ks.id_sub_kategori_seni')
+            ->where('djs.id_penampilan_seni IS NOT NULL', null, false)
+            ->where('djs.id_battle_seni IS NULL', null, false)
+            ->orderBy('sks.jenis_seni', 'ASC')
+            ->orderBy('djs.nomor_partai', 'ASC')
+            ->get()
+            ->getResult();
     }
 
     private function writeSchedulePdf(string $html, string $filename): string

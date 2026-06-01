@@ -101,10 +101,23 @@ class ImportJadwalSeniBattleExcelService
                     $status = false;
                     continue;
                 }
+
+                $subKategoriId = is_array($subKategori)
+                    ? ($subKategori['id_sub_kategori_seni'] ?? null)
+                    : ($subKategori->id_sub_kategori_seni ?? null);
+                $sistemPenampilan = is_array($subKategori)
+                    ? ($subKategori['sistem_penampilan'] ?? null)
+                    : ($subKategori->sistem_penampilan ?? null);
                 
                 // Check sistem_penampilan must be 'battle'
-                if ($subKategori['sistem_penampilan'] !== 'battle') {
-                    $messages[] = "❌ Baris $excelRowNum: Sistem penampilan harus 'battle', ditemukan '{$subKategori['sistem_penampilan']}'.";
+                if ($sistemPenampilan !== 'battle') {
+                    $messages[] = "❌ Baris $excelRowNum: Sistem penampilan harus 'battle', ditemukan '{$sistemPenampilan}'.";
+                    $status = false;
+                    continue;
+                }
+
+                if ($subKategoriId === null) {
+                    $messages[] = "❌ Baris $excelRowNum: ID sub kategori seni tidak valid.";
                     $status = false;
                     continue;
                 }
@@ -119,7 +132,7 @@ class ImportJadwalSeniBattleExcelService
                 
                 // Initialize battle entry
                 $battleSeniAkanDiinput = [
-                    'id_sub_kategori_seni' => $subKategori['id_sub_kategori_seni'],
+                    'id_sub_kategori_seni' => $subKategoriId,
                     'id_kompetisi_seni' => null,
                     'nomor_battle' => null,
                     'nomor_battle_selanjutnya' => null,

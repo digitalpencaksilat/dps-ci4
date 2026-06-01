@@ -31,7 +31,15 @@ class ImportJadwalTandingCommitService
                 $idJadwalTanding
             );
 
-            // 4. Generate bagan dari jadwal excel
+            // 4. Auto-fix bracket bentrok (parity CI3)
+            $bracketService = new BracketBentrokService();
+            $fixResult = $bracketService->perbaikiBracketBentrokOtomatis($idJadwalTanding, true);
+            
+            if (!$fixResult['status']) {
+                throw new \RuntimeException('Bracket bentrok tidak bisa diperbaiki otomatis: ' . $fixResult['message']);
+            }
+
+            // 5. Generate bagan dari jadwal excel
             $this->generateBaganDariJadwal($mapKompetisiTanding);
 
             $db->transComplete();

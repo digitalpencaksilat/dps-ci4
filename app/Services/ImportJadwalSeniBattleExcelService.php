@@ -450,11 +450,24 @@ class ImportJadwalSeniBattleExcelService
         if (empty($nama)) {
             return true;
         }
-        
-        $lower = strtolower($nama);
-        return stripos($lower, 'pp') !== false ||
-               stripos($lower, 'pemenang partai') !== false ||
-               stripos($lower, 'winner') !== false;
+
+        $lower = strtolower(trim((string) $nama));
+
+        // Toleran terhadap variasi penulisan di file nyata:
+        // winner, wiiner, pemenang partai, pp 123
+        if (stripos($lower, 'pemenang partai') !== false) {
+            return true;
+        }
+
+        if (preg_match('/\bpp\s*\d+/i', $lower)) {
+            return true;
+        }
+
+        if (preg_match('/\bw[iy]*n+n*e*r\b/i', $lower)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -462,7 +475,7 @@ class ImportJadwalSeniBattleExcelService
      */
     private function extractMatchNumber($text)
     {
-        return preg_replace('/\D+/', '', $text);
+        return preg_replace('/\D+/', '', (string) $text);
     }
 
     /**

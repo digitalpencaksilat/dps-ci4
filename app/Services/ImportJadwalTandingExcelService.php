@@ -382,6 +382,9 @@ class ImportJadwalTandingExcelService
     /**
      * Validasi jalur winner ganda (bracket bentrok) — parity CI3: _validasi_jalur_winner_ganda
      * dataPertandingan sudah nested 4-level
+     * 
+     * PENTING: Sisi ditentukan dari KONTEKS (kolom Excel mana yang punya Winner reference),
+     * bukan dari nomor_pertandingan % 2 (karena nomor_pertandingan belum di-set saat validasi)
      */
     private function validasiJalurWinnerGanda(array $dataPertandingan): array
     {
@@ -392,31 +395,58 @@ class ImportJadwalTandingExcelService
                 foreach ($v2 as $kLabel => $v3) {
                     foreach ($v3 as $kPool => $arrPool) {
                         // Cek apakah ada partai yang menerima 2+ feeder pada sisi yang sama
-                        // Sisi ditentukan dari nomor_pertandingan feeder: ganjil=biru, genap=merah
-                        $feeders = [];
+                        // Sisi ditentukan dari KONTEKS: kolom mana yang punya Winner reference
+                        $jalur = [];
 
                         foreach ($arrPool as $p) {
-                            if (!isset($p['nomor_pertandingan_selanjutnya']) || $p['nomor_pertandingan_selanjutnya'] === null) {
+                            foreach (['biru', 'merah'] as $sudut) {
+                                $keyCalonAtlet = "nomor_partai_calon_atlet_$sudut";
+                                
+                                // Cek apakah ada Winner reference di sisi ini
+                                if (!isset($p[$keyCalonAtlet]) || $p[$keyCalonAtlet] === '' || $p[$keyCalonAtlet] === null) {
+                                    continue;
+                                }
+
+                                $partaiTujuan = (string)($p['nomor_partai'] ?? '');
+                                $partaiSumber = (string)$p[$keyCalonAtlet];
+                                
+                                if ($partaiTujuan === '' || $partaiSumber === '') {
+                                    continue;
+                                }
+
+                                // Key: partai_tujuan|sudut
+                                $jalurKey = $partaiTujuan . '|' . $sudut;
+                                if (!isset($jalur[$jalurKey])) {
+                                    $jalur[$jalurKey] = [];
+                                }
+
+                                $jalur[$jalurKey][] = [
+                                    'partai_tujuan' => $partaiTujuan,
+                                    'partai_sumber' => $partaiSumber,
+                                    'sudut' => $sudut,
+                                ];
+                            }
+                        }
+
+                        // Deteksi bentrok: 1 jalur hanya boleh punya 1 feeder
+                        foreach ($jalur as $list) {
+                            if (count($list) <= 1) {
                                 continue;
                             }
 
-                            $nomorTujuan = $p['nomor_pertandingan_selanjutnya'];
-                            $sisi = ((int)$p['nomor_pertandingan'] % 2 === 1) ? 'biru' : 'merah';
-                            $feeders[$nomorTujuan][$sisi][] = $p['nomor_partai'];
-                        }
+                            $contoh = $list[0];
+                            $sisiLabel = ($contoh['sudut'] === 'biru') ? 'BIRU/BLUE' : 'MERAH/RED';
+                            $detailSumber = [];
 
-                        // Deteksi bentrok
-                        foreach ($feeders as $nomorTujuan => $sisiData) {
-                            foreach ($sisiData as $sisi => $sources) {
-                                if (count($sources) > 1) {
-                                    $nomorPartaiSumber = implode(', ', $sources);
-                                    $sisiLabel = ($sisi === 'biru') ? 'BIRU/BLUE' : 'MERAH/RED';
-                                    $pesan[] = "❌ Jadwal tidak bisa ditampilkan karena struktur bracket ganda terdeteksi. "
-                                        . "Partai tujuan $nomorTujuan pada sisi $sisiLabel menerima " . count($sources) . " feeder sekaligus "
-                                        . "(partai sumber: $nomorPartaiSumber). "
-                                        . "Periksa data hasil import Excel atau bersihkan data pertandingan ganda di database.";
-                                }
+                            foreach ($list as $it) {
+                                $detailSumber[] = 'Partai ' . $it['partai_sumber'];
                             }
+
+                            $pesan[] = "❌ Struktur bracket tidak valid: Partai tujuan {$contoh['partai_tujuan']} "
+                                . "sisi $sisiLabel menerima lebih dari 1 feeder (" . implode(', ', $detailSumber) . "). "
+                                . "Dalam 1 partai tujuan, setiap sisi hanya boleh punya 1 Winner/PP. "
+                                . "Periksa kolom A (MATCH NUMBER), kolom G (BLUE), kolom I (RED). "
+                                . "Grup: $kUsia / $kJk / Kelas $kLabel / Pool $kPool.";
                         }
                     }
                 }

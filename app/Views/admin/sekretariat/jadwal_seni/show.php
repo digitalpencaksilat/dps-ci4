@@ -27,6 +27,26 @@
                 <div class="tab-pane active" id="battle_seni">
                     <div class="admin-card">
                         <div class="card-body px-0">
+                            <?php if (session()->get('level') === 'super_admin'): ?>
+                                <div class="mb-3 d-flex flex-wrap gap-2 px-3 px-md-0">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalImportExcelBattle">
+                                        <i class="fas fa-file-excel me-1"></i> Import Excel Battle
+                                    </button>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary bg-dark text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Edit Schedule
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="<?= base_url(($routePrefix === 'admin/sekretariat/jadwal-seni' ? 'admin/super/jadwal-seni' : $routePrefix) . '/pengaturan-urutan-partai-seni/' . (int) ($jadwal->id_jadwal_seni ?? 0)) ?>">
+                                                <i class="fas fa-grip-vertical me-1"></i> Set Match Sequence
+                                            </a>
+                                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalSortirNomorPartaiSeniBattle">
+                                                <i class="fas fa-sort-numeric-down me-1"></i> Sort Match Numbers
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                             <div class="admin-table-wrap">
                                 <div class="table-shell admin-table-scroller">
                                     <?= view('shared_components/detail_jadwal_seni/tabel_battle', ['data_detail_jadwal_seni' => $battleDetails ?? []]) ?>
@@ -42,6 +62,13 @@
                 <div class="tab-pane" id="pool_seni">
                     <div class="admin-card">
                         <div class="card-body px-0">
+                            <?php if (session()->get('level') === 'super_admin'): ?>
+                                <div class="mb-3 d-flex flex-wrap gap-2 px-3 px-md-0">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalImportExcelPool">
+                                        <i class="fas fa-file-excel me-1"></i> Import Excel Pool
+                                    </button>
+                                </div>
+                            <?php endif; ?>
                             <?php if (session()->get('level') === 'super_admin' && ! empty($poolDetails ?? [])): ?>
                                 <div class="mb-3 d-flex flex-wrap gap-2 px-3 px-md-0">
                                     <div class="dropdown">
@@ -49,7 +76,15 @@
                                             Edit Schedule
                                         </button>
                                         <div class="dropdown-menu">
-                                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalTukarKelompokPesertaSeniPool">Swap Athletes</button>
+                                            <a class="dropdown-item" href="<?= base_url(($routePrefix === 'admin/sekretariat/jadwal-seni' ? 'admin/super/jadwal-seni' : $routePrefix) . '/pengaturan-urutan-partai-seni/' . (int) ($jadwal->id_jadwal_seni ?? 0)) ?>">
+                                                <i class="fas fa-grip-vertical me-1"></i> Set Match Sequence
+                                            </a>
+                                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalSortirNomorPartaiSeniPool">
+                                                <i class="fas fa-sort-numeric-down me-1"></i> Sort Match Numbers
+                                            </button>
+                                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalTukarKelompokPesertaSeniPool">
+                                                <i class="fas fa-exchange-alt me-1"></i> Swap Athletes
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -80,4 +115,26 @@
 .bg-info-gradient { background: linear-gradient(180deg, #0dcaf0, #0d6efd) !important; }
 .bg-danger-gradient { background: linear-gradient(180deg, #dc3545, #a71d2a) !important; }
 </style>
+
+<?php if (session()->get('level') === 'super_admin'): ?>
+    <?php $seniRoutePrefix = ($routePrefix === 'admin/sekretariat/jadwal-seni' ? 'admin/super/jadwal-seni' : $routePrefix); ?>
+    <?= view('shared_components/detail_jadwal_seni/modal_import_excel_pool', [
+        'jadwal' => $jadwal,
+        'routePrefix' => $seniRoutePrefix,
+    ]) ?>
+    <?= view('shared_components/detail_jadwal_seni/modal_import_excel_battle', [
+        'jadwal' => $jadwal,
+        'routePrefix' => $seniRoutePrefix,
+    ]) ?>
+    <?= view('shared_components/detail_jadwal_seni/modal_sortir_nomor_partai', [
+        'jadwal' => $jadwal,
+        'routePrefix' => $seniRoutePrefix,
+        'modalSuffix' => 'Pool',
+    ]) ?>
+    <?= view('shared_components/detail_jadwal_seni/modal_sortir_nomor_partai', [
+        'jadwal' => $jadwal,
+        'routePrefix' => $seniRoutePrefix,
+        'modalSuffix' => 'Battle',
+    ]) ?>
+<?php endif; ?>
 <?= $this->endSection() ?>

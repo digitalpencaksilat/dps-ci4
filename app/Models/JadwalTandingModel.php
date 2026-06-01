@@ -19,7 +19,7 @@ class JadwalTandingModel extends Model
         // db_testing_event schema still uses CI3 legacy field name.
         'nama_file',
     ];
-    protected $useTimestamps = true;
+    protected $useTimestamps = false; // CI3 legacy table does not have created_at/updated_at
 
     public function get_all()
     {
@@ -73,8 +73,88 @@ class JadwalTandingModel extends Model
                 kontingen_merah.nama_kontingen as nama_kontingen_merah,
                 kontingen_biru.nama_kontingen as nama_kontingen_biru,
                 p.id_atlet_merah,
-                p.id_atlet_biru
-            ')
+                p.id_atlet_biru,
+                (SELECT IF(p.babak != "Perebutan Juara Tiga",
+                    (SELECT djt2.nomor_partai
+                        FROM detail_jadwal_tanding djt2
+                        JOIN pertandingan p2 ON p2.id_pertandingan = djt2.id_pertandingan
+                        WHERE p2.id_kompetisi_tanding = kt.id_kompetisi_tanding
+                          AND p2.nomor_pertandingan_selanjutnya = p.nomor_pertandingan
+                          AND p2.nomor_pertandingan % 2 = 1
+                        LIMIT 1
+                    ),
+                    (SELECT djt2.nomor_partai
+                        FROM detail_jadwal_tanding djt2
+                        JOIN pertandingan p2 ON p2.id_pertandingan = djt2.id_pertandingan
+                        WHERE p2.id_kompetisi_tanding = kt.id_kompetisi_tanding
+                          AND p2.babak = "Semi Final"
+                          AND p2.nomor_pertandingan % 2 = 1
+                        LIMIT 1
+                    )
+                )) as calon_atlet_biru,
+                (SELECT IF(p.babak != "Perebutan Juara Tiga",
+                    (SELECT djt2.nomor_partai
+                        FROM detail_jadwal_tanding djt2
+                        JOIN pertandingan p2 ON p2.id_pertandingan = djt2.id_pertandingan
+                        WHERE p2.id_kompetisi_tanding = kt.id_kompetisi_tanding
+                          AND p2.nomor_pertandingan_selanjutnya = p.nomor_pertandingan
+                          AND p2.nomor_pertandingan % 2 = 0
+                        LIMIT 1
+                    ),
+                    (SELECT djt2.nomor_partai
+                        FROM detail_jadwal_tanding djt2
+                        JOIN pertandingan p2 ON p2.id_pertandingan = djt2.id_pertandingan
+                        WHERE p2.id_kompetisi_tanding = kt.id_kompetisi_tanding
+                          AND p2.babak = "Semi Final"
+                          AND p2.nomor_pertandingan % 2 = 0
+                        LIMIT 1
+                    )
+                )) as calon_atlet_merah,
+                (SELECT IF(p.babak != "Perebutan Juara Tiga",
+                    (SELECT g.nama_gelanggang
+                        FROM detail_jadwal_tanding djt2
+                        JOIN jadwal_tanding jt2 ON jt2.id_jadwal_tanding = djt2.id_jadwal_tanding
+                        JOIN gelanggang g ON g.id_gelanggang = jt2.id_gelanggang
+                        JOIN pertandingan p2 ON p2.id_pertandingan = djt2.id_pertandingan
+                        WHERE p2.id_kompetisi_tanding = kt.id_kompetisi_tanding
+                          AND p2.nomor_pertandingan_selanjutnya = p.nomor_pertandingan
+                          AND p2.nomor_pertandingan % 2 = 1
+                        LIMIT 1
+                    ),
+                    (SELECT g.nama_gelanggang
+                        FROM detail_jadwal_tanding djt2
+                        JOIN jadwal_tanding jt2 ON jt2.id_jadwal_tanding = djt2.id_jadwal_tanding
+                        JOIN gelanggang g ON g.id_gelanggang = jt2.id_gelanggang
+                        JOIN pertandingan p2 ON p2.id_pertandingan = djt2.id_pertandingan
+                        WHERE p2.id_kompetisi_tanding = kt.id_kompetisi_tanding
+                          AND p2.babak = "Semi Final"
+                          AND p2.nomor_pertandingan % 2 = 1
+                        LIMIT 1
+                    )
+                )) as gelanggang_calon_atlet_biru,
+                (SELECT IF(p.babak != "Perebutan Juara Tiga",
+                    (SELECT g.nama_gelanggang
+                        FROM detail_jadwal_tanding djt2
+                        JOIN jadwal_tanding jt2 ON jt2.id_jadwal_tanding = djt2.id_jadwal_tanding
+                        JOIN gelanggang g ON g.id_gelanggang = jt2.id_gelanggang
+                        JOIN pertandingan p2 ON p2.id_pertandingan = djt2.id_pertandingan
+                        WHERE p2.id_kompetisi_tanding = kt.id_kompetisi_tanding
+                          AND p2.nomor_pertandingan_selanjutnya = p.nomor_pertandingan
+                          AND p2.nomor_pertandingan % 2 = 0
+                        LIMIT 1
+                    ),
+                    (SELECT g.nama_gelanggang
+                        FROM detail_jadwal_tanding djt2
+                        JOIN jadwal_tanding jt2 ON jt2.id_jadwal_tanding = djt2.id_jadwal_tanding
+                        JOIN gelanggang g ON g.id_gelanggang = jt2.id_gelanggang
+                        JOIN pertandingan p2 ON p2.id_pertandingan = djt2.id_pertandingan
+                        WHERE p2.id_kompetisi_tanding = kt.id_kompetisi_tanding
+                          AND p2.babak = "Semi Final"
+                          AND p2.nomor_pertandingan % 2 = 0
+                        LIMIT 1
+                    )
+                )) as gelanggang_calon_atlet_merah
+            ', false)
             ->join('pertandingan p', 'p.id_pertandingan = djt.id_pertandingan')
             ->join('kompetisi_tanding kt', 'kt.id_kompetisi_tanding = p.id_kompetisi_tanding')
             ->join('kelas_tanding kl', 'kl.id_kelas_tanding = kt.id_kelas_tanding')

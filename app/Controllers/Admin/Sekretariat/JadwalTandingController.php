@@ -26,10 +26,18 @@ class JadwalTandingController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
+        // Validasi bracket bentrok sebelum render — TIDAK mengosongkan data,
+        // hanya menampilkan banner peringatan agar super_admin bisa pakai tombol fix.
+        $validasi = (new \App\Services\BracketBentrokService())->validasiJadwalSiapDitampilkan($id);
+        $bracketBentrokError = ! $validasi['status'];
+        $bracketBentrokMessage = $bracketBentrokError ? implode('<br>', $validasi['message']) : '';
+
         return view('admin/sekretariat/jadwal_tanding/show', $this->viewData([
-            'jadwal'     => $jadwal,
-            'details'    => $model->get_detail_jadwal($id),
-            'peserta'    => (new \App\Models\PesertaTandingModel())->findAll(),
+            'jadwal'                => $jadwal,
+            'details'               => $model->get_detail_jadwal($id),
+            'peserta'               => (new \App\Models\PesertaTandingModel())->findAll(),
+            'bracketBentrokError'   => $bracketBentrokError,
+            'bracketBentrokMessage' => $bracketBentrokMessage,
         ], 'Schedule Arena ' . esc($jadwal->nama_gelanggang ?? 'Arena ' . $id)));
     }
 
@@ -133,6 +141,102 @@ class JadwalTandingController extends BaseController
     public function polaPenjadwalan(int $id)
     {
         return redirect()->back()->with('status', false)->with('message', 'Fitur pola penjadwalan belum tersedia.');
+    }
+
+    public function importExcel(int $id)
+    {
+        $model = new JadwalTandingModel();
+        $jadwal = $model->find($id);
+        if ($jadwal === null) {
+            return $this->response->setJSON(['status' => false, 'message' => 'Jadwal tidak ditemukan.']);
+        }
+
+        $file = $this->request->getFile('file_excel');
+        if (!$file || !$file->isValid()) {
+            return $this->response->setJSON(['status' => false, 'message' => 'File Excel tidak valid atau tidak ditemukan.']);
+        }
+
+        $allowedExtensions = ['xlsx', 'xls'];
+        if (!in_array(strtolower($file->getExtension()), $allowedExtensions)) {
+            return $this->response->setJSON(['status' => false, 'message' => 'Format file harus .xlsx atau .xls']);
+        }
+
+        $service = new \App\Services\ImportJadwalTandingExcelService();
+
+        try {
+            $dataFromExcel = $service->parseExcelFile($file);
+        } catch (\Throwable $e) {
+            return $this->response->setJSON(['status' => false, 'message' => 'Gagal membaca file: ' . $e->getMessage()]);
+        }
+
+        if (count($dataFromExcel) < 3) {
+            return $this->response->setJSON(['status' => false, 'message' => 'File Excel kosong atau hanya berisi header.']);
+        }
+
+        $result = $service->validateExcelFormat($dataFromExcel, $id);
+
+        if (!$result['status']) {
+            return $this->response->setJSON([
+                'status' => false,
+                'message' => 'Validasi gagal.',
+                'errors' => $result['message'],
+            ]);
+        }
+
+        // Simpan preview ke cache
+        $token = $service->generateToken();
+        $result['id_jadwal_tanding'] = $id;
+        $service->savePreview($token, $result);
+
+        // Hitung ringkasan
+        $jumlahPartai = 0;
+        foreach ($result['data_pertandingan'] as $v1) {
+            foreach ($v1 as $v2) {
+                foreach ($v2 as $v3) {
+                    foreach ($v3 as $arrPool) {
+                        $jumlahPartai += count($arrPool);
+                    }
+                }
+            }
+        }
+
+        return $this->response->setJSON([
+            'status' => true,
+            'message' => "Validasi berhasil. Ditemukan $jumlahPartai partai siap diimport.",
+            'token' => $token,
+            'summary' => [
+                'jumlah_partai' => $jumlahPartai,
+                'jumlah_peserta' => count($result['peserta_tanding']),
+                'jumlah_kontingen' => count(array_unique($result['kontingen'])),
+            ],
+        ]);
+    }
+
+    public function importExcelCommit(int $id)
+    {
+        $token = (string) $this->request->getPost('token');
+        if (empty($token)) {
+            return $this->response->setJSON(['status' => false, 'message' => 'Token tidak valid.']);
+        }
+
+        $excelService = new \App\Services\ImportJadwalTandingExcelService();
+        $payload = $excelService->loadPreview($token);
+
+        if ($payload === null) {
+            return $this->response->setJSON(['status' => false, 'message' => 'Sesi import sudah kedaluwarsa. Silakan upload ulang.']);
+        }
+
+        if ((int)($payload['id_jadwal_tanding'] ?? 0) !== $id) {
+            return $this->response->setJSON(['status' => false, 'message' => 'Token tidak sesuai dengan jadwal ini.']);
+        }
+
+        $commitService = new \App\Services\ImportJadwalTandingCommitService();
+        $result = $commitService->commit($payload, $id);
+
+        // Hapus preview setelah commit
+        $excelService->deletePreview($token);
+
+        return $this->response->setJSON($result);
     }
 
     private function viewData(array $data, string $title = 'Daftar Jadwal Tanding'): array

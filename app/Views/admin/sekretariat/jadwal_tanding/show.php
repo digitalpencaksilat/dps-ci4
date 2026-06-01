@@ -12,6 +12,30 @@
                 <h6 class="card-title">Schedule of Matches at Arena <?= esc($jadwal->nama_gelanggang ?? '-') ?> - <?= esc($jadwal->keterangan_jadwal ?? $jadwal->keterangan ?? '') ?></h6>
             </div>
             <div class="card-body px-0">
+                <?php if (!empty($bracketBentrokError ?? false)): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <h5 class="alert-heading mb-2"><i class="fas fa-exclamation-triangle me-1"></i> Struktur Bracket Bentrok Terdeteksi</h5>
+                        <div class="small mb-2">
+                            <?= $bracketBentrokMessage ?? '' ?>
+                        </div>
+                        <?php if (session()->get('level') === 'super_admin'): ?>
+                            <hr>
+                            <form action="<?= base_url('admin/super/jadwal-tanding/' . (int) $jadwal->id_jadwal_tanding . '/perbaiki-bracket-bentrok') ?>"
+                                  method="post"
+                                  class="mb-0"
+                                  onsubmit="return confirm('Jalankan perbaikan bracket bentrok otomatis untuk jadwal ini?');">
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-tools me-1"></i> Perbaiki Bracket Otomatis
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <hr>
+                            <small class="text-muted">Hubungi Super Admin untuk memperbaiki struktur bracket ini.</small>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
                 <?php if (session()->get('level') === 'super_admin'): ?>
                     <div class="mb-3 d-flex flex-wrap gap-2">
                         <div class="dropdown">
@@ -25,10 +49,14 @@
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalTukarAtlet">Swap Athletes</button>
                             </div>
                         </div>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalImportExcel">
+                            <i class="fas fa-file-excel me-1"></i> Import Excel
+                        </button>
                     </div>
                     <?= view('shared_components/jadwal_tanding/modal_tukar_atlet', ['data_peserta_tanding' => $peserta ?? [], 'routePrefix' => $routePrefix]) ?>
                     <?= view('shared_components/jadwal_tanding/modal_atur_pola_jadwal', ['jadwal_tanding' => $jadwal, 'routePrefix' => $routePrefix]) ?>
                     <?= view('shared_components/jadwal_tanding/modal_sortir_ulang_nomor_partai', ['jadwal_tanding' => $jadwal, 'routePrefix' => $routePrefix]) ?>
+                    <?= view('shared_components/jadwal_tanding/modal_import_excel', ['jadwal' => $jadwal, 'routePrefix' => $routePrefix]) ?>
                 <?php endif; ?>
 
                 <div class="admin-table-wrap">
@@ -60,7 +88,14 @@
                                         </td>
                                         <td class="align-middle text-capitalize text-center">
                                             <?php if (empty($partai->nama_atlet_biru)): ?>
-                                                <span class="d-block text-capitalize px-2 text-center text-decoration-underline fst-italic">TBD</span>
+                                                <?php if (!empty($partai->calon_atlet_biru)): ?>
+                                                    <span class="d-block text-capitalize px-2 text-center fst-italic small">
+                                                        <u class="d-block">Pemenang Partai Ke <strong><?= esc((string) $partai->calon_atlet_biru) ?></strong></u>
+                                                        Dari Gelanggang <?= esc($partai->gelanggang_calon_atlet_biru ?? '-') ?>
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="d-block text-capitalize px-2 text-center text-decoration-underline fst-italic">TBD</span>
+                                                <?php endif; ?>
                                             <?php else: ?>
                                                 <span class="fw-bold d-block text-capitalize"><?= esc($partai->nama_atlet_biru) ?></span>
                                                 <span class="text-capitalize d-block small"><?= esc($partai->nama_kontingen_biru ?? '-') ?></span>
@@ -74,7 +109,14 @@
                                         </td>
                                         <td class="align-middle text-capitalize text-center">
                                             <?php if (empty($partai->nama_atlet_merah)): ?>
-                                                <span class="d-block text-capitalize px-2 text-center text-decoration-underline fst-italic">TBD</span>
+                                                <?php if (!empty($partai->calon_atlet_merah)): ?>
+                                                    <span class="d-block text-capitalize px-2 text-center fst-italic small">
+                                                        <u class="d-block">Pemenang Partai Ke <strong><?= esc((string) $partai->calon_atlet_merah) ?></strong></u>
+                                                        Dari Gelanggang <?= esc($partai->gelanggang_calon_atlet_merah ?? '-') ?>
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="d-block text-capitalize px-2 text-center text-decoration-underline fst-italic">TBD</span>
+                                                <?php endif; ?>
                                             <?php else: ?>
                                                 <span class="fw-bold d-block text-capitalize"><?= esc($partai->nama_atlet_merah) ?></span>
                                                 <span class="text-capitalize d-block small"><?= esc($partai->nama_kontingen_merah ?? '-') ?></span>

@@ -6,17 +6,8 @@
         <h6 class="card-title">List of Artistic Match Schedule</h6>
     </div>
     <div class="card-body px-0">
-        <?php if (in_array(session()->get('level'), ['super_admin', 'sekretariat'], true)): ?>
-            <div class="mb-3 d-flex flex-wrap gap-2">
-                <?= view('shared_components/jadwal_seni/modal_insert', [
-                    'data_gelanggang' => $gelanggang,
-                    'routePrefix' => $routePrefix ?? 'admin/sekretariat/jadwal-seni',
-                ]) ?>
-            </div>
-        <?php endif; ?>
-
         <?php if (session()->get('level') === 'super_admin'): ?>
-            <div class="mb-3">
+            <?php if (session()->get('level') === 'super_admin'): ?>
                 <div class="mb-3 p-3 border rounded bg-light">
                     <p class="form-label mb-2 fw-bold">PDF Library untuk Update</p>
                     <div class="form-check form-check-inline">
@@ -28,12 +19,24 @@
                         <label class="form-check-label" for="globalPdfLibMpdfSeni">mPDF <small class="text-muted">(lebih cepat)</small></label>
                     </div>
                 </div>
+            <?php endif; ?>
 
-                <button type="button" class="btn btn-outline-danger mb-4" id="btnUpdateAllPDF">Update all PDF</button>
-                <button type="button" class="btn btn-outline-success mb-4" id="btnUpdateAllPDFWithScore">Update all PDF with Score</button>
-                <button type="button" class="btn btn-danger mb-4" id="btnUpdateSelectedSeni" disabled>Update Selected PDF <span id="btnUpdateSelectedSeniCount">(0)</span></button>
-                <button type="button" class="btn btn-success mb-4" id="btnUpdateSelectedSeniScore" disabled>Update Selected PDF with Score <span id="btnUpdateSelectedSeniScoreCount">(0)</span></button>
+            <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalInsertJadwalSeni">
+                    <i class="fas fa-plus me-1"></i> Create Schedule
+                </button>
+                <?php if (session()->get('level') === 'super_admin'): ?>
+                    <button type="button" class="btn btn-outline-danger" id="btnUpdateAllPDF">Update all PDF</button>
+                    <button type="button" class="btn btn-outline-success" id="btnUpdateAllPDFWithScore">Update all PDF with Score</button>
+                    <button type="button" class="btn btn-danger" id="btnUpdateSelectedSeni" disabled>Update Selected PDF <span id="btnUpdateSelectedSeniCount">(0)</span></button>
+                    <button type="button" class="btn btn-success" id="btnUpdateSelectedSeniScore" disabled>Update Selected PDF with Score <span id="btnUpdateSelectedSeniScoreCount">(0)</span></button>
+                <?php endif; ?>
             </div>
+
+            <?= view('shared_components/jadwal_seni/modal_insert', [
+                'data_gelanggang' => $gelanggang,
+                'routePrefix' => $routePrefix ?? 'admin/super/jadwal-seni',
+            ]) ?>
         <?php endif; ?>
 
         <?= view('shared_components/jadwal_seni/tabel', [

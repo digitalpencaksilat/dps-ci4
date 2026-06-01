@@ -20,7 +20,7 @@ class JadwalSeniModel extends Model
         'jumlah_penampilan',
         'pdf_path',
     ];
-    protected $useTimestamps = true;
+    protected $useTimestamps = false; // CI3 legacy table does not have created_at/updated_at
 
     public function get_all()
     {
@@ -118,5 +118,80 @@ class JadwalSeniModel extends Model
             ->orderBy('djs.nomor_partai', 'asc')
             ->get()
             ->getResult();
+    }
+
+    /**
+     * Resequence nomor partai mulai dari $nomorPartaiBaruMulai.
+     * Menggunakan ROW_NUMBER() agar nomor partai berurutan rapi tanpa duplikat,
+     * tapi mengurutkan sesuai nomor_partai saat ini agar urutan logis tetap terjaga.
+     *
+     * Parity dengan CI3: Detail_jadwal_seni_model::resequence_nomor_partai().
+     */
+    public function resequenceNomorPartai($idJadwalSeni, $nomorPartaiBaruMulai)
+    {
+        $sql = "
+            UPDATE detail_jadwal_seni t
+            JOIN (
+                SELECT id_detail_jadwal_seni,
+                    ROW_NUMBER() OVER (ORDER BY nomor_partai) + ? - 1 AS new_nomor
+                FROM detail_jadwal_seni
+                WHERE id_jadwal_seni = ?
+            ) AS subquery
+            ON t.id_detail_jadwal_seni = subquery.id_detail_jadwal_seni
+            SET t.nomor_partai = subquery.new_nomor
+            WHERE t.id_jadwal_seni = ?
+        ";
+
+        return $this->db->query($sql, [
+            (int) $nomorPartaiBaruMulai,
+            (int) $idJadwalSeni,
+            (int) $idJadwalSeni,
+        ]);
+    }
+
+    /**
+     * Update urutan partai berdasarkan drag-drop dari halaman pengaturan urutan.
+     * Parity dengan CI3: Jadwal_seni::update_urutan_partai_seni().
+     *
+     * Strategi 2-tahap: NULL-kan dulu id_penampilan_seni & id_battle_seni untuk
+     * menghindari unique-key collision, lalu set ulang dengan nilai baru.
+     *
+     * @param int   $idJadwalSeni
+     * @param array $detailIds   id_detail_jadwal_seni[]
+     * @param array $penampilanIds id_penampilan_seni[]
+     * @param array $battleIds   id_battle_seni[]
+     * @param array $nomorPartai nomor_partai[]
+     * @return bool
+     */
+    public function updateUrutanPartai($idJadwalSeni, array $detailIds, array $penampilanIds, array $battleIds, array $nomorPartai)
+    {
+        if (count($detailIds) !== count($penampilanIds) || count($detailIds) !== count($nomorPartai)) {
+            return false;
+        }
+
+        $this->db->transStart();
+        $tabel = $this->db->table('detail_jadwal_seni');
+
+        // Tahap 1: NULL-kan id_penampilan_seni & id_battle_seni untuk hindari konflik unique key
+        foreach ($detailIds as $id) {
+            $tabel->where('id_detail_jadwal_seni', (int) $id)
+                ->update([
+                    'id_penampilan_seni' => null,
+                    'id_battle_seni'     => null,
+                ]);
+        }
+
+        // Tahap 2: Set ulang dengan nilai baru
+        foreach ($detailIds as $i => $id) {
+            $tabel->where('id_detail_jadwal_seni', (int) $id)
+                ->update([
+                    'id_penampilan_seni' => empty($penampilanIds[$i]) ? null : (int) $penampilanIds[$i],
+                    'id_battle_seni'     => empty($battleIds[$i]) ? null : (int) $battleIds[$i],
+                    'nomor_partai'       => (int) $nomorPartai[$i],
+                ]);
+        }
+
+        $this->db->transComplete();
+        return $this->db->transStatus();
     }
 }

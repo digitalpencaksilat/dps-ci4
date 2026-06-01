@@ -98,14 +98,26 @@ class ImportJadwalSeniPoolExcelService
                     $status = false;
                     continue;
                 }
-                
+
+                $subKategoriId = is_array($subKategori)
+                    ? ($subKategori['id_sub_kategori_seni'] ?? null)
+                    : ($subKategori->id_sub_kategori_seni ?? null);
+                $sistemPenampilan = is_array($subKategori)
+                    ? ($subKategori['sistem_penampilan'] ?? null)
+                    : ($subKategori->sistem_penampilan ?? null);
                 // Check sistem_penampilan must be 'pool'
-                if ($subKategori['sistem_penampilan'] !== 'pool') {
-                    $messages[] = "❌ Baris $excelRowNum: Sistem penampilan harus 'pool', ditemukan '{$subKategori['sistem_penampilan']}'.";
+                if ($sistemPenampilan !== 'pool') {
+                    $messages[] = "❌ Baris $excelRowNum: Sistem penampilan harus 'pool', ditemukan '{$sistemPenampilan}'.";
                     $status = false;
                     continue;
                 }
-                
+
+                if ($subKategoriId === null) {
+                    $messages[] = "❌ Baris $excelRowNum: ID sub kategori seni tidak valid.";
+                    $status = false;
+                    continue;
+                }
+
                 // Get kontingen from next row (odd row)
                 $namaKontingen = trim($rawData[$rowIndex + 1][6] ?? '');
                 if (empty($namaKontingen)) {
@@ -139,7 +151,7 @@ class ImportJadwalSeniPoolExcelService
                 ];
                 
                 $dataPenampilan[$namaKategoriUsia][$jenisKelamin][$jenisSeni][$namaSeni][$nomorPool][] = [
-                    'id_sub_kategori_seni' => $subKategori['id_sub_kategori_seni'],
+                    'id_sub_kategori_seni' => $subKategoriId,
                     'id_kompetisi_seni' => null,
                     'nomor_partai' => $nomorPartai,
                     'nama_atlet' => $namaAtlet,

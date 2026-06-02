@@ -23,7 +23,7 @@
                             <form action="<?= base_url('admin/super/jadwal-tanding/' . (int) $jadwal->id_jadwal_tanding . '/perbaiki-bracket-bentrok') ?>"
                                   method="post"
                                   class="mb-0"
-                                  onsubmit="return confirm('Jalankan perbaikan bracket bentrok otomatis untuk jadwal ini?');">
+                                  onsubmit="return confirmAdminAction(this, 'Perbaiki Bracket Bentrok?', 'Sistem akan menjalankan perbaikan otomatis untuk bracket bentrok pada jadwal ini.', 'Ya, Perbaiki');">
                                 <?= csrf_field() ?>
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     <i class="fas fa-tools me-1"></i> Perbaiki Bracket Otomatis

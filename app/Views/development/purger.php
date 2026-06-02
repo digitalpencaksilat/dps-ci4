@@ -58,7 +58,7 @@
                             <td class="small fw-bold text-dark"><?= $info['count'] ?> <span class="text-muted fw-normal">items</span></td>
                             <td class="small"><span class="badge bg-light text-dark border"><?= esc($info['size']) ?></span></td>
                             <td class="text-end pe-4">
-                                <a href="<?= base_url('development/purger/clean/' . $key) ?>" class="btn btn-custom btn-outline-brand py-1 px-3" onclick="return confirm('Purge all files in <?= $key ?>?')">
+                                <a href="<?= base_url('development/purger/clean/' . $key) ?>" class="btn btn-custom btn-outline-brand py-1 px-3" onclick="return confirmAdminAction(this, 'Purge <?= ucfirst($key) ?>?', 'Semua file dalam folder <?= $key ?> akan dihapus permanen.', 'Ya, Purge')">
                                     <i class="fas fa-eraser me-1"></i> Purge
                                 </a>
                             </td>

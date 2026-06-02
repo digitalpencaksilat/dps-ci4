@@ -310,7 +310,17 @@ $babakOptions = $babakOptions ?? [];
         formPool.addEventListener('submit', function(e){
             if (!ensureChecked('.pool-sub', 'Pilih minimal satu sub kategori pool.')) { e.preventDefault(); return; }
             if (!ensureVenue('.venue-pool-check', 'Pilih minimal satu gelanggang pool.')) { e.preventDefault(); return; }
-            if (!confirm('Buat jadwal seni pool otomatis sekarang?')) e.preventDefault();
+            e.preventDefault();
+            Swal.fire({
+                title: 'Buat Jadwal Seni Pool Otomatis?',
+                text: 'Jadwal seni pool akan dibuat otomatis untuk sub kategori dan gelanggang yang dipilih.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Buat',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => { if (result.isConfirmed) formPool.submit(); });
         });
     }
 
@@ -320,7 +330,17 @@ $babakOptions = $babakOptions ?? [];
             if (!ensureChecked('.battle-sub', 'Pilih minimal satu sub kategori battle.')) { e.preventDefault(); return; }
             if (!ensureBattleRound()) { e.preventDefault(); return; }
             if (!ensureVenue('.venue-battle-check', 'Pilih minimal satu gelanggang battle.')) { e.preventDefault(); return; }
-            if (!confirm('Buat jadwal seni battle otomatis sekarang?')) e.preventDefault();
+            e.preventDefault();
+            Swal.fire({
+                title: 'Buat Jadwal Seni Battle Otomatis?',
+                text: 'Jadwal seni battle akan dibuat otomatis untuk sub kategori, babak, dan gelanggang yang dipilih.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Buat',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => { if (result.isConfirmed) formBattle.submit(); });
         });
     }
 })();

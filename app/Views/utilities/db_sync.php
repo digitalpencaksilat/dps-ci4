@@ -30,7 +30,7 @@
 
         <div class="d-flex flex-wrap gap-2 mb-4">
             <a href="<?= base_url('utilities/db-sync') ?>" class="btn btn-outline-secondary">Jalankan Simulasi</a>
-            <a href="<?= base_url('utilities/db-sync?run=true') ?>" class="btn btn-danger" onclick="return confirm('Jalankan sinkronisasi database sungguhan? Pastikan backup sudah dilakukan.')">Jalankan Sinkronisasi</a>
+            <a href="<?= base_url('utilities/db-sync?run=true') ?>" class="btn btn-danger" onclick="return confirmAdminAction(this, 'Jalankan Sinkronisasi Database?', 'Struktur database akan diubah sesuai file referensi. Pastikan backup sudah dilakukan.', 'Ya, Sinkronkan')">Jalankan Sinkronisasi</a>
             <a href="<?= base_url('admin/super/operasi-basis-data') ?>" class="btn btn-outline-dark">Kembali ke Operasi Basis Data</a>
         </div>
 

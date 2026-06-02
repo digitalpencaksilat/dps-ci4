@@ -34,7 +34,7 @@
                 </select>
             </div>
             <div class="col-12 col-lg-6 d-flex gap-2">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Jalankan penghapusan? Pastikan sudah backup.')">Proses Hapus</button>
+                <button type="submit" class="btn btn-danger" onclick="return confirmAdminAction(this.closest('form'), 'Hapus Data Kosong?', 'Data yang dipilih akan dihapus permanen. Pastikan sudah backup.', 'Ya, Hapus')">Proses Hapus</button>
                 <a class="btn btn-outline-dark" href="<?= base_url('admin/super/operasi-basis-data') ?>">Kembali</a>
             </div>
         </form>

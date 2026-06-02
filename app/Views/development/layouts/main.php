@@ -69,6 +69,35 @@
         <?php if (session()->getFlashdata('error')) : ?>
             toastr.error(<?= json_encode((string) session()->getFlashdata('error')) ?>);
         <?php endif; ?>
+
+        window.confirmAdminAction = function(target, title, text, confirmText = 'Lanjutkan') {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => {
+                if (!result.isConfirmed || !target) {
+                    return;
+                }
+
+                if (typeof target.submit === 'function') {
+                    target.submit();
+                    return;
+                }
+
+                const href = target.getAttribute ? target.getAttribute('href') : null;
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+
+            return false;
+        };
     </script>
 </body>
 

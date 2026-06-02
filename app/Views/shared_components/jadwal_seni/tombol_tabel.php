@@ -22,7 +22,7 @@
                 </button>
             </li>
             <li>
-                <form action="<?= base_url($routePrefix . '/' . $jadwal->id_jadwal_seni . '/delete') ?>" method="post" onsubmit="return confirm('Apakah Anda yakin? Schedule will be deleted!')">
+                <form action="<?= base_url($routePrefix . '/' . $jadwal->id_jadwal_seni . '/delete') ?>" method="post" onsubmit="return confirmAdminAction(this, 'Hapus Jadwal Seni?', 'Schedule akan dihapus permanen.', 'Ya, Hapus')">
                     <?= csrf_field() ?>
                     <button type="submit" class="dropdown-item text-danger">
                         <i class="fas fa-trash me-2"></i>Delete

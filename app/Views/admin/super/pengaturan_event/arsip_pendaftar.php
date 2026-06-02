@@ -229,7 +229,17 @@
             btn.addEventListener('click', async () => {
                 const slot = btn.dataset.slotName || '';
                 const nama = btn.dataset.nama || slot;
-                if (!confirm(`Hapus slot arsip "${nama}"?`)) return;
+                const result = await Swal.fire({
+                    title: 'Hapus slot arsip?',
+                    text: `Slot arsip "${nama}" akan dihapus.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#b91c1c',
+                    cancelButtonColor: '#6b7280'
+                });
+                if (!result.isConfirmed) return;
                 const form = document.createElement('form');
                 form.innerHTML = <?= json_encode(csrf_field()) ?>;
                 const input = document.createElement('input');

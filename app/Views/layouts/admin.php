@@ -461,7 +461,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
 
         // initAdminExportTable — loaded from public/assets/js/admin-export-datatable.js
 
-        window.confirmAdminAction = function(form, title, text, confirmText = 'Lanjutkan') {
+        window.confirmAdminAction = function(target, title, text, confirmText = 'Lanjutkan') {
             Swal.fire({
                 title: title,
                 text: text,
@@ -472,8 +472,18 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                 confirmButtonColor: '#b91c1c',
                 cancelButtonColor: '#6b7280'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
+                if (!result.isConfirmed || !target) {
+                    return;
+                }
+
+                if (typeof target.submit === 'function') {
+                    target.submit();
+                    return;
+                }
+
+                const href = target.getAttribute ? target.getAttribute('href') : null;
+                if (href) {
+                    window.location.href = href;
                 }
             });
 

@@ -100,9 +100,25 @@ async function submitHapusPeserta(event) {
         return false;
     }
 
-    const keyword = window.prompt("Ketik 'hapuspeserta' untuk konfirmasi penghapusan:");
-    if (keyword !== 'hapuspeserta') {
-        window.alert('Kata kunci tidak sesuai.');
+    const result = await Swal.fire({
+        title: 'Hapus Peserta?',
+        html: 'Data peserta sesuai kategori usia terpilih akan dihapus permanen.<br>Ketik <strong>hapuspeserta</strong> untuk melanjutkan.',
+        input: 'text',
+        inputPlaceholder: 'hapuspeserta',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#b91c1c',
+        cancelButtonColor: '#6b7280',
+        preConfirm: (val) => {
+            if (val !== 'hapuspeserta') {
+                Swal.showValidationMessage('Kata kunci tidak sesuai. Ketik persis: hapuspeserta');
+            }
+        }
+    });
+
+    if (!result.isConfirmed) {
         return false;
     }
 

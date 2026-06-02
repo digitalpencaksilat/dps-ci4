@@ -33,7 +33,7 @@
         </div>
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mt-3">
                 <p class="muted-copy small mb-0">Bagan lama akan ditimpa dari urutan battle yang sudah ada di jadwal/import Excel.</p>
-                <button type="submit" class="btn btn-primary" onclick="return confirm('Generate ulang bagan seni battle untuk kompetisi yang dipilih?')">Generate Bagan Terpilih</button>
+                <button type="submit" class="btn btn-primary" onclick="return confirmAdminAction(this.closest('form'), 'Generate Bagan Seni Battle?', 'Bagan lama akan ditimpa dari urutan battle yang sudah ada di jadwal/import Excel.', 'Ya, Generate')">Generate Bagan Terpilih</button>
             </div>
         </form>
     </div>

@@ -62,7 +62,7 @@
                                                 <?= csrf_field() ?>
                                                 <button type="submit" class="btn btn-sm btn-success rounded-pill">Konfirmasi</button>
                                             </form>
-                                            <form method="post" action="<?= base_url('admin/bendahara/pembayaran/biaya-kontingen/' . $row->id_pembayaran . '/tolak') ?>" onsubmit="return confirm('Tolak pembayaran biaya kontingen ini?')">
+                                            <form method="post" action="<?= base_url('admin/bendahara/pembayaran/biaya-kontingen/' . $row->id_pembayaran . '/tolak') ?>" onsubmit="return confirmAdminAction(this, 'Tolak pembayaran ini?', 'Pembayaran biaya kontingen akan ditolak dan dikembalikan ke status tagihan aktif.', 'Ya, Tolak')">
                                                 <?= csrf_field() ?>
                                                 <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Tolak</button>
                                             </form>

@@ -218,14 +218,34 @@ $summary = $summary ?? [];
     if (formDistribusi) {
         formDistribusi.addEventListener('submit', function(e){
             if (!distribusiChecks().some(i => i.checked)) { e.preventDefault(); alert('Pilih minimal satu kategori.'); return; }
-            if (!confirm('Jalankan distribusi/nomor undi untuk kategori seni terpilih?')) e.preventDefault();
+            e.preventDefault();
+            Swal.fire({
+                title: 'Distribusi Seni?',
+                text: 'Distribusi dan nomor undi akan dijalankan untuk kategori seni terpilih.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Jalankan',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => { if (result.isConfirmed) formDistribusi.submit(); });
         });
     }
     const formBagan = qs('#formAcakBaganSeni');
     if (formBagan) {
         formBagan.addEventListener('submit', function(e){
             if (!baganChecks().some(i => i.checked)) { e.preventDefault(); alert('Pilih minimal satu kategori battle.'); return; }
-            if (!confirm('Acak ulang bagan battle untuk kategori terpilih?')) e.preventDefault();
+            e.preventDefault();
+            Swal.fire({
+                title: 'Acak Ulang Bagan Battle?',
+                text: 'Bagan battle akan diacak ulang untuk kategori seni terpilih.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Acak',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => { if (result.isConfirmed) formBagan.submit(); });
         });
     }
 })();

@@ -37,7 +37,7 @@ foreach ($errors as $e) {
                         <button type="submit" class="btn btn-outline-secondary rounded-pill">Batal & Kembali</button>
                     </form>
                     <?php if ($isValid): ?>
-                        <form action="<?= base_url('admin/super/import-excel-data/commit') ?>" method="post" class="m-0" onsubmit="return confirm('Data akan disimpan ke database. Lanjutkan import?')">
+                        <form action="<?= base_url('admin/super/import-excel-data/commit') ?>" method="post" class="m-0" onsubmit="return confirmAdminAction(this, 'Konfirmasi Import?', 'Data dari Excel akan disimpan ke database. Pastikan sudah preview dengan benar.', 'Ya, Import')">
                             <?= csrf_field() ?>
                             <input type="hidden" name="token" value="<?= esc($token) ?>">
                             <button type="submit" class="btn btn-dark rounded-pill">Konfirmasi Import</button>

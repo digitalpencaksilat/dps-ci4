@@ -184,12 +184,12 @@ $summary = $summary ?? [];
                             <div class="card-body px-0">
                                 <div class="d-flex flex-wrap gap-2">
                                     <?php foreach ([3,5,7,10,13] as $t) : ?>
-                                        <form method="post" action="<?= base_url('admin/super/drawing-tanding/distribusikan-tanpa-lawan/' . $t) ?>" onsubmit="return confirm('Jalankan mode manual pindah kelas (toleransi <?= $t ?> kg)?')">
+                                        <form method="post" action="<?= base_url('admin/super/drawing-tanding/distribusikan-tanpa-lawan/' . $t) ?>" onsubmit="return confirmAdminAction(this, 'Mode Pindah Kelas Manual?', 'Distribusi tanpa lawan akan dijalankan dengan toleransi <?= $t ?> kg.', 'Ya, Jalankan')">
                                             <?= csrf_field() ?>
                                             <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill">Toleransi <?= $t ?>kg</button>
                                         </form>
                                     <?php endforeach; ?>
-                                    <form method="post" action="<?= base_url('admin/super/drawing-tanding/pisahkan-kontingen-sendiri') ?>" onsubmit="return confirm('Pisahkan kontingen sendiri untuk semua kelas?')">
+                                    <form method="post" action="<?= base_url('admin/super/drawing-tanding/pisahkan-kontingen-sendiri') ?>" onsubmit="return confirmAdminAction(this, 'Pisahkan Kontingen Sendiri?', 'Peserta dari kontingen yang sama akan dipisahkan untuk semua kelas.', 'Ya, Jalankan')">
                                         <?= csrf_field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill">Pisah Kontingen Sendiri</button>
                                     </form>
@@ -275,9 +275,17 @@ $summary = $summary ?? [];
                 alert('Pilih minimal satu kategori.');
                 return;
             }
-            if (!confirm('Jalankan distribusi peserta untuk kategori terpilih?')) {
-                e.preventDefault();
-            }
+            e.preventDefault();
+            Swal.fire({
+                title: 'Distribusi Peserta?',
+                text: 'Distribusi peserta akan dijalankan untuk kategori terpilih.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Jalankan',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => { if (result.isConfirmed) formDistribusi.submit(); });
         });
     }
 
@@ -290,9 +298,17 @@ $summary = $summary ?? [];
                 alert('Pilih minimal satu kategori.');
                 return;
             }
-            if (!confirm('Acak ulang bagan untuk semua pool pada kategori terpilih?')) {
-                e.preventDefault();
-            }
+            e.preventDefault();
+            Swal.fire({
+                title: 'Acak Ulang Bagan?',
+                text: 'Bagan akan diacak ulang untuk semua pool pada kategori terpilih.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Acak',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => { if (result.isConfirmed) formBagan.submit(); });
         });
     }
 })();

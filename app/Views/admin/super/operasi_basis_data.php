@@ -25,7 +25,7 @@
                     <div class="super-mode-link mt-4">
                         <form action="<?= base_url('admin/super/operasi-basis-data/backup-database') ?>" method="post" class="w-100">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-outline-danger w-100 rounded-pill" onclick="return confirm('Database akan segera diunduh. Lanjutkan?')">Jalankan Backup</button>
+                            <button type="submit" class="btn btn-outline-danger w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Backup Database?', 'Database akan segera diunduh. Pastikan koneksi stabil.', 'Ya, Backup')">Jalankan Backup</button>
                         </form>
                     </div>
                 </section>
@@ -55,7 +55,7 @@
                     <div class="super-mode-link mt-4">
                         <form action="<?= base_url('admin/super/operasi-basis-data/hapus-pool-seni-kosong') ?>" method="post" class="w-100">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-danger w-100 rounded-pill" onclick="return confirm('Pool seni kosong akan dihapus. Lanjutkan?')">Hapus Pool Kosong</button>
+                            <button type="submit" class="btn btn-danger w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Hapus Pool Seni Kosong?', 'Pool seni yang tidak memiliki kelompok peserta akan dihapus.', 'Ya, Hapus')">Hapus Pool Kosong</button>
                         </form>
                     </div>
                 </section>
@@ -78,7 +78,7 @@
                     <div class="super-mode-link mt-4">
                         <form action="<?= base_url('admin/super/operasi-basis-data/hapus-atlet-belum-lunas') ?>" method="post" class="w-100">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-danger w-100 rounded-pill" onclick="return confirm('Atlet belum lunas akan segera dihapus. Lanjutkan?')">Hapus Atlet Belum Lunas</button>
+                            <button type="submit" class="btn btn-danger w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Hapus Atlet Belum Lunas?', 'Peserta tanding dan kelompok seni dengan pembayaran belum lunas akan dihapus.', 'Ya, Hapus')">Hapus Atlet Belum Lunas</button>
                         </form>
                     </div>
                 </section>
@@ -101,7 +101,7 @@
                     <div class="super-mode-link mt-4">
                         <form action="<?= base_url('admin/super/operasi-basis-data/hapus-data-dari-excel') ?>" method="post" class="w-100">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-danger w-100 rounded-pill" onclick="return confirm('Seluruh data dari excel akan dihapus. Lanjutkan?')">Hapus Data</button>
+                            <button type="submit" class="btn btn-danger w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Hapus Data dari Excel?', 'Seluruh kontingen yang diimpor dari Excel beserta data turunannya akan dihapus.', 'Ya, Hapus')">Hapus Data</button>
                         </form>
                     </div>
                 </section>
@@ -131,7 +131,7 @@
                     <div class="super-mode-link mt-4">
                         <form action="<?= base_url('admin/super/operasi-basis-data/buat-pool-baru') ?>" method="post" class="w-100">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-success w-100 rounded-pill" onclick="return confirm('Buat pool baru untuk kategori yang membutuhkan?')">Buat Pool</button>
+                            <button type="submit" class="btn btn-success w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Buat Pool Baru?', 'Pool baru akan dibuat untuk kategori yang belum memiliki pool atau kapasitasnya sudah penuh.', 'Ya, Buat')">Buat Pool</button>
                         </form>
                     </div>
                 </section>
@@ -154,7 +154,7 @@
                     <div class="super-mode-link mt-4">
                         <form action="<?= base_url('admin/super/operasi-basis-data/buat-kategori-partai-tambahan') ?>" method="post" class="w-100">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-info w-100 rounded-pill" onclick="return confirm('Buat kategori/pool untuk partai tambahan?')">Buat Kategori Tambahan</button>
+                            <button type="submit" class="btn btn-info w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Buat Kategori Partai Tambahan?', 'Pool berketerangan Partai Tambahan akan ditambahkan untuk kelas tanding yang membutuhkan.', 'Ya, Buat')">Buat Kategori Tambahan</button>
                         </form>
                     </div>
                 </section>
@@ -283,21 +283,49 @@
 
 <script>
 function confirmResetJadwal(form) {
-    const keyword = window.prompt("Seluruh penjadwalan akan dihapus. Ketik 'RESET JADWAL' untuk melanjutkan:");
-    if (keyword !== 'RESET JADWAL') {
-        window.alert('Kata kunci tidak sesuai.');
-        return false;
-    }
-    return window.confirm('Yakin reset seluruh jadwal? Aksi ini tidak bisa dibatalkan.');
+    Swal.fire({
+        title: 'Reset Seluruh Jadwal?',
+        html: 'Seluruh penjadwalan tanding dan seni akan dihapus permanen.<br>Ketik <strong>RESET JADWAL</strong> untuk melanjutkan.',
+        input: 'text',
+        inputPlaceholder: 'RESET JADWAL',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Reset Jadwal',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#b91c1c',
+        cancelButtonColor: '#6b7280',
+        preConfirm: (val) => {
+            if (val !== 'RESET JADWAL') {
+                Swal.showValidationMessage('Kata kunci tidak sesuai. Ketik persis: RESET JADWAL');
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) form.submit();
+    });
+    return false;
 }
 
 function confirmResetDatabase(form) {
-    const keyword = window.prompt("Seluruh data operasional akan dihapus. Ketik 'RESET DATABASE' untuk melanjutkan:");
-    if (keyword !== 'RESET DATABASE') {
-        window.alert('Kata kunci tidak sesuai.');
-        return false;
-    }
-    return window.confirm('Yakin reset database? Aksi ini sangat berisiko dan tidak bisa dibatalkan.');
+    Swal.fire({
+        title: 'Reset Database?',
+        html: 'Seluruh data operasional akan dihapus dan AUTO_INCREMENT direset. Aksi ini <strong>tidak bisa dibatalkan</strong>.<br><br>Ketik <strong>RESET DATABASE</strong> untuk melanjutkan.',
+        input: 'text',
+        inputPlaceholder: 'RESET DATABASE',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Reset Database',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#b91c1c',
+        cancelButtonColor: '#6b7280',
+        preConfirm: (val) => {
+            if (val !== 'RESET DATABASE') {
+                Swal.showValidationMessage('Kata kunci tidak sesuai. Ketik persis: RESET DATABASE');
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) form.submit();
+    });
+    return false;
 }
 </script>
 <?= $this->endSection() ?>

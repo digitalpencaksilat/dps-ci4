@@ -32,7 +32,7 @@
                     <?php endforeach; ?>
                 </div>
                 <div class="mt-4 pt-3 border-top">
-                    <a href="<?= base_url('development/log-viewer/clear') ?>" class="btn btn-custom btn-outline-brand w-100 py-2" onclick="return confirm('Hapus semua file log?')">
+                    <a href="<?= base_url('development/log-viewer/clear') ?>" class="btn btn-custom btn-outline-brand w-100 py-2" onclick="return confirmAdminAction(this, 'Hapus Semua Log?', 'Semua file log akan dihapus permanen.', 'Ya, Hapus')">
                         <i class="fas fa-trash me-2"></i> Clear
                     </a>
                 </div>

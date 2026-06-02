@@ -12,8 +12,43 @@ class PenjadwalanSeniOtomatisController extends BaseController
     {
         $gelanggang = (new GelanggangModel())->findAll();
 
-        $subKategori = db_connect()->table('sub_kategori_seni sks')
-            ->select('sks.id_sub_kategori_seni, sks.nama_seni, sks.jenis_seni, sks.sistem_penampilan, ku.nama_kategori_usia, ku.jenis_kelamin')
+        $db = db_connect();
+        $subKategori = $db->table('sub_kategori_seni sks')
+            ->select('
+                sks.id_sub_kategori_seni,
+                sks.nama_seni,
+                sks.jenis_seni,
+                sks.sistem_penampilan,
+                ku.nama_kategori_usia,
+                ku.jenis_kelamin,
+                (
+                    SELECT COUNT(DISTINCT ks.id_kompetisi_seni)
+                    FROM kompetisi_seni ks
+                    JOIN kelompok_peserta_seni kps ON kps.id_kompetisi_seni = ks.id_kompetisi_seni
+                    LEFT JOIN penampilan_seni ps ON ps.id_kelompok_peserta_seni = kps.id_kelompok_peserta_seni
+                    LEFT JOIN detail_jadwal_seni djs ON djs.id_penampilan_seni = ps.id_penampilan_seni
+                    WHERE ks.id_sub_kategori_seni = sks.id_sub_kategori_seni
+                    AND djs.id_detail_jadwal_seni IS NULL
+                ) AS jumlah_pool_seni,
+                (
+                    SELECT COUNT(DISTINCT kps.id_kelompok_peserta_seni)
+                    FROM kompetisi_seni ks
+                    JOIN kelompok_peserta_seni kps ON kps.id_kompetisi_seni = ks.id_kompetisi_seni
+                    LEFT JOIN penampilan_seni ps ON ps.id_kelompok_peserta_seni = kps.id_kelompok_peserta_seni
+                    LEFT JOIN detail_jadwal_seni djs ON djs.id_penampilan_seni = ps.id_penampilan_seni
+                    WHERE ks.id_sub_kategori_seni = sks.id_sub_kategori_seni
+                    AND djs.id_detail_jadwal_seni IS NULL
+                ) AS jumlah_kelompok_belum_jadwal,
+                (
+                    SELECT COUNT(*)
+                    FROM battle_seni bs
+                    JOIN kompetisi_seni ks ON ks.id_kompetisi_seni = bs.id_kompetisi_seni
+                    LEFT JOIN detail_jadwal_seni djs ON djs.id_battle_seni = bs.id_battle_seni
+                    WHERE ks.id_sub_kategori_seni = sks.id_sub_kategori_seni
+                    AND bs.jenis_kemenangan != "BYE"
+                    AND djs.id_detail_jadwal_seni IS NULL
+                ) AS jumlah_battle_belum_jadwal
+            ', false)
             ->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba')
             ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
             ->orderBy('ku.min_umur', 'ASC')
@@ -22,16 +57,7 @@ class PenjadwalanSeniOtomatisController extends BaseController
             ->get()
             ->getResult();
 
-        $babakOptions = [
-            'Final',
-            'Perebutan Juara Tiga',
-            'Semi Final',
-            '1/4 Final',
-            '1/8 Final',
-            '1/16 Final',
-            '1/32 Final',
-            '1/64 Final',
-        ];
+        $babakOptions = $this->getBabakBattleOptions($db);
 
         return view('admin/super/jadwal_seni/penjadwalan_seni_otomatis', $this->viewData([
             'activeMenu' => 'pembuatan_jadwal_penjadwalan_otomatis_seni',
@@ -63,7 +89,7 @@ class PenjadwalanSeniOtomatisController extends BaseController
             'jumlah_pool' => $this->request->getPost('jumlah_pool'),
             'urutan_id_sub_kategori_seni' => $this->request->getPost('urutan_id_sub_kategori_seni'),
             'langsung_buat_pdf' => (string) ($this->request->getPost('langsung_buat_pdf') ?? '') === '1',
-            'pdf_library' => $this->request->getPost('pdf_library') ?? '',
+            'pdf_library' => 'mpdf',
         ];
 
         $service = new JadwalSeniOtomatisService();
@@ -115,7 +141,7 @@ class PenjadwalanSeniOtomatisController extends BaseController
             'jenis_penjadwalan' => $this->request->getPost('jenis_penjadwalan'),
             'urutan_id_sub_kategori_seni' => $this->request->getPost('urutan_id_sub_kategori_seni'),
             'langsung_buat_pdf' => (string) ($this->request->getPost('langsung_buat_pdf') ?? '') === '1',
-            'pdf_library' => $this->request->getPost('pdf_library') ?? '',
+            'pdf_library' => 'mpdf',
         ];
 
         $service = new JadwalSeniOtomatisService();
@@ -139,6 +165,48 @@ class PenjadwalanSeniOtomatisController extends BaseController
         return redirect()->to(base_url('admin/super/jadwal-seni'))
             ->with('status', true)
             ->with('message', (string) ($result['message'] ?? 'Generate jadwal seni battle berhasil.'));
+    }
+
+    private function getBabakBattleOptions(\CodeIgniter\Database\BaseConnection $db): array
+    {
+        $rows = $db->table('battle_seni bs')
+            ->distinct()
+            ->select('bs.babak')
+            ->join('detail_jadwal_seni djs', 'djs.id_battle_seni = bs.id_battle_seni', 'left')
+            ->where('bs.jenis_kemenangan !=', 'BYE')
+            ->where('djs.id_detail_jadwal_seni IS NULL', null, false)
+            ->orderBy('bs.babak', 'ASC')
+            ->get()
+            ->getResult();
+
+        $options = [];
+        foreach ($rows as $row) {
+            $babak = trim((string) ($row->babak ?? ''));
+            if ($babak !== '') {
+                $options[] = $babak;
+            }
+        }
+
+        $babakOrder = [
+            'Final',
+            'Perebutan Juara Tiga',
+            'Semi Final',
+            '1/4 Final',
+            '1/8 Final',
+            '1/16 Final',
+            '1/32 Final',
+            '1/64 Final',
+        ];
+        usort($options, static function (string $a, string $b) use ($babakOrder): int {
+            $ia = array_search($a, $babakOrder, true);
+            $ib = array_search($b, $babakOrder, true);
+            $ia = $ia === false ? 999 : $ia;
+            $ib = $ib === false ? 999 : $ib;
+
+            return $ia === $ib ? strcmp($a, $b) : $ia <=> $ib;
+        });
+
+        return $options !== [] ? $options : ['Final'];
     }
 
     private function generatePdfForJadwalIds(array $ids, string $library = 'mpdf'): void
@@ -168,7 +236,7 @@ class PenjadwalanSeniOtomatisController extends BaseController
             ]);
 
             $path = $this->writeSchedulePdf($html, 'jadwal-seni-' . $id . '.pdf');
-            $model->update($id, ['pdf_path' => $path]);
+            $model->update($id, ['nama_file' => $path]);
         }
     }
 
@@ -185,8 +253,40 @@ class PenjadwalanSeniOtomatisController extends BaseController
 
         $filename = preg_replace('/[^a-zA-Z0-9_.-]/', '-', $filename) ?: 'jadwal.pdf';
         $path = 'uploads/jadwal/' . $filename;
-        $mpdf = (new \App\Services\Pdf\MpdfService())->make(['format' => 'A4-L']);
-        $mpdf->WriteHTML($html);
+        ini_set('memory_limit', '512M');
+        ini_set('pcre.backtrack_limit', '5000000');
+
+        $oldDisplayErrors = ini_get('display_errors');
+        $oldErrorReporting = error_reporting();
+        ini_set('display_errors', '0');
+        error_reporting(0);
+
+        ob_start();
+        try {
+            $mpdf = (new \App\Services\Pdf\MpdfService())->make([
+                'format' => 'A4',
+                'orientation' => 'P',
+                'margin_left' => 2,
+                'margin_right' => 2,
+                'margin_top' => 3,
+                'margin_bottom' => 3,
+                'margin_header' => 0,
+                'margin_footer' => 0,
+            ]);
+            $mpdf->WriteHTML($html);
+            $buffer = ob_get_clean();
+        } finally {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+            ini_set('display_errors', (string) $oldDisplayErrors);
+            error_reporting($oldErrorReporting);
+        }
+
+        if ($buffer !== false && $buffer !== '') {
+            log_message('warning', 'Output buffer dibersihkan sebelum generate PDF jadwal seni otomatis: {buffer}', ['buffer' => substr($buffer, 0, 200)]);
+        }
+
         $mpdf->Output(FCPATH . $path, \Mpdf\Output\Destination::FILE);
 
         return $path;

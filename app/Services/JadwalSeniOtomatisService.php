@@ -116,10 +116,16 @@ class JadwalSeniOtomatisService
                 $jadwalIds[] = $idJadwal;
 
                 foreach ($kompetisiPerGelanggang[$gid] as $komp) {
-                    $rowsKelompok = $this->db->table('kelompok_peserta_seni')
-                        ->select('id_kelompok_peserta_seni')
-                        ->where('id_kompetisi_seni', (int) $komp->id_kompetisi_seni)
-                        ->orderBy('nomor_undi', 'ASC')
+                    $rowsKelompok = $this->db->table('kelompok_peserta_seni kps')
+                        ->select('DISTINCT kps.id_kelompok_peserta_seni, kps.nomor_undi', false)
+                        ->where('kps.id_kompetisi_seni', (int) $komp->id_kompetisi_seni)
+                        ->where('NOT EXISTS (
+                            SELECT 1
+                            FROM penampilan_seni psx
+                            JOIN detail_jadwal_seni djsx ON djsx.id_penampilan_seni = psx.id_penampilan_seni
+                            WHERE psx.id_kelompok_peserta_seni = kps.id_kelompok_peserta_seni
+                        )', null, false)
+                        ->orderBy('kps.nomor_undi', 'ASC')
                         ->get()
                         ->getResult();
 
@@ -160,6 +166,8 @@ class JadwalSeniOtomatisService
                             ->update(['status_penampilan' => 'belum_tampil']);
                     }
                 }
+
+                $this->syncJadwalSeniRange($idJadwal);
             }
 
             $this->db->transComplete();
@@ -217,6 +225,14 @@ class JadwalSeniOtomatisService
                 ->countAllResults();
             if ($already > 0) {
                 return ['status' => false, 'message' => 'Battle seni telah terjadwal sebelumnya!'];
+            }
+
+            $totalKapasitas = 0;
+            foreach ($idGelanggang as $gid) {
+                $totalKapasitas += (int) ($jumlahPartai[$gid] ?? 0);
+            }
+            if ($totalKapasitas < count($battles)) {
+                return ['status' => false, 'message' => 'Kapasitas partai tidak mencukupi untuk semua battle'];
             }
 
             $battlePerGelanggang = $this->distributeBattleToGelanggang($battles, $idGelanggang, $jumlahPartai);
@@ -277,6 +293,8 @@ class JadwalSeniOtomatisService
                         return ['status' => false, 'message' => 'Gagal menugaskan wasit/juri untuk penampilan: ' . $idMerah];
                     }
                 }
+
+                $this->syncJadwalSeniRange($idJadwal);
             }
 
             $this->db->transComplete();
@@ -509,23 +527,75 @@ class JadwalSeniOtomatisService
 
     private function fetchLastNomorPartaiByGelanggang(): array
     {
-        $rows = $this->db->table('detail_jadwal_seni djs')
-            ->select('js.id_gelanggang, MAX(djs.nomor_partai) as max_partai')
-            ->join('jadwal_seni js', 'js.id_jadwal_seni = djs.id_jadwal_seni')
-            ->groupBy('js.id_gelanggang')
+        $out = [];
+        $gelanggang = $this->db->table('gelanggang')->select('id_gelanggang')->get()->getResult();
+        foreach ($gelanggang as $row) {
+            $gid = (int) ($row->id_gelanggang ?? 0);
+            if ($gid > 0) {
+                $out[$gid] = 1;
+            }
+        }
+
+        foreach ($this->fetchMaxPartaiByGelanggang('detail_jadwal_seni', 'jadwal_seni', 'id_jadwal_seni') as $gid => $maxPartai) {
+            $out[$gid] = max((int) ($out[$gid] ?? 1), $maxPartai + 1);
+        }
+
+        foreach ($this->fetchMaxPartaiByGelanggang('detail_jadwal_tanding', 'jadwal_tanding', 'id_jadwal_tanding') as $gid => $maxPartai) {
+            $out[$gid] = max((int) ($out[$gid] ?? 1), $maxPartai + 1);
+        }
+
+        return $out;
+    }
+
+    private function fetchMaxPartaiByGelanggang(string $detailTable, string $jadwalTable, string $jadwalKey): array
+    {
+        if (! $this->db->tableExists($detailTable) || ! $this->db->tableExists($jadwalTable)) {
+            return [];
+        }
+
+        $rows = $this->db->table($detailTable . ' d')
+            ->select('j.id_gelanggang, MAX(d.nomor_partai) as max_partai')
+            ->join($jadwalTable . ' j', 'j.' . $jadwalKey . ' = d.' . $jadwalKey)
+            ->groupBy('j.id_gelanggang')
             ->get()
             ->getResult();
 
         $out = [];
         foreach ($rows as $row) {
             $gid = (int) ($row->id_gelanggang ?? 0);
-            if ($gid <= 0) {
-                continue;
+            $maxPartai = (int) ($row->max_partai ?? 0);
+            if ($gid > 0 && $maxPartai > 0) {
+                $out[$gid] = $maxPartai;
             }
-            $out[$gid] = ((int) ($row->max_partai ?? 0)) + 1;
         }
 
         return $out;
+    }
+
+    private function syncJadwalSeniRange(int $idJadwalSeni): void
+    {
+        $fields = $this->db->getFieldNames('jadwal_seni');
+        $hasRangeColumns = in_array('nomor_partai_awal', $fields, true)
+            && in_array('nomor_partai_akhir', $fields, true)
+            && in_array('jumlah_penampilan', $fields, true);
+
+        if (! $hasRangeColumns) {
+            return;
+        }
+
+        $range = $this->db->table('detail_jadwal_seni')
+            ->select('MIN(nomor_partai) AS awal, MAX(nomor_partai) AS akhir, COUNT(*) AS total', false)
+            ->where('id_jadwal_seni', $idJadwalSeni)
+            ->get()
+            ->getRow();
+
+        $this->db->table('jadwal_seni')
+            ->where('id_jadwal_seni', $idJadwalSeni)
+            ->update([
+                'nomor_partai_awal' => $range->awal ?? null,
+                'nomor_partai_akhir' => $range->akhir ?? null,
+                'jumlah_penampilan' => (int) ($range->total ?? 0),
+            ]);
     }
 
     private function normalizeIntArray($value): array

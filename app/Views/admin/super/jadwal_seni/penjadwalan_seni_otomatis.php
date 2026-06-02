@@ -5,19 +5,48 @@
 $gelanggang = $gelanggang ?? [];
 $subKategori = $subKategori ?? [];
 $babakOptions = $babakOptions ?? [];
+$showValidation = session('status') === false;
+$poolSubOld = array_map('strval', old('pool_urutan_id_sub_kategori_seni', old('urutan_id_sub_kategori_seni', [])) ?: []);
+$battleSubOld = array_map('strval', old('battle_urutan_id_sub_kategori_seni', old('urutan_id_sub_kategori_seni', [])) ?: []);
+$battleBabakOld = array_map('strval', old('babak_battle_seni', []));
+$jenisBattle = (string) old('jenis_penjadwalan', 'prestasi');
+$langsungPdf = old('langsung_buat_pdf');
+$poolCount = 0;
+$battleCount = 0;
+$battlePartaiEstimate = 0;
+foreach ($subKategori as $row) {
+    if (($row->sistem_penampilan ?? '') === 'pool') {
+        $poolCount += (int) ($row->jumlah_pool_seni ?? 0);
+    }
+    if (($row->sistem_penampilan ?? '') === 'battle') {
+        $battleCount++;
+        $battlePartaiEstimate += (int) ($row->jumlah_battle_belum_jadwal ?? 0);
+    }
+}
+$battlePartaiEstimate = max(1, $battlePartaiEstimate);
 ?>
 
-<div class="admin-card">
+<div class="admin-card ci3-schedule-card seni-schedule-card">
     <div class="card-header pb-0 border-bottom-0 bg-transparent px-0">
-        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+        <div class="hero-strip">
             <div>
                 <p class="eyebrow mb-1">Pembuatan Jadwal</p>
                 <h2 class="section-title h4 mb-1">Penjadwalan Otomatis Seni</h2>
-                <p class="muted-copy mb-0">Migrasi CI4 untuk flow penjadwalan otomatis seni pool dan battle dengan payload parity ke project CI3.</p>
+                <p class="muted-copy mb-0">Tampilan dan interaksi diselaraskan dengan penjadwalan otomatis tanding, termasuk urutan drag and drop.</p>
             </div>
-            <div class="d-flex flex-wrap gap-2">
-                <a class="btn btn-outline-secondary rounded-pill" href="<?= base_url('admin/super/jadwal-seni') ?>">Daftar Jadwal Seni</a>
-                <a class="btn btn-outline-secondary rounded-pill" href="<?= base_url('admin/super/drawing-seni') ?>">Drawing Seni</a>
+            <div class="hero-stats">
+                <div class="hero-stat-item">
+                    <span class="hero-stat-label">Seni Pool</span>
+                    <strong><?= esc((string) $poolCount) ?></strong>
+                </div>
+                <div class="hero-stat-item accent">
+                    <span class="hero-stat-label">Seni Battle</span>
+                    <strong><?= esc((string) $battleCount) ?></strong>
+                </div>
+                <div class="hero-stat-item">
+                    <span class="hero-stat-label">Gelanggang</span>
+                    <strong><?= esc((string) count($gelanggang)) ?></strong>
+                </div>
             </div>
         </div>
     </div>
@@ -34,315 +63,284 @@ $babakOptions = $babakOptions ?? [];
 
         <div class="tab-content">
             <div class="tab-pane fade show active" id="pool-pane" role="tabpanel" aria-labelledby="pool-tab">
-                <div class="admin-card">
-                    <div class="card-header pb-0 border-bottom-0 bg-transparent px-0">
-                        <h3 class="section-title h6 mb-1">Penjadwalan Seni Otomatis Sistem Pool</h3>
-                        <p class="muted-copy small mb-0">Parity CI3 `buat_jadwal_seni_sistem_pool_otomatis`: pilih urutan sub kategori, distribusikan kapasitas pool per gelanggang, lalu generate jadwal + detail + penugasan juri.</p>
-                    </div>
-                    <div class="card-body px-0">
-                        <form method="post" action="<?= base_url('admin/super/jadwal-seni/buat-jadwal-seni-pool-otomatis') ?>" id="formPool">
-                            <?= csrf_field() ?>
-                            <div class="row g-3">
-                                <div class="col-12 col-lg-4">
-                                    <label class="form-label">Tanggal</label>
-                                    <input type="date" class="form-control" name="tanggal" value="<?= esc((string) old('tanggal')) ?>" required>
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <label class="form-label">Jam Mulai</label>
-                                    <input type="time" class="form-control" name="jam_mulai" value="<?= esc((string) old('jam_mulai')) ?>" required>
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <label class="form-label">Jam Selesai</label>
-                                    <input type="time" class="form-control" name="jam_selesai" value="<?= esc((string) old('jam_selesai')) ?>" required>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Keterangan</label>
-                                    <input type="text" class="form-control" name="keterangan" value="<?= esc((string) old('keterangan')) ?>" placeholder="Contoh: Sesi pagi seni pool hari 1">
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div>
-                                        <div class="fw-semibold">Urutan Sub Kategori Seni</div>
-                                        <div class="small text-muted">Urutan checkbox dipakai sebagai `urutan_id_sub_kategori_seni` seperti di CI3.</div>
-                                    </div>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-check-all="#pool-subkategori .pool-sub">Pilih semua</button>
-                                </div>
-                                <div class="table-shell admin-table-scroller" style="max-height: 320px; overflow-y: auto;">
-                                    <table class="table admin-table align-middle mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th style="width:44px;">Pilih</th>
-                                                <th>Kategori Usia</th>
-                                                <th>JK</th>
-                                                <th>Jenis</th>
-                                                <th>Nama Seni</th>
-                                                <th>Sistem</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="pool-subkategori">
-                                            <?php foreach ($subKategori as $row) : ?>
-                                                <tr>
-                                                    <td><input class="form-check-input pool-sub" type="checkbox" name="urutan_id_sub_kategori_seni[]" value="<?= (int) $row->id_sub_kategori_seni ?>" <?= ($row->sistem_penampilan ?? '') !== 'pool' ? 'disabled' : '' ?>></td>
-                                                    <td><?= esc((string) ($row->nama_kategori_usia ?? '-')) ?></td>
-                                                    <td><?= esc((string) ($row->jenis_kelamin ?? '-')) ?></td>
-                                                    <td><?= esc((string) ($row->jenis_seni ?? '-')) ?></td>
-                                                    <td class="fw-semibold"><?= esc((string) ($row->nama_seni ?? '-')) ?></td>
-                                                    <td><?= esc((string) ($row->sistem_penampilan ?? '-')) ?></td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <div class="fw-semibold mb-2">Distribusi Gelanggang & Kapasitas Pool</div>
-                                <div class="row g-3">
-                                    <?php foreach ($gelanggang as $g) : ?>
-                                        <div class="col-12 col-md-6 col-xl-4">
-                                            <div class="venue-card">
-                                                <div class="form-check mb-2">
-                                                    <input class="form-check-input venue-pool-check" type="checkbox" id="pool-g-<?= (int) $g->id_gelanggang ?>" name="id_gelanggang[]" value="<?= (int) $g->id_gelanggang ?>">
-                                                    <label class="form-check-label fw-semibold" for="pool-g-<?= (int) $g->id_gelanggang ?>"><?= esc((string) ($g->nama_gelanggang ?? 'Gelanggang')) ?></label>
-                                                </div>
-                                                <label class="form-label small text-muted">Jumlah Pool</label>
-                                                <input type="number" min="0" class="form-control" name="jumlah_pool[<?= (int) $g->id_gelanggang ?>]" value="<?= esc((string) old('jumlah_pool.' . (int) $g->id_gelanggang, '0')) ?>">
+                <form novalidate method="post" action="<?= base_url('admin/super/jadwal-seni/buat-jadwal-seni-pool-otomatis') ?>" id="formPool" class="seni-auto-form" data-unit-label="Pool">
+                    <?= csrf_field() ?>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card sticky-top ci3-panel-card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label" for="poolTanggal">Tanggal</label>
+                                                <input type="date" id="poolTanggal" class="form-control <?= $showValidation && ! old('tanggal') ? 'is-invalid' : '' ?>" name="tanggal" value="<?= esc((string) old('tanggal', date('Y-m-d'))) ?>" required>
+                                                <div class="invalid-feedback">Silahkan memilih tanggal</div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label" for="poolJamMulai">Jam Mulai :</label>
+                                                <input type="time" id="poolJamMulai" class="form-control <?= $showValidation && ! old('jam_mulai') ? 'is-invalid' : '' ?>" name="jam_mulai" value="<?= esc((string) old('jam_mulai', '08:00')) ?>" required>
+                                                <div class="invalid-feedback">Silahkan memilih jam mulai</div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label" for="poolJamSelesai">Jam Selesai :</label>
+                                                <input type="time" id="poolJamSelesai" class="form-control <?= $showValidation && ! old('jam_selesai') ? 'is-invalid' : '' ?>" name="jam_selesai" value="<?= esc((string) old('jam_selesai', '22:00')) ?>" required>
+                                                <div class="invalid-feedback">Silahkan memilih jam selesai</div>
                                             </div>
                                         </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-md-6">
-                                    <div class="form-check mt-2">
-                                        <input class="form-check-input" type="checkbox" name="langsung_buat_pdf" id="poolPdf" value="1" <?= old('langsung_buat_pdf') ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="poolPdf">Langsung buat PDF setelah generate</label>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label" for="poolKeterangan">Keterangan :</label>
+                                                <textarea id="poolKeterangan" name="keterangan" class="form-control" rows="3"><?= esc((string) old('keterangan')) ?></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input pdf-toggle" type="checkbox" name="langsung_buat_pdf" id="poolPdf" value="1" <?= $langsungPdf === null || $langsungPdf ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="poolPdf">Langsung Buat Jadwal PDF</label>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3 pdf-engine-group">
+                                                <input type="hidden" name="pdf_library" value="mpdf">
+                                                <small class="text-muted">PDF Engine: mPDF</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="section-chip-row mb-3">
+                                                <span class="section-chip">Distribusi Gelanggang</span>
+                                                <small class="text-muted">Aktifkan gelanggang lalu atur jumlah pool per arena.</small>
+                                            </div>
+                                            <?php foreach ($gelanggang as $arena) : ?>
+                                                <?php $idG = (string) $arena->id_gelanggang; $oldPool = (int) old('jumlah_pool.' . $idG, 0); ?>
+                                                <div class="arena-row row align-items-center mb-2">
+                                                    <div class="col-12 col-lg-4">
+                                                        <div class="form-check arena-check">
+                                                            <input id="poolGelanggang<?= esc($idG) ?>" type="checkbox" class="checkbox-gelanggang form-check-input" value="<?= esc($idG) ?>" name="id_gelanggang[]" data-caption="#poolCaption<?= esc($idG) ?>" data-range-slider="#poolSlider<?= esc($idG) ?>" <?= $oldPool > 0 ? 'checked' : '' ?>>
+                                                            <label class="form-label cursor-pointer mb-0" for="poolGelanggang<?= esc($idG) ?>"><span class="arena-name">Gelanggang <?= esc((string) ($arena->nama_gelanggang ?? $idG)) ?></span></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-lg-6 d-flex justify-content-center flex-column">
+                                                        <input id="poolSlider<?= esc($idG) ?>" type="range" name="jumlah_pool[<?= esc($idG) ?>]" value="<?= esc((string) $oldPool) ?>" min="0" max="<?= esc((string) max(1, $poolCount)) ?>" class="unit-slider form-range" data-caption="#poolCaption<?= esc($idG) ?>" data-checkbox="#poolGelanggang<?= esc($idG) ?>">
+                                                    </div>
+                                                    <div class="col-12 col-lg-2 text-lg-end"><small class="arena-caption" id="poolCaption<?= esc($idG) ?>"><?= esc((string) $oldPool) ?> Pool</small></div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">PDF Library</label>
-                                    <select class="form-select" name="pdf_library">
-                                        <option value="mpdf">mPDF</option>
-                                    </select>
+                                    <button type="submit" class="btn btn-danger my-3 w-100">Buat Jadwal Seni Pool</button>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="alert alert-warning small mt-3 mb-0" role="alert">
-                                Generate pool akan membuat `jadwal_seni`, `detail_jadwal_seni`, `penampilan_seni` bila belum ada, lalu menugaskan juri per gelanggang.
+                        <div class="col-md-6 opsi_penjadwalan">
+                            <div class="alert alert-danger text-white ci3-info-alert" role="alert">
+                                <strong class="d-block">Info</strong>
+                                Geser sub kategori untuk menentukan prioritas penjadwalan. Jumlah pool slider dihitung dari sub kategori yang dipilih.
                             </div>
-
-                            <div class="d-flex flex-wrap gap-2 mt-3">
-                                <button type="submit" class="btn btn-danger rounded-pill">Buat Jadwal Seni Pool</button>
+                            <div class="card mb-3 ci3-panel-card">
+                                <div class="card-header pb-0"><h6 class="card-title">Daftar Sub Kategori Seni Pool</h6></div>
+                                <div class="card-body pt-2">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input check-all-sub" type="checkbox" id="poolPilihSemua" data-target="#pool-subkategori .sub-checkbox:not(:disabled)">
+                                        <label class="form-check-label" for="poolPilihSemua">Pilih Semua Sub Kategori Pool</label>
+                                    </div>
+                                    <p class="text-sm">Urutan drag and drop dikirim sebagai urutan `urutan_id_sub_kategori_seni[]`.</p>
+                                    <ul class="list-group sortable-sub-list" id="pool-subkategori">
+                                        <?php foreach ($subKategori as $row) : ?>
+                                            <?php $idSub = (string) $row->id_sub_kategori_seni; $jumlahPoolSeni = (int) ($row->jumlah_pool_seni ?? 0); $isPool = ($row->sistem_penampilan ?? '') === 'pool' && $jumlahPoolSeni > 0; ?>
+                                            <li class="list-group-item py-0 sub-item <?= $isPool ? '' : 'is-disabled' ?>" data-sub-id="<?= esc($idSub) ?>">
+                                                <div class="row align-items-center kategori-row-shell">
+                                                    <div class="col-auto pe-0"><button type="button" class="btn btn-link drag-handle" aria-label="Geser urutan sub kategori"><i class="fa fa-grip-vertical" aria-hidden="true"></i></button></div>
+                                                    <div class="col px-2 py-3">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input sub-checkbox" id="poolSub<?= esc($idSub) ?>" type="checkbox" name="urutan_id_sub_kategori_seni[]" value="<?= esc($idSub) ?>" data-jumlah-pool="<?= esc((string) $jumlahPoolSeni) ?>" <?= $isPool ? '' : 'disabled' ?> <?= $isPool && in_array($idSub, $poolSubOld, true) ? 'checked' : '' ?>>
+                                                            <label class="form-label cursor-pointer mb-0" for="poolSub<?= esc($idSub) ?>">&nbsp; <?= esc((string) (($row->nama_kategori_usia ?? '-') . ' ' . ($row->jenis_kelamin ?? '-') . ' - ' . ($row->jenis_seni ?? '-') . ' ' . ($row->nama_seni ?? '-'))) ?> <span class="kelas-babak-pill"><?= esc((string) ($row->sistem_penampilan ?? '-')) ?></span> <small class="text-muted">(<?= esc((string) $jumlahPoolSeni) ?> pool)</small></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
 
             <div class="tab-pane fade" id="battle-pane" role="tabpanel" aria-labelledby="battle-tab">
-                <div class="admin-card">
-                    <div class="card-header pb-0 border-bottom-0 bg-transparent px-0">
-                        <h3 class="section-title h6 mb-1">Penjadwalan Seni Otomatis Sistem Battle</h3>
-                        <p class="muted-copy small mb-0">Parity CI3 `buat_jadwal_seni_battle_otomatis`: pilih jenis penjadwalan, babak battle, urutan sub kategori, kapasitas partai per gelanggang, lalu generate jadwal battle.</p>
-                    </div>
-                    <div class="card-body px-0">
-                        <form method="post" action="<?= base_url('admin/super/jadwal-seni/buat-jadwal-seni-battle-otomatis') ?>" id="formBattle">
-                            <?= csrf_field() ?>
-                            <div class="row g-3">
-                                <div class="col-12 col-lg-3">
-                                    <label class="form-label">Tanggal</label>
-                                    <input type="date" class="form-control" name="tanggal" value="<?= esc((string) old('tanggal')) ?>" required>
-                                </div>
-                                <div class="col-12 col-lg-3">
-                                    <label class="form-label">Jam Mulai</label>
-                                    <input type="time" class="form-control" name="jam_mulai" value="<?= esc((string) old('jam_mulai')) ?>" required>
-                                </div>
-                                <div class="col-12 col-lg-3">
-                                    <label class="form-label">Jam Selesai</label>
-                                    <input type="time" class="form-control" name="jam_selesai" value="<?= esc((string) old('jam_selesai')) ?>" required>
-                                </div>
-                                <div class="col-12 col-lg-3">
-                                    <label class="form-label">Jenis Penjadwalan</label>
-                                    <select class="form-select" name="jenis_penjadwalan" required>
-                                        <?php $jenisBattle = (string) old('jenis_penjadwalan', 'prestasi'); ?>
-                                        <option value="prestasi" <?= $jenisBattle === 'prestasi' ? 'selected' : '' ?>>Prestasi</option>
-                                        <option value="pemasalan_seling_1" <?= $jenisBattle === 'pemasalan_seling_1' ? 'selected' : '' ?>>Pemasalan Seling 1</option>
-                                        <option value="pemasalan_seling_2" <?= $jenisBattle === 'pemasalan_seling_2' ? 'selected' : '' ?>>Pemasalan Seling 2</option>
-                                        <option value="pemasalan_seling_3" <?= $jenisBattle === 'pemasalan_seling_3' ? 'selected' : '' ?>>Pemasalan Seling 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Keterangan</label>
-                                    <input type="text" class="form-control" name="keterangan" value="<?= esc((string) old('keterangan')) ?>" placeholder="Contoh: Sesi battle semifinal dan final">
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <div class="fw-semibold mb-2">Babak Battle</div>
-                                <div class="row g-2">
-                                    <?php foreach ($babakOptions as $babak) : ?>
-                                        <div class="col-6 col-md-4 col-xl-3">
-                                            <label class="check-card">
-                                                <input type="checkbox" name="babak_battle_seni[]" value="<?= esc($babak) ?>" <?= in_array($babak, (array) old('babak_battle_seni', []), true) ? 'checked' : '' ?>>
-                                                <span><?= esc($babak) ?></span>
-                                            </label>
+                <form novalidate method="post" action="<?= base_url('admin/super/jadwal-seni/buat-jadwal-seni-battle-otomatis') ?>" id="formBattle" class="seni-auto-form" data-unit-label="Partai">
+                    <?= csrf_field() ?>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card sticky-top ci3-panel-card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3"><label class="form-label" for="battleTanggal">Tanggal</label><input type="date" id="battleTanggal" class="form-control" name="tanggal" value="<?= esc((string) old('tanggal', date('Y-m-d'))) ?>" required></div>
+                                            <div class="mb-3"><label class="form-label" for="battleJamMulai">Jam Mulai :</label><input type="time" id="battleJamMulai" class="form-control" name="jam_mulai" value="<?= esc((string) old('jam_mulai', '08:00')) ?>" required></div>
+                                            <div class="mb-3"><label class="form-label" for="battleJamSelesai">Jam Selesai :</label><input type="time" id="battleJamSelesai" class="form-control" name="jam_selesai" value="<?= esc((string) old('jam_selesai', '22:00')) ?>" required></div>
                                         </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div>
-                                        <div class="fw-semibold">Urutan Sub Kategori Seni</div>
-                                        <div class="small text-muted">Hanya sub kategori dengan sistem battle yang aktif.</div>
-                                    </div>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-check-all="#battle-subkategori .battle-sub">Pilih semua</button>
-                                </div>
-                                <div class="table-shell admin-table-scroller" style="max-height: 320px; overflow-y: auto;">
-                                    <table class="table admin-table align-middle mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th style="width:44px;">Pilih</th>
-                                                <th>Kategori Usia</th>
-                                                <th>JK</th>
-                                                <th>Jenis</th>
-                                                <th>Nama Seni</th>
-                                                <th>Sistem</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="battle-subkategori">
-                                            <?php foreach ($subKategori as $row) : ?>
-                                                <tr>
-                                                    <td><input class="form-check-input battle-sub" type="checkbox" name="urutan_id_sub_kategori_seni[]" value="<?= (int) $row->id_sub_kategori_seni ?>" <?= ($row->sistem_penampilan ?? '') !== 'battle' ? 'disabled' : '' ?>></td>
-                                                    <td><?= esc((string) ($row->nama_kategori_usia ?? '-')) ?></td>
-                                                    <td><?= esc((string) ($row->jenis_kelamin ?? '-')) ?></td>
-                                                    <td><?= esc((string) ($row->jenis_seni ?? '-')) ?></td>
-                                                    <td class="fw-semibold"><?= esc((string) ($row->nama_seni ?? '-')) ?></td>
-                                                    <td><?= esc((string) ($row->sistem_penampilan ?? '-')) ?></td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <div class="fw-semibold mb-2">Distribusi Gelanggang & Kapasitas Partai</div>
-                                <div class="row g-3">
-                                    <?php foreach ($gelanggang as $g) : ?>
-                                        <div class="col-12 col-md-6 col-xl-4">
-                                            <div class="venue-card">
-                                                <div class="form-check mb-2">
-                                                    <input class="form-check-input venue-battle-check" type="checkbox" id="battle-g-<?= (int) $g->id_gelanggang ?>" name="id_gelanggang[]" value="<?= (int) $g->id_gelanggang ?>">
-                                                    <label class="form-check-label fw-semibold" for="battle-g-<?= (int) $g->id_gelanggang ?>"><?= esc((string) ($g->nama_gelanggang ?? 'Gelanggang')) ?></label>
+                                        <div class="col-md-6">
+                                            <div class="mb-3"><label class="form-label" for="battleKeterangan">Keterangan :</label><textarea id="battleKeterangan" name="keterangan" class="form-control" rows="3"><?= esc((string) old('keterangan')) ?></textarea></div>
+                                            <div class="mb-3"><label class="form-label" for="battleJenis">Jenis Penjadwalan</label><select class="form-select" name="jenis_penjadwalan" id="battleJenis" required><option value="prestasi" <?= $jenisBattle === 'prestasi' ? 'selected' : '' ?>>Prestasi</option><option value="pemasalan_seling_1" <?= $jenisBattle === 'pemasalan_seling_1' ? 'selected' : '' ?>>Pemasalan Seling 1</option><option value="pemasalan_seling_2" <?= $jenisBattle === 'pemasalan_seling_2' ? 'selected' : '' ?>>Pemasalan Seling 2</option><option value="pemasalan_seling_3" <?= $jenisBattle === 'pemasalan_seling_3' ? 'selected' : '' ?>>Pemasalan Seling 3</option></select></div>
+                                            <div class="form-check form-switch mb-3"><input class="form-check-input pdf-toggle" type="checkbox" name="langsung_buat_pdf" id="battlePdf" value="1" <?= $langsungPdf === null || $langsungPdf ? 'checked' : '' ?>><label class="form-check-label" for="battlePdf">Langsung Buat Jadwal PDF</label></div>
+                                            <div class="pdf-engine-group"><input type="hidden" name="pdf_library" value="mpdf"><small class="text-muted">PDF Engine: mPDF</small></div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="section-chip-row mb-3"><span class="section-chip">Distribusi Gelanggang</span><small class="text-muted">Aktifkan gelanggang lalu atur partai per arena.</small></div>
+                                            <?php foreach ($gelanggang as $arena) : ?>
+                                                <?php $idG = (string) $arena->id_gelanggang; $oldPartai = (int) old('jumlah_partai.' . $idG, 0); ?>
+                                                <div class="arena-row row align-items-center mb-2">
+                                                    <div class="col-12 col-lg-4"><div class="form-check arena-check"><input id="battleGelanggang<?= esc($idG) ?>" type="checkbox" class="checkbox-gelanggang form-check-input" value="<?= esc($idG) ?>" name="id_gelanggang[]" data-caption="#battleCaption<?= esc($idG) ?>" data-range-slider="#battleSlider<?= esc($idG) ?>" <?= $oldPartai > 0 ? 'checked' : '' ?>><label class="form-label cursor-pointer mb-0" for="battleGelanggang<?= esc($idG) ?>"><span class="arena-name">Gelanggang <?= esc((string) ($arena->nama_gelanggang ?? $idG)) ?></span></label></div></div>
+                                                    <div class="col-12 col-lg-6 d-flex justify-content-center flex-column"><input id="battleSlider<?= esc($idG) ?>" type="range" name="jumlah_partai[<?= esc($idG) ?>]" value="<?= esc((string) $oldPartai) ?>" min="0" max="<?= esc((string) $battlePartaiEstimate) ?>" class="unit-slider form-range" data-caption="#battleCaption<?= esc($idG) ?>" data-checkbox="#battleGelanggang<?= esc($idG) ?>"></div>
+                                                    <div class="col-12 col-lg-2 text-lg-end"><small class="arena-caption" id="battleCaption<?= esc($idG) ?>"><?= esc((string) $oldPartai) ?> Partai</small></div>
                                                 </div>
-                                                <label class="form-label small text-muted">Jumlah Partai</label>
-                                                <input type="number" min="0" class="form-control" name="jumlah_partai[<?= (int) $g->id_gelanggang ?>]" value="<?= esc((string) old('jumlah_partai.' . (int) $g->id_gelanggang, '0')) ?>">
-                                            </div>
+                                            <?php endforeach; ?>
                                         </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-danger my-3 w-100">Buat Jadwal Seni Battle</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 opsi_penjadwalan">
+                            <div class="alert alert-danger text-white ci3-info-alert" role="alert"><strong class="d-block">Info</strong>Urutan sub kategori bisa digeser. Total partai slider mengikuti sub kategori dan babak yang dipilih.</div>
+                            <div class="card mb-3 ci3-panel-card">
+                                <div class="card-header pb-0"><h6 class="card-title">Babak Battle</h6></div>
+                                <div class="card-body pt-2" id="battle-babak-container">
+                                    <?php foreach ($babakOptions as $babak) : ?>
+                                        <?php $babakId = str_replace([' ', '/'], ['_', '_per_'], strtolower((string) $babak)); ?>
+                                        <div class="form-check form-check-inline"><input class="form-check-input babak-checkbox" type="checkbox" name="babak_battle_seni[]" id="battleBabak<?= esc($babakId) ?>" value="<?= esc($babak) ?>" <?= in_array((string) $babak, $battleBabakOld, true) ? 'checked' : '' ?>><label class="form-check-label" for="battleBabak<?= esc($babakId) ?>"><?= esc((string) $babak) ?></label></div>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
-
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-md-6">
-                                    <div class="form-check mt-2">
-                                        <input class="form-check-input" type="checkbox" name="langsung_buat_pdf" id="battlePdf" value="1" <?= old('langsung_buat_pdf') ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="battlePdf">Langsung buat PDF setelah generate</label>
-                                    </div>
+                            <div class="card mb-3 ci3-panel-card">
+                                <div class="card-header pb-0"><h6 class="card-title">Daftar Sub Kategori Seni Battle</h6></div>
+                                <div class="card-body pt-2">
+                                    <div class="form-check mb-2"><input class="form-check-input check-all-sub" type="checkbox" id="battlePilihSemua" data-target="#battle-subkategori .sub-checkbox:not(:disabled)"><label class="form-check-label" for="battlePilihSemua">Pilih Semua Sub Kategori Battle</label></div>
+                                    <p class="text-sm">Sub kategori non-battle ditampilkan redup agar urutan data tetap mudah dicocokkan.</p>
+                                    <ul class="list-group sortable-sub-list" id="battle-subkategori">
+                                        <?php foreach ($subKategori as $row) : ?>
+                                            <?php $idSub = (string) $row->id_sub_kategori_seni; $isBattle = ($row->sistem_penampilan ?? '') === 'battle'; ?>
+                                            <li class="list-group-item py-0 sub-item <?= $isBattle ? '' : 'is-disabled' ?>" data-sub-id="<?= esc($idSub) ?>">
+                                                <div class="row align-items-center kategori-row-shell">
+                                                    <div class="col-auto pe-0"><button type="button" class="btn btn-link drag-handle" aria-label="Geser urutan sub kategori"><i class="fa fa-grip-vertical" aria-hidden="true"></i></button></div>
+                                                    <div class="col px-2 py-3"><div class="form-check"><input class="form-check-input sub-checkbox" id="battleSub<?= esc($idSub) ?>" type="checkbox" name="urutan_id_sub_kategori_seni[]" value="<?= esc($idSub) ?>" data-jumlah-battle="<?= esc((string) ($row->jumlah_battle_belum_jadwal ?? 0)) ?>" <?= $isBattle ? '' : 'disabled' ?> <?= in_array($idSub, $battleSubOld, true) ? 'checked' : '' ?>><label class="form-check-label" for="battleSub<?= esc($idSub) ?>">&nbsp; <?= esc((string) (($row->nama_kategori_usia ?? '-') . ' ' . ($row->jenis_kelamin ?? '-') . ' - ' . ($row->jenis_seni ?? '-') . ' ' . ($row->nama_seni ?? '-'))) ?> <span class="kelas-babak-pill"><?= esc((string) ($row->sistem_penampilan ?? '-')) ?></span></label></div></div>
+                                                </div>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">PDF Library</label>
-                                    <select class="form-select" name="pdf_library">
-                                        <option value="mpdf">mPDF</option>
-                                    </select>
-                                </div>
                             </div>
-
-                            <div class="alert alert-warning small mt-3 mb-0" role="alert">
-                                Generate battle akan membuat `jadwal_seni` + `detail_jadwal_seni` untuk `id_battle_seni`, serta menugaskan juri pada penampilan merah dan biru yang terhubung ke battle tersebut.
-                            </div>
-
-                            <div class="d-flex flex-wrap gap-2 mt-3">
-                                <button type="submit" class="btn btn-danger rounded-pill">Buat Jadwal Seni Battle</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <style>
-.venue-card{border:1px solid rgba(0,0,0,.12);border-radius:14px;padding:14px;background:#fff;height:100%;}
-.check-card{display:flex;align-items:center;gap:.5rem;border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:12px;background:#fff;cursor:pointer;height:100%;}
-.check-card input{margin:0;}
-.check-card:has(input:checked){border-color:rgba(220,53,69,.5);box-shadow:0 0 0 .2rem rgba(220,53,69,.12);}
+:root{--schedule-ink:#0f172a;--schedule-muted:rgba(15,23,42,.62);--schedule-line:rgba(15,23,42,.10);--schedule-soft:rgba(220,53,69,.10);--schedule-accent:#dc3545;--schedule-sky:#ef4444;}
+.ci3-schedule-card .ci3-panel-card{border:1px solid var(--schedule-line);border-radius:14px}.ci3-schedule-card .form-label{color:var(--schedule-ink);font-weight:600}.ci3-schedule-card .text-sm{color:var(--schedule-muted)}.ci3-schedule-card .form-check-input:checked{background-color:var(--schedule-accent);border-color:var(--schedule-accent)}.ci3-schedule-card .form-range::-webkit-slider-thumb{background:var(--schedule-accent)}.ci3-schedule-card .form-range::-moz-range-thumb{background:var(--schedule-accent);border-color:var(--schedule-accent)}
+.hero-strip{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:14px 0 6px;border-bottom:1px solid var(--schedule-line)}.hero-stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.hero-stat-item{border:1px solid var(--schedule-line);border-radius:999px;padding:8px 12px;background:rgba(255,255,255,.66);backdrop-filter:blur(6px);line-height:1.1}.hero-stat-item strong{display:block;font-size:16px;color:var(--schedule-ink)}.hero-stat-label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--schedule-muted)}.hero-stat-item.accent{border-color:rgba(220,53,69,.35);background:rgba(220,53,69,.08)}
+.ci3-info-alert{background:linear-gradient(135deg,var(--schedule-sky),var(--schedule-accent));border:0;border-radius:14px}.section-chip-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}.section-chip{display:inline-flex;align-items:center;border:1px solid var(--schedule-line);border-radius:999px;padding:6px 10px;font-weight:700;font-size:12px;letter-spacing:.02em;background:rgba(255,255,255,.75)}
+.arena-row{padding:10px;border:1px solid var(--schedule-line);border-radius:12px;background:rgba(255,255,255,.8)}.arena-check{padding-top:2px}.arena-name{font-weight:700}.arena-caption{color:var(--schedule-muted)}.kategori-row-shell{flex-wrap:nowrap}.drag-handle{color:var(--schedule-accent);text-decoration:none;padding:0 8px;min-height:48px;display:inline-flex;align-items:center;cursor:grab}.drag-handle:hover,.drag-handle:focus{color:var(--schedule-accent)}.drag-handle:active{cursor:grabbing}.kelas-babak-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;border:1px solid rgba(15,23,42,.10);background:rgba(15,23,42,.03);color:var(--schedule-muted);font-size:12px;font-weight:600}.sortable-sub-list{min-height:280px}.sortable-sub-list>li{cursor:move;border-radius:12px}.sortable-sub-list .list-group-item{border-color:var(--schedule-line)}.sub-item.is-disabled{opacity:.46}.sub-item.ui-sortable-helper{box-shadow:0 18px 42px rgba(127,29,29,.18);border-color:rgba(220,53,69,.28)}.ui-sortable-placeholder{visibility:visible!important;background:var(--schedule-soft);border:1px dashed rgba(220,53,69,.55);min-height:54px;border-radius:12px}.ui-sortable-helper{box-shadow:0 18px 42px rgba(15,23,42,.14)}
+@media(max-width:992px){.hero-strip{align-items:flex-start;flex-direction:column}.hero-stats{justify-content:flex-start}}
 </style>
 
+<?= $this->section('scripts') ?>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <script>
-(function(){
-    const qsa = (s, root=document) => Array.from(root.querySelectorAll(s));
-    qsa('[data-check-all]').forEach(function(btn){
-        btn.addEventListener('click', function(){
-            const selector = btn.getAttribute('data-check-all');
-            qsa(selector).forEach(function(el){ if (!el.disabled) el.checked = true; });
+$(function(){
+    if ($.fn.sortable) {
+        $('.sortable-sub-list').sortable({items:'> li.sub-item',handle:'.drag-handle',placeholder:'ui-sortable-placeholder',tolerance:'pointer',distance:6,cancel:'input, label, a'});
+    }
+
+    function setSlider(slider,value,label){
+        const caption = $($(slider).data('caption')).first();
+        slider.value = value;
+        caption.text(value + ' ' + label);
+    }
+
+    function totalChecked(form){
+        const label = form.data('unit-label') || 'Partai';
+        if (label === 'Pool') {
+            let totalPool = 0;
+            form.find('.sub-checkbox:checked').each(function(){
+                totalPool += parseInt($(this).data('jumlah-pool'), 10) || 0;
+            });
+            return totalPool;
+        }
+
+        let totalBattle = 0;
+        form.find('.sub-checkbox:checked').each(function(){
+            totalBattle += parseInt($(this).data('jumlah-battle'), 10) || 0;
         });
+        return totalBattle;
+    }
+
+    function updateSliders(form){
+        const label = form.data('unit-label') || 'Partai';
+        const total = totalChecked(form);
+        const checked = form.find('.checkbox-gelanggang:checked');
+        const totalGelanggang = checked.length;
+        const perArena = totalGelanggang > 0 ? Math.round(total / totalGelanggang) : 0;
+        checked.each(function(index){
+            const slider = $($(this).data('range-slider'))[0];
+            if (!slider) return;
+            setSlider(slider, index < totalGelanggang - 1 ? perArena : total - (perArena * index), label);
+        });
+        form.find('.checkbox-gelanggang:not(:checked)').each(function(){
+            const slider = $($(this).data('range-slider'))[0];
+            if (slider) setSlider(slider, 0, label);
+        });
+    }
+
+    $('.seni-auto-form').each(function(){
+        updateSliders($(this));
     });
 
-    const ensureChecked = function(selector, message) {
-        return qsa(selector).some(function(el){ return !el.disabled && el.checked; }) || (alert(message), false);
-    };
-    const ensureBattleRound = function() {
-        return qsa('input[name="babak_battle_seni[]"]').some(function(el){ return el.checked; }) || (alert('Pilih minimal satu babak battle.'), false);
-    };
-    const ensureVenue = function(selector, message) {
-        return qsa(selector).some(function(el){ return el.checked; }) || (alert(message), false);
-    };
+    $(document).on('change', '.sub-checkbox, .babak-checkbox, .checkbox-gelanggang', function(){
+        updateSliders($(this).closest('form'));
+    });
 
-    const formPool = document.getElementById('formPool');
-    if (formPool) {
-        formPool.addEventListener('submit', function(e){
-            if (!ensureChecked('.pool-sub', 'Pilih minimal satu sub kategori pool.')) { e.preventDefault(); return; }
-            if (!ensureVenue('.venue-pool-check', 'Pilih minimal satu gelanggang pool.')) { e.preventDefault(); return; }
-            e.preventDefault();
-            Swal.fire({
-                title: 'Buat Jadwal Seni Pool Otomatis?',
-                text: 'Jadwal seni pool akan dibuat otomatis untuk sub kategori dan gelanggang yang dipilih.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Buat',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#b91c1c',
-                cancelButtonColor: '#6b7280'
-            }).then((result) => { if (result.isConfirmed) formPool.submit(); });
-        });
+    $(document).on('input', '.unit-slider', function(e){
+        const form = $(this).closest('form');
+        const label = form.data('unit-label') || 'Partai';
+        const total = totalChecked(form);
+        const checkbox = $($(this).data('checkbox')).first();
+        if (!checkbox.is(':checked')) { setSlider(this, 0, label); return; }
+        if ((parseInt(this.value,10) || 0) > total) { setSlider(this, total, label); }
+        else { setSlider(this, this.value, label); }
+    });
+
+    $('.check-all-sub').on('change', function(){
+        const form = $(this).closest('form');
+        $($(this).data('target')).prop('checked', $(this).is(':checked'));
+        updateSliders(form);
+    });
+
+    $('.pdf-toggle').on('change', function(){
+        $(this).closest('form').find('.pdf-engine-group').toggle($(this).is(':checked'));
+    }).trigger('change');
+
+    function ensure(form, selector, message){
+        if (form.find(selector).filter(':checked').length > 0) return true;
+        alert(message);
+        return false;
     }
 
-    const formBattle = document.getElementById('formBattle');
-    if (formBattle) {
-        formBattle.addEventListener('submit', function(e){
-            if (!ensureChecked('.battle-sub', 'Pilih minimal satu sub kategori battle.')) { e.preventDefault(); return; }
-            if (!ensureBattleRound()) { e.preventDefault(); return; }
-            if (!ensureVenue('.venue-battle-check', 'Pilih minimal satu gelanggang battle.')) { e.preventDefault(); return; }
-            e.preventDefault();
-            Swal.fire({
-                title: 'Buat Jadwal Seni Battle Otomatis?',
-                text: 'Jadwal seni battle akan dibuat otomatis untuk sub kategori, babak, dan gelanggang yang dipilih.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Buat',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#b91c1c',
-                cancelButtonColor: '#6b7280'
-            }).then((result) => { if (result.isConfirmed) formBattle.submit(); });
-        });
-    }
-})();
+    $('.seni-auto-form').on('submit', function(e){
+        const form = $(this);
+        const isBattle = form.attr('id') === 'formBattle';
+        if (!ensure(form, '.sub-checkbox:not(:disabled)', isBattle ? 'Pilih minimal satu sub kategori battle.' : 'Pilih minimal satu sub kategori pool.')) { e.preventDefault(); return; }
+        if (isBattle && !ensure(form, '.babak-checkbox', 'Pilih minimal satu babak battle.')) { e.preventDefault(); return; }
+        if (!ensure(form, '.checkbox-gelanggang', isBattle ? 'Pilih minimal satu gelanggang battle.' : 'Pilih minimal satu gelanggang pool.')) { e.preventDefault(); return; }
+        e.preventDefault();
+        Swal.fire({title:isBattle?'Buat Jadwal Seni Battle Otomatis?':'Buat Jadwal Seni Pool Otomatis?',text:'Jadwal seni akan dibuat otomatis sesuai urutan dan distribusi gelanggang yang dipilih.',icon:'warning',showCancelButton:true,confirmButtonText:'Ya, Buat',cancelButtonText:'Batal',confirmButtonColor:'#b91c1c',cancelButtonColor:'#6b7280'}).then(function(result){ if(result.isConfirmed) e.target.submit(); });
+    });
+});
 </script>
+<?= $this->endSection() ?>
 <?= $this->endSection() ?>

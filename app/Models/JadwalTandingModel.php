@@ -18,6 +18,7 @@ class JadwalTandingModel extends Model
 
         // db_testing_event schema still uses CI3 legacy field name.
         'nama_file',
+        'pdf_path',
     ];
     protected $useTimestamps = false; // CI3 legacy table does not have created_at/updated_at
 

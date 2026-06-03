@@ -130,6 +130,16 @@ $routes->group('admin/bendahara', ['filter' => 'adminrole:bendahara'], static fu
     $routes->post('kontingen/(:num)/buat-transaksi', 'Admin\\Bendahara\\PembayaranController::createForKontingen/$1');
 });
 
+$routes->group('admin/gelanggang', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
+    $routes->get('/', 'Admin\\GelanggangController::index');
+    $routes->post('create', 'Admin\\GelanggangController::create');
+    $routes->post('delete/(:num)', 'Admin\\GelanggangController::delete/$1');
+    $routes->get('get-dates/(:num)', 'Admin\\GelanggangController::getDatesJson/$1');
+    $routes->post('merge/(:num)', 'Admin\\GelanggangController::mergeJadwal/$1');
+    $routes->post('merge-by-date/(:num)', 'Admin\\GelanggangController::mergeJadwalByDate/$1');
+    $routes->post('merge-all', 'Admin\\GelanggangController::mergeJadwalAllArena');
+});
+
 $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
     $routes->get('/', 'Admin\\Super\\DashboardController::index');
     $routes->get('dashboard', 'Admin\\Super\\DashboardController::index');
@@ -185,6 +195,7 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->get('jadwal-tanding/penjadwalan-otomatis', 'Admin\\Super\\PenjadwalanTandingOtomatisController::index');
     $routes->post('jadwal-tanding/buat-jadwal-tanding-otomatis', 'Admin\\Super\\PenjadwalanTandingOtomatisController::store');
 
+    $routes->get('jadwal-tanding/(:num)/download', 'Admin\\Super\\PembuatanJadwalController::downloadJadwalTanding/$1');
     $routes->get('jadwal-tanding/(:num)', 'Admin\\Super\\PembuatanJadwalController::showJadwalTanding/$1');
     $routes->post('jadwal-tanding/create', 'Admin\\Super\\PembuatanJadwalController::createJadwalTanding');
     $routes->post('jadwal-tanding/(:num)/update-keterangan', 'Admin\\Super\\PembuatanJadwalController::updateKeteranganJadwalTanding/$1');
@@ -205,6 +216,7 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('jadwal-seni/buat-jadwal-seni-battle-otomatis', 'Admin\\Super\\PenjadwalanSeniOtomatisController::storeBattle');
     $routes->get('jadwal-seni/diagnosis', 'Admin\\Super\\PembuatanJadwalController::diagnosisSeni');
     $routes->get('jadwal-seni/overview', 'Admin\\Super\\PembuatanJadwalController::overviewSeni');
+    $routes->get('jadwal-seni/(:num)/download', 'Admin\\Super\\PembuatanJadwalController::downloadJadwalSeni/$1');
     $routes->get('jadwal-seni/(:num)', 'Admin\\Super\\PembuatanJadwalController::showJadwalSeni/$1');
     $routes->post('jadwal-seni/create', 'Admin\\Super\\PembuatanJadwalController::createJadwalSeni');
     $routes->post('jadwal-seni/(:num)/update-keterangan', 'Admin\\Super\\PembuatanJadwalController::updateKeteranganJadwalSeni/$1');
@@ -343,9 +355,15 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('nomor-sertifikat', 'Admin\\Sekretariat\\NomorSertifikatController::index');
     $routes->get('pengadaan-medali', 'Admin\\Sekretariat\\PengadaanMedaliController::index');
     $routes->get('jadwal-tanding', 'Admin\\Sekretariat\\JadwalTandingController::index');
+    $routes->get('jadwal-tanding/(:num)/download', 'Admin\\Sekretariat\\JadwalTandingController::download/$1');
     $routes->get('jadwal-tanding/(:num)', 'Admin\\Sekretariat\\JadwalTandingController::show/$1');
+    $routes->post('jadwal-tanding/create-pdf-ajax/(:num)/(:num)', 'Admin\\Sekretariat\\JadwalTandingController::createPdfAjax/$1/$2');
+    $routes->get('jadwal-tanding/get-all-ids-ajax', 'Admin\\Sekretariat\\JadwalTandingController::getAllIdsAjax');
     $routes->get('jadwal-seni', 'Admin\\Sekretariat\\JadwalSeniController::index');
+    $routes->get('jadwal-seni/(:num)/download', 'Admin\\Sekretariat\\JadwalSeniController::download/$1');
     $routes->get('jadwal-seni/(:num)', 'Admin\\Sekretariat\\JadwalSeniController::show/$1');
+    $routes->post('jadwal-seni/create-pdf-ajax/(:num)/(:num)', 'Admin\\Sekretariat\\JadwalSeniController::createPdfAjax/$1/$2');
+    $routes->get('jadwal-seni/get-all-ids-ajax', 'Admin\\Sekretariat\\JadwalSeniController::getAllIdsAjax');
 });
 
 $routes->group('utilities', ['filter' => 'adminrole:super_admin'], static function ($routes): void {

@@ -235,14 +235,30 @@ class PenjadwalanSeniOtomatisController extends BaseController
                 'withScore' => false,
             ]);
 
-            $path = $this->writeSchedulePdf($html, 'jadwal-seni-' . $id . '.pdf');
-            $model->update($id, ['nama_file' => $path]);
+            $fileInfo = $this->writeSchedulePdf($html, 'seni', $this->buildSchedulePdfFilename($jadwal));
+            $model->update($id, $this->schedulePdfUpdatePayload($model->table, $fileInfo));
         }
     }
 
-    private function writeSchedulePdf(string $html, string $filename): string
+    private function schedulePdfUpdatePayload(string $table, array $fileInfo): array
     {
-        $directory = FCPATH . 'uploads/jadwal';
+        $db = db_connect();
+        if ($db->fieldExists('pdf_path', $table)) {
+            return [
+                'nama_file' => (string) ($fileInfo['basename'] ?? ''),
+                'pdf_path' => (string) ($fileInfo['path'] ?? ''),
+            ];
+        }
+
+        // Schema legacy CI3 hanya punya nama_file. Simpan path relatif penuh agar download/merge tetap bisa resolve file.
+        return ['nama_file' => (string) ($fileInfo['path'] ?? $fileInfo['basename'] ?? '')];
+    }
+
+    private function writeSchedulePdf(string $html, string $jenis, string $filename): array
+    {
+        $subdir = $jenis === 'seni' ? 'seni' : 'tanding';
+        $relativeDirectory = 'uploads/jadwal-pdf/' . $subdir . '/';
+        $directory = FCPATH . $relativeDirectory;
         if (! is_dir($directory) && ! @mkdir($directory, 0775, true) && ! is_dir($directory)) {
             throw new \RuntimeException('Direktori PDF jadwal tidak dapat dibuat.');
         }
@@ -251,8 +267,8 @@ class PenjadwalanSeniOtomatisController extends BaseController
             throw new \RuntimeException('Direktori PDF jadwal tidak dapat ditulis.');
         }
 
-        $filename = preg_replace('/[^a-zA-Z0-9_.-]/', '-', $filename) ?: 'jadwal.pdf';
-        $path = 'uploads/jadwal/' . $filename;
+        $filename = $this->sanitizeSchedulePdfFilename($filename);
+        $path = $relativeDirectory . $filename;
         ini_set('memory_limit', '512M');
         ini_set('pcre.backtrack_limit', '5000000');
 
@@ -289,7 +305,69 @@ class PenjadwalanSeniOtomatisController extends BaseController
 
         $mpdf->Output(FCPATH . $path, \Mpdf\Output\Destination::FILE);
 
-        return $path;
+        return [
+            'basename' => $filename,
+            'path' => $path,
+        ];
+    }
+
+    private function buildSchedulePdfFilename(object $jadwal): string
+    {
+        $arena = trim((string) ($jadwal->nama_gelanggang ?? 'GELANGGANG'));
+        $keterangan = trim((string) ($jadwal->keterangan_jadwal ?? $jadwal->keterangan ?? ''));
+        $tanggal = $this->formatSchedulePdfDate((string) ($jadwal->tanggal ?? ''));
+        $event = trim((string) (get_setting('event_name') ?? 'Digital Pencak Silat'));
+
+        $parts = [$arena];
+        if ($keterangan !== '') {
+            $parts[] = $keterangan;
+        }
+        if ($tanggal !== '') {
+            $parts[] = $tanggal;
+        }
+        if ($event !== '') {
+            $parts[] = $event;
+        }
+
+        return implode(' - ', $parts) . '.pdf';
+    }
+
+    private function formatSchedulePdfDate(string $tanggal): string
+    {
+        if ($tanggal === '') {
+            return '';
+        }
+
+        try {
+            $date = new \DateTime($tanggal);
+        } catch (\Throwable $e) {
+            return $tanggal;
+        }
+
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        return (int) $date->format('j') . ' ' . ($months[(int) $date->format('n')] ?? $date->format('F')) . ' ' . $date->format('Y');
+    }
+
+    private function sanitizeSchedulePdfFilename(string $filename): string
+    {
+        $filename = preg_replace('/[\\\\\/:*?"<>|]+/', '-', $filename) ?? 'jadwal.pdf';
+        $filename = preg_replace('/\s+/', ' ', $filename) ?? 'jadwal.pdf';
+        $filename = trim($filename, " .-\t\n\r\0\x0B");
+
+        if ($filename === '') {
+            $filename = 'jadwal';
+        }
+
+        if (! str_ends_with(strtolower($filename), '.pdf')) {
+            $filename .= '.pdf';
+        }
+
+        return $filename;
     }
 
     private function viewData(array $data, string $title = 'Penjadwalan Otomatis Seni'): array
@@ -302,3 +380,4 @@ class PenjadwalanSeniOtomatisController extends BaseController
         ];
     }
 }
+

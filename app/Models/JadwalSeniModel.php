@@ -18,6 +18,8 @@ class JadwalSeniModel extends Model
         'nomor_partai_awal',
         'nomor_partai_akhir',
         'jumlah_penampilan',
+        // CI3 legacy schema stores generated PDF path in nama_file.
+        'nama_file',
         'pdf_path',
     ];
     protected $useTimestamps = false; // CI3 legacy table does not have created_at/updated_at
@@ -29,8 +31,8 @@ class JadwalSeniModel extends Model
                 js.*,
                 g.nama_gelanggang,
                 g.nomor_gelanggang,
-                (SELECT nomor_partai FROM detail_jadwal_seni WHERE detail_jadwal_seni.id_jadwal_seni = js.id_jadwal_seni ORDER BY nomor_partai ASC LIMIT 1) as partai_awal,
-                (SELECT nomor_partai FROM detail_jadwal_seni WHERE detail_jadwal_seni.id_jadwal_seni = js.id_jadwal_seni ORDER BY nomor_partai DESC LIMIT 1) as partai_akhir,
+                (SELECT nomor_partai FROM detail_jadwal_seni WHERE detail_jadwal_seni.id_jadwal_seni = js.id_jadwal_seni ORDER BY nomor_partai ASC LIMIT 1) as nomor_partai_awal,
+                (SELECT nomor_partai FROM detail_jadwal_seni WHERE detail_jadwal_seni.id_jadwal_seni = js.id_jadwal_seni ORDER BY nomor_partai DESC LIMIT 1) as nomor_partai_akhir,
                 (SELECT COUNT(*) FROM detail_jadwal_seni WHERE id_jadwal_seni = js.id_jadwal_seni) as jumlah_penampilan
             ")
             ->join('gelanggang g', 'g.id_gelanggang = js.id_gelanggang')

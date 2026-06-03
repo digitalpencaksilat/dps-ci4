@@ -10,7 +10,7 @@
             </a>
         </li>
         <li>
-            <a class="dropdown-item" href="<?= base_url($routePrefix . '/' . $jadwal->id_jadwal_tanding) ?>">
+            <a class="dropdown-item" href="<?= base_url($routePrefix . '/' . $jadwal->id_jadwal_tanding . '/download') ?>">
                 <i class="fas fa-download me-2 text-danger"></i>Download
             </a>
         </li>

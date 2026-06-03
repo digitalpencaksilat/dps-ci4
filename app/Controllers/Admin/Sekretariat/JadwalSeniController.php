@@ -38,9 +38,31 @@ class JadwalSeniController extends BaseController
         ], 'Schedule Seni Arena ' . esc($jadwal->nama_gelanggang ?? 'Arena ' . $id)));
     }
 
+    public function download(int $id)
+    {
+        $model = new JadwalSeniModel();
+        $jadwal = $model->find($id);
+        $pdfPath = (string) ($jadwal->pdf_path ?? '');
+        if ($pdfPath === '' && ! empty($jadwal->nama_file)) {
+            $namaFile = ltrim((string) $jadwal->nama_file, '/');
+            $pdfPath = str_starts_with($namaFile, 'uploads/') ? $namaFile : 'uploads/jadwal-pdf/seni/' . $namaFile;
+        }
+
+        if ($jadwal === null || $pdfPath === '') {
+            return redirect()->back()->with('status', false)->with('message', 'PDF jadwal belum tersedia. Silakan update PDF terlebih dahulu.');
+        }
+
+        $path = FCPATH . ltrim($pdfPath, '/');
+        if (! is_file($path)) {
+            return redirect()->back()->with('status', false)->with('message', 'File PDF jadwal tidak ditemukan. Silakan update PDF ulang.');
+        }
+
+        return $this->response->download($path, null)->setFileName(basename($path));
+    }
+
     public function createPdfAjax(int $id, int $withScore = 0)
     {
-        return $this->response->setJSON(['status' => false, 'message' => 'Fitur PDF generation belum tersedia.']);
+        return (new \App\Controllers\Admin\Super\PembuatanJadwalController())->createPdfJadwalSeniAjax($id, $withScore);
     }
 
     public function getAllIdsAjax()

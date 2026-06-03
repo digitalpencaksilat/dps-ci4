@@ -127,6 +127,10 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         <span class="label-block"><i class="fas fa-file-import"></i><span>Import Excel</span></span>
                     </a>
 
+                    <a class="admin-nav-link <?= str_contains(uri_string(), 'admin/gelanggang') ? 'active' : '' ?>" href="<?= base_url('admin/gelanggang') ?>">
+                        <span class="label-block"><i class="fas fa-warehouse"></i><span>Gelanggang</span></span>
+                    </a>
+
                     <div>
                         <a class="admin-nav-link <?= $isDrawingMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#superDrawingPertandinganSubmenu" role="button" aria-expanded="<?= $isDrawingMenu ? 'true' : 'false' ?>" aria-controls="superDrawingPertandinganSubmenu">
                             <span class="label-block"><i class="fas fa-random"></i><span>Drawing Pertandingan</span></span>

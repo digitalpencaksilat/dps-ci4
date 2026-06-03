@@ -509,6 +509,28 @@ class PembuatanJadwalController extends BaseController
         ], 'Tukar Atlet'));
     }
 
+    public function downloadJadwalTanding(int $id)
+    {
+        $model = new JadwalTandingModel();
+        $jadwal = $model->find($id);
+        $pdfPath = (string) ($jadwal->pdf_path ?? '');
+        if ($pdfPath === '' && ! empty($jadwal->nama_file)) {
+            $namaFile = ltrim((string) $jadwal->nama_file, '/');
+            $pdfPath = str_starts_with($namaFile, 'uploads/') ? $namaFile : 'uploads/jadwal-pdf/tanding/' . $namaFile;
+        }
+
+        if ($jadwal === null || $pdfPath === '') {
+            return redirect()->back()->with('status', false)->with('message', 'PDF jadwal belum tersedia. Silakan update PDF terlebih dahulu.');
+        }
+
+        $path = FCPATH . ltrim($pdfPath, '/');
+        if (! is_file($path)) {
+            return redirect()->back()->with('status', false)->with('message', 'File PDF jadwal tidak ditemukan. Silakan update PDF ulang.');
+        }
+
+        return $this->response->download($path, null)->setFileName(basename($path));
+    }
+
     public function showJadwalTanding(int $id): string
     {
         $model  = new JadwalTandingModel();
@@ -713,6 +735,28 @@ class PembuatanJadwalController extends BaseController
             'gelanggang' => (new GelanggangModel())->findAll(),
             'routePrefix' => 'admin/super/jadwal-seni',
         ], 'Daftar Jadwal Seni'));
+    }
+
+    public function downloadJadwalSeni(int $id)
+    {
+        $model = new JadwalSeniModel();
+        $jadwal = $model->find($id);
+        $pdfPath = (string) ($jadwal->pdf_path ?? '');
+        if ($pdfPath === '' && ! empty($jadwal->nama_file)) {
+            $namaFile = ltrim((string) $jadwal->nama_file, '/');
+            $pdfPath = str_starts_with($namaFile, 'uploads/') ? $namaFile : 'uploads/jadwal-pdf/seni/' . $namaFile;
+        }
+
+        if ($jadwal === null || $pdfPath === '') {
+            return redirect()->back()->with('status', false)->with('message', 'PDF jadwal belum tersedia. Silakan update PDF terlebih dahulu.');
+        }
+
+        $path = FCPATH . ltrim($pdfPath, '/');
+        if (! is_file($path)) {
+            return redirect()->back()->with('status', false)->with('message', 'File PDF jadwal tidak ditemukan. Silakan update PDF ulang.');
+        }
+
+        return $this->response->download($path, null)->setFileName(basename($path));
     }
 
     public function showJadwalSeni(int $id): string
@@ -1011,15 +1055,17 @@ class PembuatanJadwalController extends BaseController
                 'details' => $details,
                 'withScore' => (bool) $withScore,
             ]);
-            $path = $this->writeSchedulePdf($html, 'jadwal-tanding-' . $id . ($withScore ? '-skor' : '') . '.pdf');
+            $fileInfo = $this->writeSchedulePdf($html, 'tanding', $this->buildSchedulePdfFilename($jadwal, $withScore));
         } catch (\Throwable $e) {
             log_message('error', 'Gagal generate PDF jadwal tanding: {message}', ['message' => $e->getMessage()]);
             return $this->response->setJSON(['status' => false, 'message' => 'Generate PDF jadwal tanding gagal.']);
         }
 
-        $model->update($id, ['nama_file' => $path]);
+        $model->update($id, $this->schedulePdfUpdatePayload($model->table, $fileInfo));
 
-        return $this->response->setJSON(['status' => true, 'message' => 'PDF jadwal tanding berhasil dibuat.', 'path' => $path, 'url' => base_url($path)]);
+        return $this->response
+            ->setHeader('X-CSRF-TOKEN', csrf_hash())
+            ->setJSON(['status' => true, 'message' => 'PDF jadwal tanding berhasil dibuat.', 'path' => $fileInfo['path'], 'url' => base_url($fileInfo['path'])]);
     }
 
     public function getAllIdsJadwalTandingAjax()
@@ -1230,15 +1276,17 @@ class PembuatanJadwalController extends BaseController
                 'details' => $details,
                 'withScore' => (bool) $withScore,
             ]);
-            $path = $this->writeSchedulePdf($html, 'jadwal-seni-' . $id . ($withScore ? '-skor' : '') . '.pdf');
+            $fileInfo = $this->writeSchedulePdf($html, 'seni', $this->buildSchedulePdfFilename($jadwal, $withScore));
         } catch (\Throwable $e) {
             log_message('error', 'Gagal generate PDF jadwal seni: {message}', ['message' => $e->getMessage()]);
             return $this->response->setJSON(['status' => false, 'message' => 'Generate PDF jadwal seni gagal.']);
         }
 
-        $model->update($id, ['nama_file' => $path]);
+        $model->update($id, $this->schedulePdfUpdatePayload($model->table, $fileInfo));
 
-        return $this->response->setJSON(['status' => true, 'message' => 'PDF jadwal seni berhasil dibuat.', 'path' => $path, 'url' => base_url($path)]);
+        return $this->response
+            ->setHeader('X-CSRF-TOKEN', csrf_hash())
+            ->setJSON(['status' => true, 'message' => 'PDF jadwal seni berhasil dibuat.', 'path' => $fileInfo['path'], 'url' => base_url($fileInfo['path'])]);
     }
 
     public function getAllIdsJadwalSeniAjax()
@@ -1311,9 +1359,24 @@ class PembuatanJadwalController extends BaseController
             ->getResult();
     }
 
-    private function writeSchedulePdf(string $html, string $filename): string
+    private function schedulePdfUpdatePayload(string $table, array $fileInfo): array
     {
-        $directory = FCPATH . 'uploads/jadwal';
+        $db = db_connect();
+        if ($db->fieldExists('pdf_path', $table)) {
+            return [
+                'nama_file' => (string) ($fileInfo['basename'] ?? ''),
+                'pdf_path' => (string) ($fileInfo['path'] ?? ''),
+            ];
+        }
+
+        return ['nama_file' => (string) ($fileInfo['path'] ?? $fileInfo['basename'] ?? '')];
+    }
+
+    private function writeSchedulePdf(string $html, string $jenis, string $filename): array
+    {
+        $subdir = $jenis === 'seni' ? 'seni' : 'tanding';
+        $relativeDirectory = 'uploads/jadwal-pdf/' . $subdir . '/';
+        $directory = FCPATH . $relativeDirectory;
         if (! is_dir($directory) && ! @mkdir($directory, 0775, true) && ! is_dir($directory)) {
             throw new \RuntimeException('Direktori PDF jadwal tidak dapat dibuat.');
         }
@@ -1322,13 +1385,110 @@ class PembuatanJadwalController extends BaseController
             throw new \RuntimeException('Direktori PDF jadwal tidak dapat ditulis.');
         }
 
-        $filename = preg_replace('/[^a-zA-Z0-9_.-]/', '-', $filename) ?: 'jadwal.pdf';
-        $path = 'uploads/jadwal/' . $filename;
-        $mpdf = (new MpdfService())->make(['format' => 'A4-L']);
-        $mpdf->WriteHTML($html);
+        $filename = $this->sanitizeSchedulePdfFilename($filename);
+        $path = $relativeDirectory . $filename;
+        ini_set('memory_limit', '512M');
+        ini_set('pcre.backtrack_limit', '5000000');
+
+        $oldDisplayErrors = ini_get('display_errors');
+        $oldErrorReporting = error_reporting();
+        ini_set('display_errors', '0');
+        error_reporting(0);
+
+        ob_start();
+        try {
+            $mpdf = (new MpdfService())->make([
+                'format' => 'A4',
+                'orientation' => 'P',
+                'margin_left' => 2,
+                'margin_right' => 2,
+                'margin_top' => 3,
+                'margin_bottom' => 8,
+                'margin_header' => 0,
+                'margin_footer' => 0,
+            ]);
+            $mpdf->WriteHTML($html);
+            $buffer = ob_get_clean();
+        } finally {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+            ini_set('display_errors', (string) $oldDisplayErrors);
+            error_reporting($oldErrorReporting);
+        }
+
+        if ($buffer !== false && $buffer !== '') {
+            log_message('warning', 'Output buffer dibersihkan sebelum generate PDF jadwal: {buffer}', ['buffer' => substr($buffer, 0, 200)]);
+        }
+
         $mpdf->Output(FCPATH . $path, \Mpdf\Output\Destination::FILE);
 
-        return $path;
+        return [
+            'basename' => $filename,
+            'path' => $path,
+        ];
+    }
+
+    private function buildSchedulePdfFilename(object $jadwal, int $withScore = 0): string
+    {
+        $arena = trim((string) ($jadwal->nama_gelanggang ?? 'GELANGGANG'));
+        $keterangan = trim((string) ($jadwal->keterangan_jadwal ?? $jadwal->keterangan ?? ''));
+        $tanggal = $this->formatSchedulePdfDate((string) ($jadwal->tanggal ?? ''));
+        $event = trim((string) (get_setting('event_name') ?? 'Digital Pencak Silat'));
+
+        $parts = [$arena];
+        if ($keterangan !== '') {
+            $parts[] = $keterangan;
+        }
+        if ($tanggal !== '') {
+            $parts[] = $tanggal;
+        }
+        if ($event !== '') {
+            $parts[] = $event;
+        }
+        if ($withScore === 1) {
+            $parts[] = 'Skor';
+        }
+
+        return implode(' - ', $parts) . '.pdf';
+    }
+
+    private function formatSchedulePdfDate(string $tanggal): string
+    {
+        if ($tanggal === '') {
+            return '';
+        }
+
+        try {
+            $date = new \DateTime($tanggal);
+        } catch (\Throwable $e) {
+            return $tanggal;
+        }
+
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        return (int) $date->format('j') . ' ' . ($months[(int) $date->format('n')] ?? $date->format('F')) . ' ' . $date->format('Y');
+    }
+
+    private function sanitizeSchedulePdfFilename(string $filename): string
+    {
+        $filename = preg_replace('/[\\\\\/:*?"<>|]+/', '-', $filename) ?? 'jadwal.pdf';
+        $filename = preg_replace('/\s+/', ' ', $filename) ?? 'jadwal.pdf';
+        $filename = trim($filename, " .-\t\n\r\0\x0B");
+
+        if ($filename === '') {
+            $filename = 'jadwal';
+        }
+
+        if (! str_ends_with(strtolower($filename), '.pdf')) {
+            $filename .= '.pdf';
+        }
+
+        return $filename;
     }
 
     private function bulkGenerateBaganDariJadwal(array $ids, string $type): array

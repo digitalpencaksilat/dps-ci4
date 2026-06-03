@@ -14,7 +14,6 @@ $kelasByKategori = $kelasByKategori ?? [];
 $oldBabak = old('babak_pertandingan') ?: array_map(static fn ($item) => (string) ($item->babak ?? $item), $babakOptions);
 $oldJenis = (string) old('jenis_penjadwalan', 'pemasalan_seling_2');
 $oldLangsungPdf = old('langsung_buat_pdf');
-$oldPdfLibrary = (string) old('pdf_library', 'mpdf');
 $oldJumlahSelang = (int) old('jumlah_selang_seling', preg_match('/pemasalan_seling_(\d+)/', $oldJenis, $mOldSelang) ? (int) $mOldSelang[1] : 2);
 $oldCheckedKelas = array_map('strval', old('urutan_id_kelas_tanding') ?: []);
 $oldCheckedKategori = array_map('strval', old('urutan_id_kategori_lomba') ?: []);
@@ -106,11 +105,8 @@ $showValidation = session('status') === false;
                                                 </div>
                                             </div>
                                             <div class="mb-3" id="pdfEngineGroup">
-                                                <label class="form-label d-block mb-2">PDF Engine :</label>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="pdf_library" id="pdfEngineMpdf" value="mpdf" <?= $oldPdfLibrary === 'mpdf' ? 'checked' : '' ?>>
-                                                    <label class="form-check-label" for="pdfEngineMpdf">mPDF <small class="text-muted">(Didukung CI4)</small></label>
-                                                </div>
+                                                <input type="hidden" name="pdf_library" value="mpdf">
+                                                <small class="text-muted">PDF Engine: mPDF</small>
                                             </div>
                                         </div>
                                         <div class="col-md-12">

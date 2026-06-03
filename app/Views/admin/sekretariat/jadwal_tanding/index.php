@@ -9,15 +9,8 @@
         <?php if (session()->get('level') === 'super_admin'): ?>
             <?php if (session()->get('level') === 'super_admin'): ?>
                 <div class="mb-3 p-3 border rounded bg-light">
-                    <p class="form-label mb-2 fw-bold">PDF Library untuk Update</p>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="global_pdf_library_tanding" id="globalPdfLibDompdfTanding" value="dompdf" checked>
-                        <label class="form-check-label" for="globalPdfLibDompdfTanding">DOMPDF <small class="text-muted">(default, stabil)</small></label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="global_pdf_library_tanding" id="globalPdfLibMpdfTanding" value="mpdf">
-                        <label class="form-check-label" for="globalPdfLibMpdfTanding">mPDF <small class="text-muted">(lebih cepat)</small></label>
-                    </div>
+                    <p class="form-label mb-1 fw-bold">PDF Engine untuk Update</p>
+                    <small class="text-muted">Semua update jadwal menggunakan mPDF.</small>
                 </div>
             <?php endif; ?>
 
@@ -78,6 +71,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressErrors = document.getElementById('progressErrors');
     const errorList = document.getElementById('errorList');
     const btnCloseProgress = document.getElementById('btnCloseProgress');
+    const csrfName = '<?= csrf_token() ?>';
+    let csrfHash = '<?= csrf_hash() ?>';
+
+    function updateCsrfToken(response) {
+        const newToken = response.headers.get('X-CSRF-TOKEN');
+        if (newToken) csrfHash = newToken;
+    }
 
     async function processPDFSequential(jadwalList, withScore = false) {
         progressBar.style.width = '0%';
@@ -104,13 +104,16 @@ document.addEventListener('DOMContentLoaded', function() {
             progressDetail.textContent = current + '/' + total + ' - ' + jadwal.nama;
 
             try {
-                const pdfLibrary = document.querySelector('input[name="global_pdf_library_tanding"]:checked').value;
                 const url = '<?= base_url(($routePrefix ?? "admin/sekretariat/jadwal-tanding") . "/create-pdf-ajax/") ?>' + jadwal.id + '/' + (withScore ? '1' : '0');
+                const body = new URLSearchParams();
+                body.append('pdf_library', 'mpdf');
+                body.append(csrfName, csrfHash);
                 const pdfResponse = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'pdf_library=' + pdfLibrary,
+                    body: body.toString(),
                 });
+                updateCsrfToken(pdfResponse);
                 const pdfResult = await pdfResponse.json();
                 if (pdfResult.status) success++; else { failed++; errors.push(jadwal.nama + ': ' + pdfResult.message); }
             } catch (error) {

@@ -13,6 +13,8 @@ class GelanggangModel extends Model
         'nama_gelanggang',
         'nomor_gelanggang',
         'keterangan',
+        'tipe_gong',
+        'beep_alarm',
     ];
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
 }

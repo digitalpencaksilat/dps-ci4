@@ -47,7 +47,7 @@ class PdfMergeService
         }
 
         // Save merged PDF to writable directory
-        $writable_path = WRITEPATH . 'uploads/merged-pdf/';
+        $writable_path = \WRITEPATH . 'uploads/merged-pdf/';
         if (!is_dir($writable_path)) {
             mkdir($writable_path, 0755, true);
         }
@@ -55,7 +55,8 @@ class PdfMergeService
         $merged_filename = 'merged_' . time() . '_' . bin2hex(random_bytes(4)) . '.pdf';
         $output_path = $writable_path . $merged_filename;
 
-        $pdf->Output($output_path, 'F');
+        // FPDF/FPDI signature follows legacy CI3 usage: Output($dest, $name).
+        $pdf->Output('F', $output_path);
 
         if (!file_exists($output_path)) {
             throw new \Exception('Failed to create merged PDF file');

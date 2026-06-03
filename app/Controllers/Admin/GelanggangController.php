@@ -119,7 +119,7 @@ class GelanggangController extends BaseController
         $result = $this->prepareMergedJadwal($id_gelanggang);
 
         if (!$result['status']) {
-            return redirect()->back()->with('error', $result['message']);
+            return redirect()->back()->with('status', false)->with('message', $result['message']);
         }
 
         try {
@@ -132,7 +132,7 @@ class GelanggangController extends BaseController
             return $this->response->download($mergedPdfPath, null)->setFileName($output_filename);
         } catch (\Exception $e) {
             log_message('error', 'PDF merge failed: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal merge PDF: ' . $e->getMessage());
+            return redirect()->back()->with('status', false)->with('message', 'Gagal merge PDF: ' . $e->getMessage());
         }
     }
 
@@ -146,13 +146,13 @@ class GelanggangController extends BaseController
         $tanggal = $this->request->getPost('tanggal');
 
         if (empty($tanggal)) {
-            return redirect()->back()->with('error', 'Harap pilih tanggal');
+            return redirect()->back()->with('status', false)->with('message', 'Harap pilih tanggal');
         }
 
         $result = $this->prepareMergedJadwalByDate($id_gelanggang, $tanggal);
 
         if (!$result['status']) {
-            return redirect()->back()->with('error', $result['message']);
+            return redirect()->back()->with('status', false)->with('message', $result['message']);
         }
 
         try {
@@ -176,7 +176,7 @@ class GelanggangController extends BaseController
             return $this->response->download($mergedPdfPath, null)->setFileName($output_filename);
         } catch (\Exception $e) {
             log_message('error', 'PDF merge by date failed: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal merge PDF: ' . $e->getMessage());
+            return redirect()->back()->with('status', false)->with('message', 'Gagal merge PDF: ' . $e->getMessage());
         }
     }
 
@@ -230,7 +230,7 @@ class GelanggangController extends BaseController
             return $this->response->download($mergedPdfPath, null)->setFileName($output_filename);
         } catch (\Exception $e) {
             log_message('error', 'PDF merge all arena failed: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal merge PDF semua arena: ' . $e->getMessage());
+            return redirect()->back()->with('status', false)->with('message', 'Gagal merge PDF semua arena: ' . $e->getMessage());
         }
     }
 
@@ -291,16 +291,18 @@ class GelanggangController extends BaseController
 
         $file_paths = [];
         foreach ($data_jadwal_gabungan as $jadwal) {
-            $file_path = isset($jadwal->id_jadwal_tanding)
+            $defaultRelativePath = isset($jadwal->id_jadwal_tanding)
                 ? 'uploads/jadwal-pdf/tanding/'
                 : 'uploads/jadwal-pdf/seni/';
 
-            $full_path = FCPATH . $file_path . $jadwal->nama_file;
+            $namaFile = ltrim((string) ($jadwal->nama_file ?? ''), '/');
+            $relativePath = str_starts_with($namaFile, 'uploads/') ? $namaFile : $defaultRelativePath . $namaFile;
+            $full_path = FCPATH . $relativePath;
 
-            if (!file_exists($full_path)) {
+            if ($namaFile === '' || !file_exists($full_path)) {
                 return [
                     'status' => false,
-                    'message' => 'Failed, File not found: ' . $jadwal->nama_file . ' in ' . $full_path
+                    'message' => 'Failed, File not found: ' . ($jadwal->nama_file ?? '-') . ' in ' . $full_path
                 ];
             }
 
@@ -371,16 +373,18 @@ class GelanggangController extends BaseController
 
         $file_paths = [];
         foreach ($data_jadwal_gabungan as $jadwal) {
-            $file_path = isset($jadwal->id_jadwal_tanding)
+            $defaultRelativePath = isset($jadwal->id_jadwal_tanding)
                 ? 'uploads/jadwal-pdf/tanding/'
                 : 'uploads/jadwal-pdf/seni/';
 
-            $full_path = FCPATH . $file_path . $jadwal->nama_file;
+            $namaFile = ltrim((string) ($jadwal->nama_file ?? ''), '/');
+            $relativePath = str_starts_with($namaFile, 'uploads/') ? $namaFile : $defaultRelativePath . $namaFile;
+            $full_path = FCPATH . $relativePath;
 
-            if (!file_exists($full_path)) {
+            if ($namaFile === '' || !file_exists($full_path)) {
                 return [
                     'status' => false,
-                    'message' => 'Failed, File not found: ' . $jadwal->nama_file . ' in ' . $full_path
+                    'message' => 'Failed, File not found: ' . ($jadwal->nama_file ?? '-') . ' in ' . $full_path
                 ];
             }
 

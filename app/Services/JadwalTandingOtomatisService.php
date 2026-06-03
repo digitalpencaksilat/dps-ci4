@@ -396,15 +396,39 @@ class JadwalTandingOtomatisService
     {
         $out = [];
         foreach ($gelanggangIds as $idGelanggang) {
-            $row = $this->db->table('detail_jadwal_tanding djt')
-                ->select('MAX(djt.nomor_partai) AS nomor_partai_terakhir')
-                ->join('jadwal_tanding jt', 'jt.id_jadwal_tanding = djt.id_jadwal_tanding')
-                ->where('jt.id_gelanggang', $idGelanggang)
-                ->get()
-                ->getRowArray();
-            $out[$idGelanggang] = ((int) ($row['nomor_partai_terakhir'] ?? 0)) + 1;
+            $maxTanding = $this->getMaxNomorPartaiByGelanggang(
+                'detail_jadwal_tanding',
+                'jadwal_tanding',
+                'id_jadwal_tanding',
+                $idGelanggang
+            );
+            $maxSeni = $this->getMaxNomorPartaiByGelanggang(
+                'detail_jadwal_seni',
+                'jadwal_seni',
+                'id_jadwal_seni',
+                $idGelanggang
+            );
+
+            // Parity jadwal gelanggang: nomor partai harus berlanjut lintas tanding+seni.
+            $out[$idGelanggang] = max($maxTanding, $maxSeni) + 1;
         }
         return $out;
+    }
+
+    private function getMaxNomorPartaiByGelanggang(string $detailTable, string $jadwalTable, string $jadwalKey, int $idGelanggang): int
+    {
+        if (! $this->db->tableExists($detailTable) || ! $this->db->tableExists($jadwalTable)) {
+            return 0;
+        }
+
+        $row = $this->db->table($detailTable . ' d')
+            ->select('MAX(d.nomor_partai + 0) AS nomor_partai_terakhir', false)
+            ->join($jadwalTable . ' j', 'j.' . $jadwalKey . ' = d.' . $jadwalKey)
+            ->where('j.id_gelanggang', $idGelanggang)
+            ->get()
+            ->getRowArray();
+
+        return (int) ($row['nomor_partai_terakhir'] ?? 0);
     }
 
     private function acakUrutanPertandingan(int $maxDiambil, array $pertandingan): array

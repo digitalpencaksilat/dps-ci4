@@ -26,7 +26,7 @@ $idJadwal    = (int) ($jadwal->id_jadwal_tanding ?? 0);
             <div class="card-body px-0 px-md-3">
                 <div class="alert alert-info small mb-3">
                     <i class="fas fa-info-circle me-1"></i>
-                    Drag &amp; drop baris untuk mengubah urutan. Nomor partai otomatis mengikuti urutan setelah drop. Edit nomor langsung di kolom <strong>Match</strong> bila perlu, lalu klik <strong>Update</strong>.
+                    Drag &amp; drop baris untuk mengubah urutan. Nomor partai otomatis mengikuti urutan setelah drop. Edit nomor langsung di kolom <strong>Match</strong> bila perlu, lalu klik <strong>Update Urutan</strong>.
                 </div>
 
                 <form action="<?= base_url($routePrefix . '/update-urutan-partai-tanding/' . $idJadwal) ?>" method="post" id="formUrutanPartaiTanding">
@@ -132,7 +132,7 @@ $idJadwal    = (int) ($jadwal->id_jadwal_tanding ?? 0);
                         <a href="<?= base_url($routePrefix . '/' . $idJadwal) ?>" class="btn btn-outline-dark">
                             Batal
                         </a>
-                        <button type="submit" class="btn btn-dark">
+                        <button type="submit" class="btn btn-dps-primary">
                             <i class="fas fa-save me-1"></i> Update Urutan
                         </button>
                     </div>
@@ -145,21 +145,49 @@ $idJadwal    = (int) ($jadwal->id_jadwal_tanding ?? 0);
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
 
-<!-- jQuery UI: jQuery SUDAH ada di layout admin. Hanya tambah jQuery UI. -->
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<?= $this->section('scripts') ?>
+<!-- jQuery UI CSS dimuat di head via inject -->
+<style id="jqui-css-inject">
+/* placeholder — real CSS injected via JS setelah jQuery siap */
+</style>
 
 <script>
 (function () {
-    function bindSortable() {
+    var JQUI_CSS = 'https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css';
+    var JQUI_JS  = 'https://code.jquery.com/ui/1.13.2/jquery-ui.min.js';
+
+    // Inject jQuery UI CSS
+    if (!document.querySelector('link[href="' + JQUI_CSS + '"]')) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = JQUI_CSS;
+        document.head.appendChild(link);
+    }
+
+    function loadScript(src, callback) {
+        if (document.querySelector('script[src="' + src + '"]')) {
+            callback();
+            return;
+        }
+        var s = document.createElement('script');
+        s.src = src;
+        s.onload = callback;
+        s.onerror = function () {
+            console.warn('Gagal memuat: ' + src);
+        };
+        document.head.appendChild(s);
+    }
+
+    function initSortable() {
         if (typeof jQuery === 'undefined') {
             console.warn('jQuery tidak tersedia — sortable dibatalkan.');
             return;
         }
         if (typeof jQuery.fn.sortable !== 'function') {
-            console.warn('jQuery UI sortable belum tersedia — menunggu 300ms dan retry.');
-            setTimeout(bindSortable, 300);
+            console.warn('jQuery UI sortable belum tersedia — retry 500ms.');
+            setTimeout(initSortable, 500);
             return;
         }
 
@@ -168,40 +196,51 @@ $idJadwal    = (int) ($jadwal->id_jadwal_tanding ?? 0);
             cursor: 'move',
             tolerance: 'pointer',
             axis: 'y',
-            handle: null,
             update: function () {
-                // After sort, renumber the match numbers sequentially
+                // Auto-renumber setelah drop
                 jQuery('#listPertandinganTanding input[name="nomor_partai[]"]').each(function (i) {
                     jQuery(this).val(i + 1);
                 });
             }
         });
+
+        console.log('jQuery UI sortable terpasang pada #listPertandinganTanding');
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bindSortable);
-    } else {
-        // DOM sudah ready — tapi jQuery UI mungkin belum selesai load.
-        // Polling sampai sortable tersedia.
-        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.sortable === 'function') {
-            bindSortable();
-        } else {
-            // Tunggu jQuery UI selesai load
-            var checkInterval = setInterval(function () {
-                if (typeof jQuery !== 'undefined' && typeof jQuery.fn.sortable === 'function') {
-                    clearInterval(checkInterval);
-                    bindSortable();
-                }
-            }, 200);
-            // Stop setelah 5 detik
-            setTimeout(function () { clearInterval(checkInterval); }, 5000);
+    // Pastikan jQuery tersedia, lalu muat jQuery UI
+    function boot() {
+        if (typeof jQuery === 'undefined') {
+            console.warn('Menunggu jQuery...');
+            setTimeout(boot, 200);
+            return;
         }
+        loadScript(JQUI_JS, initSortable);
+    }
+
+    // Mulai boot — tapi jangan sebelum DOM siap
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
     }
 })();
 </script>
 
 <style>
-/* Nomor partai input — compact */
+/* Tombol DPS primary — merah brand */
+.btn-dps-primary {
+    background-color: var(--brand-primary, #c60000);
+    border-color: var(--brand-primary, #c60000);
+    color: #fff;
+}
+.btn-dps-primary:hover,
+.btn-dps-primary:focus {
+    background-color: var(--admin-accent-dark, #8f0b14);
+    border-color: var(--admin-accent-dark, #8f0b14);
+    color: #fff;
+}
+
+/* Nomor partai — hide spinner */
 #listPertandinganTanding input[name="nomor_partai[]"] {
     -moz-appearance: textfield;
 }
@@ -211,13 +250,13 @@ $idJadwal    = (int) ($jadwal->id_jadwal_tanding ?? 0);
     margin: 0;
 }
 
-/* Drag handle visual */
-#listPertandinganTanding .list-group-item .fa-grip-vertical {
+/* Drag handle */
+#listPertandinganTanding .fa-grip-vertical {
     cursor: grab;
     font-size: 1.1rem;
 }
 
-/* Placeholder saat drag */
+/* Placeholder */
 #listPertandinganTanding .ui-sortable-placeholder {
     visibility: visible !important;
     border: 2px dashed var(--admin-accent, #c60000) !important;

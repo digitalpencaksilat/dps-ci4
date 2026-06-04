@@ -132,21 +132,30 @@ $idJadwal    = (int) ($jadwal->id_jadwal_seni ?? 0);
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
 
-<!-- jQuery UI: jQuery SUDAH ada di layout admin. Hanya tambah jQuery UI. -->
+<?= $this->section('scripts') ?>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
 <script>
 (function () {
-    function bindSortable() {
-        if (typeof jQuery === 'undefined') {
-            console.warn('jQuery tidak tersedia — sortable dibatalkan.');
+    var JQUI_JS = 'https://code.jquery.com/ui/1.13.2/jquery-ui.min.js';
+
+    function loadScript(src, callback) {
+        if (document.querySelector('script[src="' + src + '"]')) {
+            callback();
             return;
         }
-        if (typeof jQuery.fn.sortable !== 'function') {
-            console.warn('jQuery UI sortable belum tersedia — retry 300ms.');
-            setTimeout(bindSortable, 300);
+        var s = document.createElement('script');
+        s.src = src;
+        s.onload = callback;
+        document.head.appendChild(s);
+    }
+
+    function initSortable() {
+        if (typeof jQuery === 'undefined' || typeof jQuery.fn.sortable !== 'function') {
+            console.warn('jQuery UI sortable belum tersedia — retry 500ms.');
+            setTimeout(initSortable, 500);
             return;
         }
         jQuery('#listPertandinganSeni').sortable({
@@ -157,20 +166,18 @@ $idJadwal    = (int) ($jadwal->id_jadwal_seni ?? 0);
         });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bindSortable);
-    } else {
-        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.sortable === 'function') {
-            bindSortable();
-        } else {
-            var checkInterval = setInterval(function () {
-                if (typeof jQuery !== 'undefined' && typeof jQuery.fn.sortable === 'function') {
-                    clearInterval(checkInterval);
-                    bindSortable();
-                }
-            }, 200);
-            setTimeout(function () { clearInterval(checkInterval); }, 5000);
+    function boot() {
+        if (typeof jQuery === 'undefined') {
+            setTimeout(boot, 200);
+            return;
         }
+        loadScript(JQUI_JS, initSortable);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
     }
 })();
 </script>

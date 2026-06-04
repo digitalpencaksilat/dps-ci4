@@ -43,7 +43,9 @@
                                 Edit Schedule
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="<?= base_url($routePrefix . '/' . $jadwal->id_jadwal_tanding) ?>">Set Match Sequence</a>
+                                <a class="dropdown-item" href="<?= base_url(($routePrefix === 'admin/sekretariat/jadwal-tanding' ? 'admin/super/jadwal-tanding' : $routePrefix) . '/pengaturan-urutan-partai-tanding/' . (int) $jadwal->id_jadwal_tanding) ?>">
+                                    <i class="fas fa-grip-vertical me-1"></i> Set Match Sequence
+                                </a>
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalSortirNomorPartai">Sort Match Numbers</button>
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalAturPolaJadwal">Set Schedule Pattern</button>
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalTukarAtlet">Swap Athletes</button>

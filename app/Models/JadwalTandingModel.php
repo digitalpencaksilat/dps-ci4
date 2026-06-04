@@ -172,4 +172,73 @@ class JadwalTandingModel extends Model
             ->get()
             ->getResult();
     }
+
+    /**
+     * Resequence nomor partai tanding mulai dari $nomorPartaiBaruMulai.
+     * Parity dengan CI3: Detail_jadwal_tanding_model::resequence_nomor_partai().
+     */
+    public function resequenceNomorPartai($idJadwalTanding, $nomorPartaiBaruMulai)
+    {
+        $sql = "
+            UPDATE detail_jadwal_tanding t
+            JOIN (
+                SELECT id_detail_jadwal_tanding,
+                    ROW_NUMBER() OVER (ORDER BY nomor_partai) + ? - 1 AS new_nomor
+                FROM detail_jadwal_tanding
+                WHERE id_jadwal_tanding = ?
+            ) AS subquery
+            ON t.id_detail_jadwal_tanding = subquery.id_detail_jadwal_tanding
+            SET t.nomor_partai = subquery.new_nomor
+            WHERE t.id_jadwal_tanding = ?
+        ";
+
+        return $this->db->query($sql, [
+            (int) $nomorPartaiBaruMulai,
+            (int) $idJadwalTanding,
+            (int) $idJadwalTanding,
+        ]);
+    }
+
+    /**
+     * Update urutan partai berdasarkan drag-drop dari halaman pengaturan urutan.
+     * Parity dengan CI3: Jadwal_tanding::update_urutan_partai_tanding().
+     *
+     * Strategi 2-tahap: NULL-kan dulu id_pertandingan untuk menghindari
+     * unique-key collision, lalu set ulang dengan nilai baru.
+     *
+     * @param int   $idJadwalTanding
+     * @param array $detailIds     id_detail_jadwal_tanding[]
+     * @param array $pertandinganIds id_pertandingan[]
+     * @param array $nomorPartai   nomor_partai[]
+     * @return bool
+     */
+    public function updateUrutanPartai($idJadwalTanding, array $detailIds, array $pertandinganIds, array $nomorPartai)
+    {
+        if (count($detailIds) !== count($pertandinganIds) || count($detailIds) !== count($nomorPartai)) {
+            return false;
+        }
+
+        $this->db->transStart();
+        $tabel = $this->db->table('detail_jadwal_tanding');
+
+        // Tahap 1: NULL-kan id_pertandingan untuk hindari konflik unique key
+        foreach ($detailIds as $id) {
+            $tabel->where('id_detail_jadwal_tanding', (int) $id)
+                ->update([
+                    'id_pertandingan' => null,
+                ]);
+        }
+
+        // Tahap 2: Set ulang dengan nilai baru
+        foreach ($detailIds as $i => $id) {
+            $tabel->where('id_detail_jadwal_tanding', (int) $id)
+                ->update([
+                    'id_pertandingan' => empty($pertandinganIds[$i]) ? null : (int) $pertandinganIds[$i],
+                    'nomor_partai'    => (int) $nomorPartai[$i],
+                ]);
+        }
+
+        $this->db->transComplete();
+        return $this->db->transStatus();
+    }
 }

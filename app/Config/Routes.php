@@ -209,8 +209,10 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('jadwal-tanding/(:num)/import-excel', 'Admin\\Super\\PembuatanJadwalController::importExcelJadwalTanding/$1');
     $routes->post('jadwal-tanding/(:num)/import-excel-commit', 'Admin\\Super\\PembuatanJadwalController::importExcelCommitJadwalTanding/$1');
     $routes->post('jadwal-tanding/(:num)/perbaiki-bracket-bentrok', 'Admin\\Super\\PembuatanJadwalController::perbaikiBracketBentrokJadwalTanding/$1');
+    $routes->get('jadwal-tanding/pengaturan-urutan-partai-tanding/(:num)', 'Admin\\Super\\PembuatanJadwalController::pengaturanUrutanPartaiTanding/$1');
+    $routes->post('jadwal-tanding/update-urutan-partai-tanding/(:num)', 'Admin\\Super\\PembuatanJadwalController::updateUrutanPartaiTanding/$1');
     $routes->get('jadwal-seni', 'Admin\\Super\\PembuatanJadwalController::jadwalSeni');
-    // Penjadwalan Otomatis Seni (parity CI3: resources/Jadwal_seni::buat_jadwal_seni_sistem_pool_otomatis + buat_jadwal_seni_battle_otomatis)
+    // Penjadwalan Otomatis Seni
     $routes->get('jadwal-seni/penjadwalan-otomatis', 'Admin\\Super\\PenjadwalanSeniOtomatisController::index');
     $routes->post('jadwal-seni/buat-jadwal-seni-pool-otomatis', 'Admin\\Super\\PenjadwalanSeniOtomatisController::storePool');
     $routes->post('jadwal-seni/buat-jadwal-seni-battle-otomatis', 'Admin\\Super\\PenjadwalanSeniOtomatisController::storeBattle');

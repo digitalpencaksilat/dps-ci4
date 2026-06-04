@@ -1264,6 +1264,59 @@ class PembuatanJadwalController extends BaseController
             ->with('message', 'Berhasil edit urutan partai!');
     }
 
+    /**
+     * Halaman Set Match Sequence (drag-drop urutan partai) untuk jadwal tanding.
+     * Parity dengan CI3: Jadwal_tanding::pengaturan_urutan_partai_tanding().
+     */
+    public function pengaturanUrutanPartaiTanding(int $id)
+    {
+        $model  = new JadwalTandingModel();
+        $jadwal = $model->findWithGelanggang($id);
+        if ($jadwal === null) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $details = $model->get_detail_jadwal($id);
+
+        return view('admin/super/jadwal_tanding/pengaturan_urutan_partai_tanding', $this->viewData([
+            'activeMenu'   => 'pembuatan_jadwal_jadwal_tanding',
+            'jadwal'       => $jadwal,
+            'details'      => $details,
+            'routePrefix'  => 'admin/super/jadwal-tanding',
+        ], 'Set Match Sequence - Arena ' . esc($jadwal->nama_gelanggang ?? '-')));
+    }
+
+    /**
+     * Update urutan partai tanding dari hasil drag-drop.
+     * Parity dengan CI3: Jadwal_tanding::update_urutan_partai_tanding().
+     */
+    public function updateUrutanPartaiTanding(int $id)
+    {
+        $detailIds       = (array) ($this->request->getPost('id_detail_jadwal_tanding') ?? []);
+        $pertandinganIds = (array) ($this->request->getPost('id_pertandingan') ?? []);
+        $nomorPartai     = (array) ($this->request->getPost('nomor_partai') ?? []);
+
+        if (empty($detailIds) || count($detailIds) !== count($nomorPartai)) {
+            return redirect()->back()->with('status', false)->with('message', 'Sistem error, jumlah pertandingan dan jumlah partai tidak sama!');
+        }
+
+        $model  = new JadwalTandingModel();
+        $jadwal = $model->find($id);
+        if ($jadwal === null) {
+            return redirect()->back()->with('status', false)->with('message', 'Jadwal tidak ditemukan.');
+        }
+
+        $ok = $model->updateUrutanPartai($id, $detailIds, $pertandinganIds, $nomorPartai);
+
+        if (! $ok) {
+            return redirect()->back()->with('status', false)->with('message', 'Gagal mengubah urutan partai.');
+        }
+
+        return redirect()->to(base_url('admin/super/jadwal-tanding/' . $id))
+            ->with('status', true)
+            ->with('message', 'Berhasil edit urutan partai! Jadwal PDF telah diupdate otomatis.');
+    }
+
     public function sortirUlangJadwalTanding(int $id)
     {
         $awal = (int) $this->request->getPost('nomor_partai_awal');

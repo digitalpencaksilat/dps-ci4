@@ -1765,18 +1765,9 @@ class PembuatanJadwalController extends BaseController
 
     private function syncJadwalTandingRange(int $id): void
     {
-        $db = db_connect();
-        $range = $db->table('detail_jadwal_tanding')
-            ->select('MIN(nomor_partai) AS awal, MAX(nomor_partai) AS akhir, COUNT(*) AS total')
-            ->where('id_jadwal_tanding', $id)
-            ->get()
-            ->getRow();
-
-        (new JadwalTandingModel())->update($id, [
-            'nomor_partai_awal' => $range->awal ?? null,
-            'nomor_partai_akhir' => $range->akhir ?? null,
-            'jumlah_partai' => (int) ($range->total ?? 0),
-        ]);
+        // Column nomor_partai_awal/akhir/jumlah_partai tidak ada di tabel jadwal_tanding
+        // (nilai dihitung on-the-fly via subquery di JadwalTandingModel::get_all).
+        // Method tetap ada untuk backward compatibility — no-op.
     }
 
     private function normalizeIds($input): array

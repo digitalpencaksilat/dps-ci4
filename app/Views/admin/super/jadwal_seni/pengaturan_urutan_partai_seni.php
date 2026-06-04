@@ -133,16 +133,20 @@ $idJadwal    = (int) ($jadwal->id_jadwal_seni ?? 0);
     </div>
 </div>
 
-<!-- jQuery UI sortable: ensure jQuery + jQuery UI are loaded -->
+<!-- jQuery UI: jQuery SUDAH ada di layout admin. Hanya tambah jQuery UI. -->
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
 <script>
 (function () {
     function bindSortable() {
-        if (typeof jQuery === 'undefined' || typeof jQuery.fn.sortable !== 'function') {
-            console.warn('jQuery UI sortable belum tersedia.');
+        if (typeof jQuery === 'undefined') {
+            console.warn('jQuery tidak tersedia — sortable dibatalkan.');
+            return;
+        }
+        if (typeof jQuery.fn.sortable !== 'function') {
+            console.warn('jQuery UI sortable belum tersedia — retry 300ms.');
+            setTimeout(bindSortable, 300);
             return;
         }
         jQuery('#listPertandinganSeni').sortable({
@@ -156,7 +160,17 @@ $idJadwal    = (int) ($jadwal->id_jadwal_seni ?? 0);
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bindSortable);
     } else {
-        bindSortable();
+        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.sortable === 'function') {
+            bindSortable();
+        } else {
+            var checkInterval = setInterval(function () {
+                if (typeof jQuery !== 'undefined' && typeof jQuery.fn.sortable === 'function') {
+                    clearInterval(checkInterval);
+                    bindSortable();
+                }
+            }, 200);
+            setTimeout(function () { clearInterval(checkInterval); }, 5000);
+        }
     }
 })();
 </script>

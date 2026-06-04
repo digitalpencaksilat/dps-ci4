@@ -182,13 +182,8 @@ class JadwalTandingModel extends Model
      */
     public function getPertandinganPola(int $idJadwalTanding, string $orderBy): array
     {
-        $subquery = $this->db->table('detail_jadwal_tanding')
-            ->select('id_pertandingan')
-            ->where('id_jadwal_tanding', $idJadwalTanding)
-            ->getCompiledSelect();
-
-        return $this->db->table('pertandingan p')
-            ->select("
+        $sql = "
+            SELECT
                 p.id_pertandingan,
                 p.id_kompetisi_tanding,
                 p.nomor_pertandingan,
@@ -211,15 +206,16 @@ class JadwalTandingModel extends Model
                 kl.berat_maksimal,
                 djt.id_detail_jadwal_tanding,
                 djt.nomor_partai
-            ", false)
-            ->join('kompetisi_tanding kt', 'kt.id_kompetisi_tanding = p.id_kompetisi_tanding')
-            ->join('kelas_tanding kl', 'kl.id_kelas_tanding = kt.id_kelas_tanding')
-            ->join('kategori_lomba klb', 'klb.id_kategori_lomba = kl.id_kategori_lomba')
-            ->join('kategori_usia ku', 'ku.id_kategori_usia = klb.id_kategori_usia')
-            ->join('detail_jadwal_tanding djt', 'djt.id_pertandingan = p.id_pertandingan AND djt.id_jadwal_tanding = ' . (int) $idJadwalTanding, 'inner')
-            ->orderBy($orderBy)
-            ->get()
-            ->getResult();
+            FROM pertandingan p
+            JOIN kompetisi_tanding kt ON kt.id_kompetisi_tanding = p.id_kompetisi_tanding
+            JOIN kelas_tanding kl ON kl.id_kelas_tanding = kt.id_kelas_tanding
+            JOIN kategori_lomba klb ON klb.id_kategori_lomba = kl.id_kategori_lomba
+            JOIN kategori_usia ku ON ku.id_kategori_usia = klb.id_kategori_usia
+            JOIN detail_jadwal_tanding djt ON djt.id_pertandingan = p.id_pertandingan AND djt.id_jadwal_tanding = ?
+            ORDER BY {$orderBy}
+        ";
+
+        return $this->db->query($sql, [$idJadwalTanding])->getResult();
     }
 
     /**

@@ -1,7 +1,11 @@
-<?php $routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding'); ?>
+<?php
+$routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding');
+// Pastikan route super_admin untuk super-admin features
+$superRoute = ($routePrefix === 'admin/sekretariat/jadwal-tanding') ? 'admin/super/jadwal-tanding' : $routePrefix;
+?>
 <div class="modal fade" id="modalAturPolaJadwal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
-        <form action="<?= base_url($routePrefix . '/pola-penjadwalan/' . ($jadwal_tanding->id_jadwal_tanding ?? 0)) ?>" method="post" id="formAturPolaPenjadwalan">
+        <form action="<?= base_url($superRoute . '/pola-penjadwalan/' . ($jadwal_tanding->id_jadwal_tanding ?? 0)) ?>" method="post" id="formAturPolaPenjadwalan">
             <?= csrf_field() ?>
             <div class="modal-content">
                 <div class="modal-header">

@@ -1,7 +1,10 @@
-<?php $routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding'); ?>
+<?php
+$routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding');
+$superRoute = ($routePrefix === 'admin/sekretariat/jadwal-tanding') ? 'admin/super/jadwal-tanding' : $routePrefix;
+?>
 <div class="modal fade" id="modalTukarAtlet" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
-        <form action="<?= base_url($routePrefix . '/tukar-atlet') ?>" method="post" id="formTukarAtlet">
+        <form action="<?= base_url($superRoute . '/tukar-atlet') ?>" method="post" id="formTukarAtlet">
             <?= csrf_field() ?>
             <div class="modal-content">
                 <div class="modal-header">

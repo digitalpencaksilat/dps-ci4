@@ -174,6 +174,55 @@ class JadwalTandingModel extends Model
     }
 
     /**
+     * Query data pertandingan untuk keperluan pola penjadwalan.
+     * Parity dengan CI3 Pertandingan_model::select() — joins ke kompetisi_tanding,
+     * kelas_tanding, kategori_lomba, kategori_usia dengan computed nilai_babak.
+     *
+     * WHERE: pertandingan.id_pertandingan IN (subquery detail_jadwal_tanding)
+     */
+    public function getPertandinganPola(int $idJadwalTanding, string $orderBy): array
+    {
+        $subquery = $this->db->table('detail_jadwal_tanding')
+            ->select('id_pertandingan')
+            ->where('id_jadwal_tanding', $idJadwalTanding)
+            ->getCompiledSelect();
+
+        return $this->db->table('pertandingan p')
+            ->select("
+                p.id_pertandingan,
+                p.id_kompetisi_tanding,
+                p.nomor_pertandingan,
+                p.babak,
+                kt.nomor_pool,
+                CASE p.babak
+                    WHEN 'Final' THEN 1
+                    WHEN 'Perebutan Juara Tiga' THEN 0.6
+                    WHEN 'Semi Final' THEN 0.5
+                    WHEN '1/4 Final' THEN 0.25
+                    WHEN '1/8 Final' THEN 0.125
+                    WHEN '1/16 Final' THEN 0.0625
+                    WHEN '1/32 Final' THEN 0.031
+                    WHEN '1/64 Final' THEN 0.0156
+                    ELSE 0
+                END AS nilai_babak,
+                ku.min_umur,
+                ku.jenis_kelamin,
+                kl.label,
+                kl.berat_maksimal,
+                djt.id_detail_jadwal_tanding,
+                djt.nomor_partai
+            ", false)
+            ->join('kompetisi_tanding kt', 'kt.id_kompetisi_tanding = p.id_kompetisi_tanding')
+            ->join('kelas_tanding kl', 'kl.id_kelas_tanding = kt.id_kelas_tanding')
+            ->join('kategori_lomba klb', 'klb.id_kategori_lomba = kl.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = klb.id_kategori_usia')
+            ->join('detail_jadwal_tanding djt', 'djt.id_pertandingan = p.id_pertandingan AND djt.id_jadwal_tanding = ' . (int) $idJadwalTanding, 'inner')
+            ->orderBy($orderBy)
+            ->get()
+            ->getResult();
+    }
+
+    /**
      * Resequence nomor partai tanding mulai dari $nomorPartaiBaruMulai.
      * Parity dengan CI3: Detail_jadwal_tanding_model::resequence_nomor_partai().
      */
@@ -197,6 +246,92 @@ class JadwalTandingModel extends Model
             (int) $idJadwalTanding,
             (int) $idJadwalTanding,
         ]);
+    }
+
+    /**
+     * Ambil nomor_partai_awal (terkecil) untuk suatu jadwal tanding.
+     * Parity dengan CI3: $jadwal_tanding->nomor_partai_awal.
+     */
+    public function getNomorPartaiAwal(int $idJadwalTanding): int
+    {
+        $row = $this->db->table('detail_jadwal_tanding')
+            ->select('MIN(nomor_partai) AS awal')
+            ->where('id_jadwal_tanding', $idJadwalTanding)
+            ->get()
+            ->getRow();
+
+        return (int) ($row->awal ?? 0);
+    }
+
+    /**
+     * Mengacak urutan pertandingan dengan pola selang-seling (parity CI3).
+     *
+     * HANYA UNTUK PEMASALAN — mengelompokkan pool per id_kompetisi_tanding
+     * lalu menukar posisi antar pool dalam "paket" sejumlah $maxDiambil.
+     *
+     * @param int   $maxDiambil Jumlah pool maksimal untuk di-reshuffle (1-4)
+     * @param array $pertandingan Array of objects dengan properti:
+     *                             id_pertandingan, id_kompetisi_tanding, nilai_babak
+     * @return array Pertandingan yang sudah diacak
+     */
+    public function acakUrutanPertandingan(int $maxDiambil, array $pertandingan): array
+    {
+        $jumlahDiambil = 0;
+        $pertandinganTemp = [];
+        $idKompetisiTanding = null;
+        $idPaket = 1;
+
+        foreach ($pertandingan as $kPertandingan => $vPertandingan) {
+            if ($jumlahDiambil < $maxDiambil) {
+                if ($vPertandingan->id_kompetisi_tanding == $idKompetisiTanding) {
+                    $vPertandingan->id_select = $kPertandingan;
+                    $vPertandingan->id_paket = $idPaket;
+                    array_push($pertandinganTemp, $vPertandingan);
+                } else {
+                    $idKompetisiTanding = $vPertandingan->id_kompetisi_tanding;
+                    $vPertandingan->id_select = $kPertandingan;
+                    $vPertandingan->id_paket = $idPaket;
+                    array_push($pertandinganTemp, $vPertandingan);
+                    $jumlahDiambil++;
+                }
+            } else {
+                if ($vPertandingan->id_kompetisi_tanding == $idKompetisiTanding) {
+                    $vPertandingan->id_select = $kPertandingan;
+                    $vPertandingan->id_paket = $idPaket;
+                    array_push($pertandinganTemp, $vPertandingan);
+                } else {
+                    $idKompetisiTanding = $vPertandingan->id_kompetisi_tanding;
+
+                    // Sort temp array by nilai_babak agar babak diurutkan
+                    usort($pertandinganTemp, static function ($a, $b): int {
+                        return ((float) $a->nilai_babak) <=> ((float) $b->nilai_babak);
+                    });
+
+                    // Ambil nilai min id_select
+                    $min = (int) min(array_column($pertandinganTemp, 'id_select'));
+                    foreach ($pertandinganTemp as $value) {
+                        $value->id_select = $min++;
+                    }
+
+                    // Replace array $pertandingan dengan $pertandinganTemp
+                    foreach ($pertandinganTemp as $value) {
+                        $pertandingan[$value->id_select] = $value;
+                    }
+
+                    // Kosongkan temp
+                    $pertandinganTemp = [];
+
+                    $vPertandingan->id_select = $kPertandingan;
+                    array_push($pertandinganTemp, $vPertandingan);
+                    $vPertandingan->id_paket = ++$idPaket;
+
+                    // Kelompok terakhir yang akan diambil
+                    $jumlahDiambil = 1;
+                }
+            }
+        }
+
+        return $pertandingan;
     }
 
     /**

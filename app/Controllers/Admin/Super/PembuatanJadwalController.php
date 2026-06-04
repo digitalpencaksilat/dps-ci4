@@ -1344,28 +1344,49 @@ class PembuatanJadwalController extends BaseController
             return redirect()->back()->with('status', false)->with('message', 'Pola penjadwalan tidak dapat diubah karena ada pertandingan dengan skor atau pemenang.');
         }
 
-        $details = (new JadwalTandingModel())->get_detail_jadwal($id);
-        if ($details === []) {
+        $jadwalTandingModel = new JadwalTandingModel();
+
+        // Ambil nomor_partai_awal dari detail_jadwal_tanding (parity CI3)
+        $nomorPartaiAwal = (int) $jadwalTandingModel->getNomorPartaiAwal($id);
+        if ($nomorPartaiAwal <= 0) {
+            $nomorPartaiAwal = 1;
+        }
+
+        if ($pola === 'prestasi') {
+            // PRESTASI: urut berdasarkan nilai_babak, min_umur, label, nomor_pool, nomor_pertandingan
+            $dataPertandingan = $jadwalTandingModel->getPertandinganPola(
+                $id,
+                'nilai_babak ASC, ku.min_umur ASC, kl.label ASC, kt.nomor_pool ASC, p.nomor_pertandingan ASC'
+            );
+        } else {
+            // PEMASALAN: urut lalu acak dengan seling
+            $dataPertandingan = $jadwalTandingModel->getPertandinganPola(
+                $id,
+                'ku.min_umur ASC, ku.jenis_kelamin ASC, kl.berat_maksimal ASC, kt.nomor_pool ASC, nilai_babak ASC, p.nomor_pertandingan ASC'
+            );
+
+            if ($dataPertandingan !== []) {
+                $seling = match ($pola) {
+                    'pemasalan_seling_1' => 1,
+                    'pemasalan_seling_2' => 2,
+                    'pemasalan_seling_3' => 3,
+                    'pemasalan_seling_4' => 4,
+                };
+                $dataPertandingan = $jadwalTandingModel->acakUrutanPertandingan($seling, $dataPertandingan);
+            }
+        }
+
+        if ($dataPertandingan === []) {
             return redirect()->back()->with('status', false)->with('message', 'Detail jadwal kosong.');
         }
 
-        usort($details, static function ($a, $b) use ($pola): int {
-            $jenisA = (string) ($a->jenis_perlombaan ?? '');
-            $jenisB = (string) ($b->jenis_perlombaan ?? '');
-            if ($jenisA !== $jenisB) {
-                return $pola === 'prestasi' ? ($jenisA <=> $jenisB) : ($jenisB <=> $jenisA);
-            }
-
-            return ((int) ($a->nomor_partai ?? 0)) <=> ((int) ($b->nomor_partai ?? 0));
-        });
-
-        $awal = (int) ($details[0]->nomor_partai ?? 1);
+        // Update nomor_partai pada detail_jadwal_tanding
         $db = db_connect();
         $db->transStart();
-        foreach (array_values($details) as $index => $detail) {
+        foreach ($dataPertandingan as $index => $pertandingan) {
             $db->table('detail_jadwal_tanding')
-                ->where('id_detail_jadwal_tanding', $detail->id_detail_jadwal_tanding)
-                ->update(['nomor_partai' => $awal + $index]);
+                ->where('id_detail_jadwal_tanding', $pertandingan->id_detail_jadwal_tanding)
+                ->update(['nomor_partai' => $nomorPartaiAwal + $index]);
         }
         $db->transComplete();
         $this->syncJadwalTandingRange($id);
@@ -1374,7 +1395,23 @@ class PembuatanJadwalController extends BaseController
             return redirect()->back()->with('status', false)->with('message', 'Gagal mengatur pola penjadwalan.');
         }
 
-        return redirect()->back()->with('status', true)->with('message', 'Pola penjadwalan berhasil diterapkan.');
+        // Regenerate PDF (parity CI3: Jadwal_tanding_model::create_pdf)
+        try {
+            $jadwalPdf = $jadwalTandingModel->findWithGelanggang($id);
+            $details = $jadwalTandingModel->get_detail_jadwal($id);
+            $html = view('admin/super/pdf/jadwal_tanding', [
+                'title' => 'Jadwal Tanding Arena ' . ($jadwalPdf->nama_gelanggang ?? $id),
+                'jadwal' => $jadwalPdf,
+                'details' => $details,
+                'withScore' => false,
+            ]);
+            $fileInfo = $this->writeSchedulePdf($html, 'tanding', $this->buildSchedulePdfFilename($jadwalPdf));
+            $jadwalTandingModel->update($id, $this->schedulePdfUpdatePayload($jadwalTandingModel->table, $fileInfo));
+        } catch (\Throwable $e) {
+            log_message('error', 'Gagal generate PDF jadwal tanding setelah pola penjadwalan: {message}', ['message' => $e->getMessage()]);
+        }
+
+        return redirect()->back()->with('status', true)->with('message', 'Pola penjadwalan berhasil dibuat ulang.');
     }
 
     public function createPdfJadwalSeniAjax(int $id, int $withScore = 0)

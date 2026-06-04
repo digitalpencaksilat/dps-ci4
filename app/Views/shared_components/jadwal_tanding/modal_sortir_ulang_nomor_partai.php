@@ -1,7 +1,10 @@
-<?php $routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding'); ?>
+<?php
+$routePrefix = (string) ($routePrefix ?? 'admin/sekretariat/jadwal-tanding');
+$superRoute = ($routePrefix === 'admin/sekretariat/jadwal-tanding') ? 'admin/super/jadwal-tanding' : $routePrefix;
+?>
 <div class="modal fade" id="modalSortirNomorPartai" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <form action="<?= base_url($routePrefix . '/sortir-ulang/' . ($jadwal_tanding->id_jadwal_tanding ?? 0)) ?>" method="post" id="formSortirNomorPartai">
+        <form action="<?= base_url($superRoute . '/sortir-ulang/' . ($jadwal_tanding->id_jadwal_tanding ?? 0)) ?>" method="post" id="formSortirNomorPartai">
             <?= csrf_field() ?>
             <div class="modal-content">
                 <div class="modal-header">

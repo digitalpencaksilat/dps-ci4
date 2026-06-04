@@ -700,9 +700,70 @@ $(function () {
         });
     });
 
+    function showScheduleValidation(message) {
+        if (window.Swal) {
+            Swal.fire({
+                title: 'Data belum lengkap',
+                text: message,
+                icon: 'warning',
+                confirmButtonText: 'Mengerti',
+                confirmButtonColor: '#b91c1c',
+            });
+            return;
+        }
+
+        alert(message);
+    }
+
+    function ensureChecked(selector, message) {
+        if ($(selector).filter(':checked').length > 0) {
+            return true;
+        }
+
+        showScheduleValidation(message);
+        return false;
+    }
+
     $('#inputjenis_jadwal').on('change', syncJenisPenjadwalan);
     $('#langsungBuatPdf').on('change', syncPdfOptions);
-    $('#penjadwalanForm').on('submit', syncDragOrderFields);
+    $('#penjadwalanForm').on('submit', function (e) {
+        e.preventDefault();
+
+        syncDragOrderFields();
+
+        if (!ensureChecked('input[name="babak_pertandingan[]"]', 'Pilih minimal satu babak pertandingan.')) {
+            return;
+        }
+
+        if (!ensureChecked('input[name="urutan_id_kelas_tanding[]"]', 'Pilih minimal satu kelas tanding.')) {
+            return;
+        }
+
+        if (!ensureChecked('input.checkbox-gelanggang', 'Pilih minimal satu gelanggang.')) {
+            return;
+        }
+
+        const form = this;
+        if (!window.Swal) {
+            form.submit();
+            return;
+        }
+
+        Swal.fire({
+            title: 'Buat Jadwal Tanding Otomatis?',
+            text: 'Jadwal tanding akan dibuat otomatis sesuai urutan kelas, babak, dan distribusi gelanggang yang dipilih.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Buat',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#b91c1c',
+            cancelButtonColor: '#6b7280',
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
 
     syncJenisPenjadwalan();
     syncPdfOptions();

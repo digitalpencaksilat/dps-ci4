@@ -162,7 +162,7 @@
         </div>
 
         <div class="col-12 col-md-6 col-xl-4">
-            <a href="<?= base_url('utilities/db-sync') ?>" class="operasi-db-mode-card text-decoration-none text-reset d-flex flex-column h-100">
+            <div class="operasi-db-mode-card text-decoration-none text-reset d-flex flex-column h-100">
                 <section class="admin-card h-100 d-flex flex-column justify-content-between super-mode-card-inner operasi-db-card-inner operasi-db-card-danger">
                     <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
                         <div class="super-mode-icon operasi-db-card-icon">
@@ -172,14 +172,15 @@
                     <div class="super-mode-copy">
                         <p class="eyebrow mb-2">Sinkronisasi</p>
                         <h3 class="h3 section-title mb-3">Sinkronisasi Basis Data</h3>
-                        <p class="muted-copy mb-0">Membandingkan struktur database aktif terhadap file referensi <code>public/db/db_structure_dps.sql</code> dalam mode simulasi terlebih dahulu.</p>
+                        <p class="muted-copy mb-0">Menyamakan struktur database aktif dengan file referensi <code>public/db/db_structure_dps.sql</code>. Flow dimulai dari mode simulasi terlebih dahulu, sama seperti legacy CI3.</p>
                     </div>
                     <div class="super-mode-link mt-4">
-                        <span>Sinkronkan Sekarang</span>
-                        <i class="fas fa-arrow-right"></i>
+                        <form action="<?= base_url('utilities/db-sync') ?>" method="get" class="w-100">
+                            <button type="button" class="btn btn-danger w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Sinkronisasi Basis Data?', 'Proses sinkronisasi akan berjalan dalam mode simulasi terlebih dahulu agar perubahan bisa direview sebelum dieksekusi.', 'Sinkronkan Sekarang')">Sinkronkan Sekarang</button>
+                        </form>
                     </div>
                 </section>
-            </a>
+            </div>
         </div>
 
         <div class="col-12">

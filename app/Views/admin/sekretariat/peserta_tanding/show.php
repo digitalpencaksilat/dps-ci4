@@ -72,3 +72,16 @@
     </div>
 </div>
 <?= $this->endSection() ?>
+
+<?php if (! empty($openModal)) : ?>
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalElement = document.getElementById(<?= json_encode((string) $openModal) ?>);
+        if (modalElement && window.bootstrap) {
+            bootstrap.Modal.getOrCreateInstance(modalElement).show();
+        }
+    });
+</script>
+<?= $this->endSection() ?>
+<?php endif; ?>

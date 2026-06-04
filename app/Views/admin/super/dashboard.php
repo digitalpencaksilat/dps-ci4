@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
 <div class="row g-4 super-mode-grid align-items-stretch">
-    <div class="col-12 col-lg-6">
+    <div class="col-12 col-md-6 col-xxl-4">
         <a href="<?= base_url('admin/super/mode-pengaturan-event') ?>" class="super-mode-card super-mode-card-event text-decoration-none text-reset d-flex flex-column h-100">
             <section class="admin-card h-100 d-flex flex-column justify-content-between super-mode-card-inner">
                 <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
@@ -26,7 +26,7 @@
         </a>
     </div>
 
-    <div class="col-12 col-lg-6">
+    <div class="col-12 col-md-6 col-xxl-4">
         <a href="<?= base_url('admin/super/mode-pengaturan-kategori-lomba') ?>" class="super-mode-card super-mode-card-kategori text-decoration-none text-reset d-flex flex-column h-100">
             <section class="admin-card h-100 d-flex flex-column justify-content-between super-mode-card-inner">
                 <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
@@ -50,7 +50,7 @@
         </a>
     </div>
 
-    <div class="col-12 col-lg-6">
+    <div class="col-12 col-md-6 col-xxl-4">
         <a href="<?= base_url('admin/super/mode-pembuatan-jadwal') ?>" class="super-mode-card super-mode-card-jadwal text-decoration-none text-reset d-flex flex-column h-100">
             <section class="admin-card h-100 d-flex flex-column justify-content-between super-mode-card-inner">
                 <div class="d-flex align-items-start justify-content-between gap-3 mb-4">

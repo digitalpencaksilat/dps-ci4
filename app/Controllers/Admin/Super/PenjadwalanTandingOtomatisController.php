@@ -91,6 +91,7 @@ class PenjadwalanTandingOtomatisController extends BaseController
                 ->join('detail_jadwal_tanding djt', 'djt.id_pertandingan = pertandingan.id_pertandingan', 'left')
                 ->where('kategori_lomba.nama_kategori_lomba', 'tanding')
                 ->where('djt.id_pertandingan IS NULL', null, false)
+                ->where('pertandingan.jenis_kemenangan !=', 'BYE')
                 ->groupBy('kelas_tanding.id_kelas_tanding, pertandingan.babak')
                 ->get()
                 ->getResult();

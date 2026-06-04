@@ -26,6 +26,27 @@ $formatAtlet = static function (?string $nama, ?string $kontingen, $berat, $ting
         'fallback' => true,
     ];
 };
+
+$formatMedali = static function ($medali, ?string $babak): string {
+    $value = strtolower(trim((string) ($medali ?? '')));
+    if ($value === '') {
+        return '<span class="muted-copy">-</span>';
+    }
+
+    if ($value === 'emas' && $babak === 'Final') {
+        return '<span class="badge text-white" style="background-color:#ffb322">Emas</span>';
+    }
+
+    if ($value === 'perak' && $babak === 'Final') {
+        return '<span class="badge text-white" style="background-color:#b0b0b0">Perak</span>';
+    }
+
+    if ($value === 'perunggu' && in_array($babak, ['Semi Final', 'Perebutan Juara Tiga'], true)) {
+        return '<span class="badge text-white" style="background-color:#7c4800">Perunggu</span>';
+    }
+
+    return esc((string) $medali);
+};
 ?>
 <div class="admin-table-wrap pesilat-terbaik-table">
     <div class="table-shell admin-table-scroller">
@@ -38,13 +59,13 @@ $formatAtlet = static function (?string $nama, ?string $kontingen, $berat, $ting
                     <th>Jenis Kelamin</th>
                     <th>Kelas</th>
                     <th>Pool</th>
-                    <th class="text-center bg-blue text-white">Tim Biru</th>
                     <th class="text-center bg-blue text-white">Atlet Biru</th>
                     <th class="text-center">Poin Biru</th>
                     <th class="text-center">Babak</th>
                     <th class="text-center">Poin Merah</th>
                     <th class="text-center bg-red text-white">Atlet Merah</th>
-                    <th class="text-center bg-red text-white">Tim Merah</th>
+                    <th class="text-center">Medali Biru</th>
+                    <th class="text-center">Medali Merah</th>
                     <th class="text-end no-export">Aksi</th>
                 </tr>
             </thead>
@@ -87,7 +108,6 @@ $formatAtlet = static function (?string $nama, ?string $kontingen, $berat, $ting
                         <td class="text-center"><?= esc(ucwords((string) ($row->jenis_kelamin ?? '-'))) ?></td>
                         <td class="text-center"><?= esc($row->label ?? '-') ?></td>
                         <td class="text-center"><?= esc((string) ($row->nomor_pool ?? '-')) ?></td>
-                        <td class="text-center small"><?= esc($row->nama_kontingen_biru ?? '-') ?></td>
                         <td class="text-center">
                             <span class="d-block px-2 py-1 rounded-2 <?= $atletBiru['fallback'] ? 'fst-italic border border-primary-subtle' : 'bg-blue text-white' ?>">
                                 <span class="fw-semibold d-block"><?= esc($atletBiru['title']) ?></span>
@@ -103,7 +123,8 @@ $formatAtlet = static function (?string $nama, ?string $kontingen, $berat, $ting
                             </span>
                             <span class="muted-copy d-block mt-1 small"><?= esc($atletMerah['subtitle']) ?></span>
                         </td>
-                        <td class="text-center small"><?= esc($row->nama_kontingen_merah ?? '-') ?></td>
+                        <td class="text-center"><?= $formatMedali($row->medali_biru ?? null, $row->babak ?? null) ?></td>
+                        <td class="text-center"><?= $formatMedali($row->medali_merah ?? null, $row->babak ?? null) ?></td>
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-danger rounded-pill" href="<?= base_url('admin/sekretariat/pertandingan-tanding/' . $row->id_pertandingan) ?>">Detail</a>
                         </td>

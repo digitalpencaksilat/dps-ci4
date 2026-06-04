@@ -66,10 +66,12 @@ class OperasiBasisDataService
         ];
     }
 
-    public function buatPoolBaru(): array
+    public function buatPoolBaru(bool $wrapTransaction = true): array
     {
         $db = db_connect();
-        $db->transStart();
+        if ($wrapTransaction) {
+            $db->transStart();
+        }
 
         try {
             $kelasRows = $db->table('kelas_tanding')->select('id_kelas_tanding')->get()->getResult();
@@ -106,13 +108,17 @@ class OperasiBasisDataService
                 $subKategoriSeniModel->otomatis_menambahkan_pool($idSub, $kapasitasDefault > 0 ? $kapasitasDefault : 4);
             }
 
-            $db->transComplete();
+            if ($wrapTransaction) {
+                $db->transComplete();
+            }
         } catch (\Throwable $e) {
-            $db->transRollback();
+            if ($wrapTransaction) {
+                $db->transRollback();
+            }
             return ['status' => false, 'message' => $e->getMessage()];
         }
 
-        if (! $db->transStatus()) {
+        if ($wrapTransaction && ! $db->transStatus()) {
             return ['status' => false, 'message' => 'Gagal membuat pool baru.'];
         }
 
@@ -283,27 +289,105 @@ class OperasiBasisDataService
      * CI3 parity: delete kontingen where jenis_pendaftaran = 'excel'.
      * Note: relies on DB constraints/cascade as per existing schema.
      */
-    public function hapusDataDariExcel(): int
+    public function hapusDataDariExcel(): array
     {
         $db = db_connect();
+        $db->transStart();
 
-        $ids = array_column(
-            $db->table('kontingen')
-                ->select('id_kontingen')
-                ->where('jenis_pendaftaran', 'excel')
-                ->get()
-                ->getResultArray(),
-            'id_kontingen'
-        );
+        try {
+            $ids = array_column(
+                $db->table('kontingen')
+                    ->select('id_kontingen')
+                    ->where('jenis_pendaftaran', 'excel')
+                    ->get()
+                    ->getResultArray(),
+                'id_kontingen'
+            );
 
-        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), static fn (int $id): bool => $id > 0)));
-        if ($ids === []) {
-            return 0;
+            $ids = array_values(array_unique(array_filter(array_map('intval', $ids), static fn (int $id): bool => $id > 0)));
+            if ($ids !== []) {
+                $db->table('kontingen')->whereIn('id_kontingen', $ids)->delete();
+            }
+
+            // CI3 parity: after deleting Excel kontingen, remove empty tanding pools, recreate missing/full pools,
+            // and normalize nomor_pool sequence through the same pool builder used by the maintenance action.
+            $poolKosongIds = array_column(
+                $db->table('kompetisi_tanding kt')
+                    ->select('kt.id_kompetisi_tanding')
+                    ->select('(SELECT COUNT(*) FROM peserta_tanding pt WHERE pt.id_kompetisi_tanding = kt.id_kompetisi_tanding) AS jumlah_peserta', false)
+                    ->having('jumlah_peserta = 0')
+                    ->get()
+                    ->getResultArray(),
+                'id_kompetisi_tanding'
+            );
+            $poolKosongIds = array_values(array_unique(array_filter(array_map('intval', $poolKosongIds), static fn (int $id): bool => $id > 0)));
+            if ($poolKosongIds !== []) {
+                $db->table('kompetisi_tanding')->whereIn('id_kompetisi_tanding', $poolKosongIds)->delete();
+            }
+
+            $poolResult = $this->buatPoolBaru(false);
+            if (($poolResult['status'] ?? false) !== true) {
+                $db->transRollback();
+                return ['status' => false, 'message' => (string) ($poolResult['message'] ?? 'Gagal memperbaiki pool setelah hapus data Excel.')];
+            }
+
+            $this->urutkanNomorPoolTanding();
+
+            $db->transComplete();
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            return ['status' => false, 'message' => $e->getMessage()];
         }
 
-        $db->table('kontingen')->whereIn('id_kontingen', $ids)->delete();
+        if (! $db->transStatus()) {
+            return ['status' => false, 'message' => 'Gagal hapus data dari Excel.'];
+        }
 
-        return count($ids);
+        return [
+            'status' => true,
+            'message' => sprintf(
+                'Data dari Excel berhasil diproses. Kontingen terhapus: %d, pool tanding kosong terhapus: %d.',
+                count($ids ?? []),
+                count($poolKosongIds ?? [])
+            ),
+            'data' => [
+                'kontingen' => count($ids ?? []),
+                'pool_tanding_kosong' => count($poolKosongIds ?? []),
+            ],
+        ];
+    }
+
+    private function urutkanNomorPoolTanding(): void
+    {
+        $db = db_connect();
+        $kelasRows = $db->table('kelas_tanding')->select('id_kelas_tanding')->get()->getResult();
+
+        foreach ($kelasRows as $kelas) {
+            $idKelas = (int) ($kelas->id_kelas_tanding ?? 0);
+            if ($idKelas <= 0) {
+                continue;
+            }
+
+            $poolRows = $db->table('kompetisi_tanding')
+                ->select('id_kompetisi_tanding')
+                ->where('id_kelas_tanding', $idKelas)
+                ->orderBy('nomor_pool', 'ASC')
+                ->orderBy('id_kompetisi_tanding', 'ASC')
+                ->get()
+                ->getResult();
+
+            $nomorPool = 1;
+            foreach ($poolRows as $pool) {
+                $idPool = (int) ($pool->id_kompetisi_tanding ?? 0);
+                if ($idPool <= 0) {
+                    continue;
+                }
+
+                $db->table('kompetisi_tanding')
+                    ->where('id_kompetisi_tanding', $idPool)
+                    ->update(['nomor_pool' => $nomorPool++]);
+            }
+        }
     }
 
     public function previewHapusDataKosong(): array

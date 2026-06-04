@@ -51,29 +51,93 @@ class PembuatanJadwalController extends BaseController
     public function backupDatabase()
     {
         $db = db_connect();
-        $database = $db->getDatabase();
-        $timestamp = date('Y-m-d_H-i-s');
-        $filename = 'backup_db_' . preg_replace('/[^A-Za-z0-9_-]/', '_', $database) . '_' . $timestamp . '.sql';
+        $config = config('Database')->default;
+        $database = (string) ($config['database'] ?? $db->getDatabase());
+        $eventName = (string) (get_setting('event_name') ?? 'Digital Pencak Silat');
+        $baseName = 'backup_db_' . preg_replace('/[^A-Za-z0-9_-]+/', '_', trim($eventName)) . '_' . date('d-M-Y');
 
-        $dumpCommand = sprintf(
-            'mysqldump --skip-lock-tables --single-transaction --routines --triggers %s',
-            escapeshellarg($database)
-        );
-
-        try {
-            $dump = (string) shell_exec($dumpCommand);
-        } catch (\Throwable $e) {
-            $dump = '';
+        $tmpDir = WRITEPATH . 'cache/db-backup';
+        if (! is_dir($tmpDir)) {
+            mkdir($tmpDir, 0775, true);
         }
 
-        if (trim($dump) === '') {
-            return redirect()->back()->with('status', false)->with('message', 'Gagal membuat backup database. Pastikan mysqldump tersedia pada server.');
+        $sqlPath = $tmpDir . DIRECTORY_SEPARATOR . $baseName . '.sql';
+        $zipPath = $tmpDir . DIRECTORY_SEPARATOR . $baseName . '.zip';
+
+        $mysqldumpBinary = null;
+        foreach ([
+            '/Applications/XAMPP/xamppfiles/bin/mysqldump',
+            '/opt/homebrew/bin/mysqldump',
+            '/usr/local/mysql/bin/mysqldump',
+            'mysqldump',
+        ] as $candidate) {
+            if ($candidate === 'mysqldump') {
+                $resolved = trim((string) shell_exec('command -v mysqldump 2>/dev/null'));
+                if ($resolved !== '') {
+                    $mysqldumpBinary = $resolved;
+                    break;
+                }
+
+                continue;
+            }
+
+            if (is_file($candidate) && is_executable($candidate)) {
+                $mysqldumpBinary = $candidate;
+                break;
+            }
         }
+
+        if ($mysqldumpBinary === null) {
+            return redirect()->back()->with('status', false)->with('message', 'Gagal membuat backup database. Binary mysqldump tidak ditemukan. Cek instalasi XAMPP/MySQL server.');
+        }
+
+        $command = [$mysqldumpBinary, '--skip-lock-tables', '--single-transaction', '--routines', '--triggers', '--add-drop-table'];
+        if (! empty($config['hostname'])) {
+            $command[] = '-h' . (string) $config['hostname'];
+        }
+        if (! empty($config['port'])) {
+            $command[] = '-P' . (string) $config['port'];
+        }
+        if (! empty($config['username'])) {
+            $command[] = '-u' . (string) $config['username'];
+        }
+        if ((string) ($config['password'] ?? '') !== '') {
+            $command[] = '-p' . (string) $config['password'];
+        }
+        $command[] = $database;
+
+        $descriptorSpec = [
+            1 => ['file', $sqlPath, 'w'],
+            2 => ['pipe', 'w'],
+        ];
+
+        $process = proc_open(implode(' ', array_map('escapeshellarg', $command)), $descriptorSpec, $pipes);
+        if (! is_resource($process)) {
+            return redirect()->back()->with('status', false)->with('message', 'Gagal menjalankan mysqldump.');
+        }
+
+        $errorOutput = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        $exitCode = proc_close($process);
+
+        if ($exitCode !== 0 || ! is_file($sqlPath) || filesize($sqlPath) === 0) {
+            @unlink($sqlPath);
+            return redirect()->back()->with('status', false)->with('message', 'Gagal membuat backup database. Pastikan mysqldump tersedia dan kredensial database benar. ' . trim((string) $errorOutput));
+        }
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            @unlink($sqlPath);
+            return redirect()->back()->with('status', false)->with('message', 'Gagal membuat file ZIP backup database.');
+        }
+        $zip->addFile($sqlPath, $baseName . '.sql');
+        $zip->close();
+        @unlink($sqlPath);
 
         return $this->response
-            ->setHeader('Content-Type', 'application/sql')
-            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
-            ->setBody($dump);
+            ->setHeader('Content-Type', 'application/zip')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $baseName . '.zip"')
+            ->setBody((string) file_get_contents($zipPath));
     }
 
     public function hapusPoolSeniKosong()
@@ -89,11 +153,11 @@ class PembuatanJadwalController extends BaseController
     public function hapusDataDariExcel()
     {
         $service = new OperasiBasisDataService();
-        $deleted = $service->hapusDataDariExcel();
+        $result = $service->hapusDataDariExcel();
 
         return redirect()->to(base_url('admin/super/operasi-basis-data'))
-            ->with('status', true)
-            ->with('message', 'Data dari excel berhasil diproses. Total kontingen terhapus: ' . $deleted . '.');
+            ->with('status', (bool) ($result['status'] ?? false))
+            ->with('message', is_scalar($result['message'] ?? null) ? (string) $result['message'] : 'Terjadi kesalahan.');
     }
 
     public function hapusAtletBelumLunas()
@@ -103,7 +167,7 @@ class PembuatanJadwalController extends BaseController
 
         return redirect()->to(base_url('admin/super/operasi-basis-data'))
             ->with('status', (bool) ($result['status'] ?? false))
-            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+            ->with('message', is_scalar($result['message'] ?? null) ? (string) $result['message'] : 'Terjadi kesalahan.');
     }
 
     public function buatPoolBaru()
@@ -113,7 +177,7 @@ class PembuatanJadwalController extends BaseController
 
         return redirect()->to(base_url('admin/super/operasi-basis-data'))
             ->with('status', (bool) ($result['status'] ?? false))
-            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+            ->with('message', is_scalar($result['message'] ?? null) ? (string) $result['message'] : 'Terjadi kesalahan.');
     }
 
     public function buatKategoriUntukPartaiTambahan()
@@ -123,7 +187,7 @@ class PembuatanJadwalController extends BaseController
 
         return redirect()->to(base_url('admin/super/operasi-basis-data'))
             ->with('status', (bool) ($result['status'] ?? false))
-            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+            ->with('message', is_scalar($result['message'] ?? null) ? (string) $result['message'] : 'Terjadi kesalahan.');
     }
 
     public function resetDatabase()
@@ -137,7 +201,7 @@ class PembuatanJadwalController extends BaseController
 
         return redirect()->to(base_url('admin/super/operasi-basis-data'))
             ->with('status', (bool) ($result['status'] ?? false))
-            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+            ->with('message', is_scalar($result['message'] ?? null) ? (string) $result['message'] : 'Terjadi kesalahan.');
     }
 
 
@@ -170,7 +234,7 @@ class PembuatanJadwalController extends BaseController
 
         return redirect()->to(base_url('admin/super/operasi-basis-data/hapus-data-kosong'))
             ->with('status', (bool) ($result['status'] ?? false))
-            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+            ->with('message', is_scalar($result['message'] ?? null) ? (string) $result['message'] : 'Terjadi kesalahan.');
     }
 
     public function hapusPesertaPerKategoriUsia(): string
@@ -205,7 +269,7 @@ class PembuatanJadwalController extends BaseController
 
         return redirect()->to(base_url('admin/super/operasi-basis-data/hapus-peserta-per-kategori-usia'))
             ->with('status', (bool) ($result['status'] ?? false))
-            ->with('message', (string) ($result['message'] ?? 'Terjadi kesalahan.'));
+            ->with('message', is_scalar($result['message'] ?? null) ? (string) $result['message'] : 'Terjadi kesalahan.');
     }
 
     public function resetSeluruhJadwal()
@@ -1806,9 +1870,12 @@ class PembuatanJadwalController extends BaseController
                 $randomSeed = $this->request->getPost('random_kategori_lomba_' . $idKategori) !== null;
                 $pools = $db->table('kompetisi_tanding kom')
                     ->select('kom.id_kompetisi_tanding')
+                    ->select('COUNT(pt.id_peserta_tanding) AS jumlah_peserta', false)
                     ->join('kelas_tanding kt', 'kt.id_kelas_tanding = kom.id_kelas_tanding')
+                    ->join('peserta_tanding pt', 'pt.id_kompetisi_tanding = kom.id_kompetisi_tanding', 'left')
                     ->where('kt.id_kategori_lomba', $idKategori)
-                    ->where('EXISTS (SELECT 1 FROM peserta_tanding pt WHERE pt.id_kompetisi_tanding = kom.id_kompetisi_tanding)', null, false)
+                    ->groupBy('kom.id_kompetisi_tanding')
+                    ->having('jumlah_peserta >=', 2)
                     ->get()->getResult();
                 foreach ($pools as $pool) {
                     $kompetisiTandingModel->acak_bagan_tanding((int) $pool->id_kompetisi_tanding, $randomSeed);

@@ -129,7 +129,7 @@ class SekretariatKategoriTandingService
     public function listPesertaByPool(int $idKompetisi): array
     {
         return db_connect()->table('peserta_tanding pt')
-            ->select('pt.id_peserta_tanding, p.nama_pendaftar, k.nama_kontingen')
+            ->select('pt.id_peserta_tanding, pt.id_kompetisi_tanding, p.nama_pendaftar, k.nama_kontingen')
             ->join('pendaftar p', 'p.id_pendaftar = pt.id_pendaftar')
             ->join('kontingen k', 'k.id_kontingen = p.id_kontingen', 'left')
             ->where('pt.id_kompetisi_tanding', $idKompetisi)

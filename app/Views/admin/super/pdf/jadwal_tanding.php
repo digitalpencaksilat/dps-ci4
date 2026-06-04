@@ -121,8 +121,8 @@ $tampilkanSkor = ! empty($withScore);
                 </td>
                 <td>
                     <?php if (empty($row->nama_atlet_biru) && ! empty($row->calon_atlet_biru)) : ?>
-                        <i><?= $babak === 'Perebutan Juara Tiga' ? 'Loser from' : 'Winner from' ?> <b>match <?= esc((string) $row->calon_atlet_biru) ?></b></i><br>
-                        <small>From arena <?= esc((string) ($row->gelanggang_calon_atlet_biru ?? '-')) ?></small>
+                        <i><?= $babak === 'Perebutan Juara Tiga' ? 'Kalah dari Partai Ke' : 'Pemenang Partai Ke' ?> <b><?= esc((string) $row->calon_atlet_biru) ?></b></i><br>
+                        <small>Dari Gelanggang <?= esc((string) ($row->gelanggang_calon_atlet_biru ?? '-')) ?></small>
                     <?php elseif (empty($row->nama_atlet_biru) && (string) ($row->jenis_kemenangan ?? '') === 'BYE') : ?>
                         <i>BYE</i>
                     <?php elseif (! empty($row->nama_atlet_biru)) : ?>
@@ -141,8 +141,8 @@ $tampilkanSkor = ! empty($withScore);
                 </td>
                 <td>
                     <?php if (empty($row->nama_atlet_merah) && ! empty($row->calon_atlet_merah)) : ?>
-                        <i><?= $babak === 'Perebutan Juara Tiga' ? 'Loser from' : 'Winner from' ?> <b>match <?= esc((string) $row->calon_atlet_merah) ?></b></i><br>
-                        <small>From arena <?= esc((string) ($row->gelanggang_calon_atlet_merah ?? '-')) ?></small>
+                        <i><?= $babak === 'Perebutan Juara Tiga' ? 'Kalah dari Partai Ke' : 'Pemenang Partai Ke' ?> <b><?= esc((string) $row->calon_atlet_merah) ?></b></i><br>
+                        <small>Dari Gelanggang <?= esc((string) ($row->gelanggang_calon_atlet_merah ?? '-')) ?></small>
                     <?php elseif (empty($row->nama_atlet_merah) && (string) ($row->jenis_kemenangan ?? '') === 'BYE') : ?>
                         <i>BYE</i>
                     <?php elseif (! empty($row->nama_atlet_merah)) : ?>

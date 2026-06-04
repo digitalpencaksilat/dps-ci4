@@ -619,6 +619,117 @@ body.admin-sidebar-collapsed .btn-admin-logout {
     padding-bottom: 6px;
 }
 
+/*
+ * Table action dropdowns need to escape the rounded/scroll containers.
+ * Without this, menu aksi inside admin tables is clipped by .admin-card,
+ * .table-shell, DataTables wrapper, or .table-responsive overflow rules.
+ */
+.admin-card:has(.dropdown.show),
+.table-shell:has(.dropdown.show),
+.admin-table-wrap:has(.dropdown.show),
+.admin-table-scroller:has(.dropdown.show),
+.admin-table-scroller .dataTables_wrapper:has(.dropdown.show),
+.admin-table-wrap .table-responsive:has(.dropdown.show) {
+    overflow: visible !important;
+}
+
+.admin-table .dropdown,
+.admin-table .dropstart,
+.admin-table .dropend,
+.admin-table .dropup {
+    position: static;
+}
+
+.admin-table .dropdown-menu,
+.admin-floating-dropdown-menu {
+    z-index: 2000;
+    min-width: 12rem;
+}
+
+.admin-floating-dropdown-menu {
+    max-width: min(18rem, calc(100vw - 24px));
+    border-color: rgba(198, 0, 0, 0.16);
+    box-shadow: 0 18px 45px rgba(88, 0, 0, 0.16);
+}
+
+.admin-table td.no-export,
+.admin-table td:last-child:has(.dropdown),
+.admin-table td:last-child:has(.btn),
+.admin-table td:last-child:has(a.btn) {
+    white-space: nowrap;
+}
+
+.admin-table .admin-action-toggle,
+.admin-table td.no-export > .btn,
+.admin-table td.no-export > a.btn,
+.admin-table td.no-export .dropdown > [data-bs-toggle="dropdown"],
+.admin-table td:last-child > .btn,
+.admin-table td:last-child > a.btn,
+.admin-table td:last-child .dropdown > [data-bs-toggle="dropdown"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-width: 5.25rem;
+    min-height: 2.15rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px !important;
+    border: 1px solid rgba(198, 0, 0, 0.42) !important;
+    background: #ffffff !important;
+    color: #9b111e !important;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(198, 0, 0, 0.08);
+    text-decoration: none;
+}
+
+.admin-table .admin-action-toggle:hover,
+.admin-table .admin-action-toggle:focus,
+.admin-table .admin-action-toggle.show,
+.admin-table td.no-export > .btn:hover,
+.admin-table td.no-export > .btn:focus,
+.admin-table td.no-export > .btn.show,
+.admin-table td.no-export > a.btn:hover,
+.admin-table td.no-export > a.btn:focus,
+.admin-table td.no-export > a.btn.show,
+.admin-table td.no-export .dropdown > [data-bs-toggle="dropdown"]:hover,
+.admin-table td.no-export .dropdown > [data-bs-toggle="dropdown"]:focus,
+.admin-table td.no-export .dropdown > [data-bs-toggle="dropdown"].show,
+.admin-table td:last-child > .btn:hover,
+.admin-table td:last-child > .btn:focus,
+.admin-table td:last-child > .btn.show,
+.admin-table td:last-child > a.btn:hover,
+.admin-table td:last-child > a.btn:focus,
+.admin-table td:last-child > a.btn.show,
+.admin-table td:last-child .dropdown > [data-bs-toggle="dropdown"]:hover,
+.admin-table td:last-child .dropdown > [data-bs-toggle="dropdown"]:focus,
+.admin-table td:last-child .dropdown > [data-bs-toggle="dropdown"].show {
+    background: linear-gradient(135deg, #ef233c, #9b111e) !important;
+    border-color: rgba(155, 17, 30, 0.92) !important;
+    color: #ffffff !important;
+    box-shadow: 0 12px 26px rgba(198, 0, 0, 0.2);
+}
+
+.admin-floating-dropdown-menu .dropdown-item,
+.admin-table .dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #351013;
+}
+
+.admin-floating-dropdown-menu .dropdown-item:hover,
+.admin-floating-dropdown-menu .dropdown-item:focus,
+.admin-table .dropdown-menu .dropdown-item:hover,
+.admin-table .dropdown-menu .dropdown-item:focus {
+    background: rgba(198, 0, 0, 0.08);
+    color: #9b111e;
+}
+
 .admin-table-scroller .table,
 .admin-table-scroller .dataTables_wrapper {
     min-width: 100%;
@@ -1156,8 +1267,9 @@ body.admin-sidebar-collapsed .btn-admin-logout {
 }
 
 .super-mode-grid {
-    max-width: 1120px;
-    margin-inline: auto;
+    width: 100%;
+    max-width: 1360px;
+    margin-inline: 0;
 }
 
 .super-mode-card {
@@ -1226,8 +1338,9 @@ body.admin-sidebar-collapsed .btn-admin-logout {
 
 /* Operasi Basis Data uses the same visual language as the super-mode dashboard cards */
 .operasi-db-mode-grid {
-    max-width: 1120px;
-    margin-inline: auto;
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: 0;
 }
 
 .operasi-db-mode-card {

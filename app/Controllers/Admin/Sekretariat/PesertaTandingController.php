@@ -26,21 +26,17 @@ class PesertaTandingController extends BaseController
 
     public function show(int $id): string
     {
-        $row = (new SekretariatPesertaKontingenService())->getPesertaTandingDetail($id);
-        if ($row === null) {
-            throw PageNotFoundException::forPageNotFound();
-        }
+        return $this->renderShow($id);
+    }
 
-        return view('admin/sekretariat/peserta_tanding/show', [
-            'title'      => 'Detail Peserta Tanding',
-            'activeMenu' => 'peserta_tanding',
-            'eventName'  => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'),
-            'eventLogo'  => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
-            'adminName'  => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat'),
-            'row'        => $row,
-            'kompetisiOptions' => (new SekretariatPesertaKontingenService())->listKompetisiTanding(),
-            'poolOptions' => (new SekretariatPesertaKontingenService())->listPoolTandingForPeserta($id),
-        ]);
+    public function editKelas(int $id): string
+    {
+        return $this->renderShow($id, 'editPesertaTandingModal');
+    }
+
+    public function pindahPool(int $id): string
+    {
+        return $this->renderShow($id, 'pindahPoolTandingModal');
     }
 
     public function byPendaftar(int $idPendaftar)
@@ -95,5 +91,26 @@ class PesertaTandingController extends BaseController
             'id_pendaftar' => 'required|integer',
             'id_kompetisi_tanding' => 'required|integer',
         ];
+    }
+
+    private function renderShow(int $id, ?string $openModal = null): string
+    {
+        $service = new SekretariatPesertaKontingenService();
+        $row = $service->getPesertaTandingDetail($id);
+        if ($row === null) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        return view('admin/sekretariat/peserta_tanding/show', [
+            'title'      => 'Detail Peserta Tanding',
+            'activeMenu' => 'peserta_tanding',
+            'eventName'  => (string) (get_setting('event_name') ?? 'Digital Pencak Silat'),
+            'eventLogo'  => get_setting('event_logo', 'pendaftaran/gambar_dan_juknis'),
+            'adminName'  => (string) (session()->get('nama') ?? session()->get('username') ?? 'Admin Sekretariat'),
+            'row'        => $row,
+            'kompetisiOptions' => $service->listKompetisiTanding(),
+            'poolOptions' => $service->listPoolTandingForPeserta($id),
+            'openModal' => $openModal,
+        ]);
     }
 }

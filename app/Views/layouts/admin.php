@@ -571,6 +571,120 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                 window.initAdminExportTable('#' + table.id, config);
             });
 
+            const normalizeAdminTableActionButtons = () => {
+                document.querySelectorAll('.admin-table td.no-export .dropdown > [data-bs-toggle="dropdown"], .admin-table td:last-child .dropdown > [data-bs-toggle="dropdown"]').forEach((toggle) => {
+                    toggle.classList.add('admin-action-toggle');
+
+                    const label = toggle.textContent.trim();
+                    if (!label) {
+                        const text = document.createElement('span');
+                        text.className = 'admin-action-toggle-label';
+                        text.textContent = 'Aksi';
+                        toggle.appendChild(text);
+                    }
+                });
+            };
+
+            normalizeAdminTableActionButtons();
+            document.addEventListener('draw.dt', normalizeAdminTableActionButtons);
+
+            const tableDropdownState = new WeakMap();
+            const positionTableDropdown = (toggle, menu) => {
+                const rect = toggle.getBoundingClientRect();
+                const menuWidth = Math.max(menu.offsetWidth || 192, 192);
+                const menuHeight = menu.offsetHeight || 0;
+                const viewportPadding = 12;
+                let left = rect.right - menuWidth;
+                let top = rect.bottom + 6;
+
+                left = Math.max(viewportPadding, Math.min(left, window.innerWidth - menuWidth - viewportPadding));
+
+                if (top + menuHeight > window.innerHeight - viewportPadding) {
+                    top = Math.max(viewportPadding, rect.top - menuHeight - 6);
+                }
+
+                menu.style.position = 'fixed';
+                menu.style.left = left + 'px';
+                menu.style.top = top + 'px';
+                menu.style.right = 'auto';
+                menu.style.bottom = 'auto';
+                menu.style.transform = 'none';
+                menu.style.zIndex = '2000';
+            };
+
+            document.addEventListener('show.bs.dropdown', (event) => {
+                const toggle = event.target?.matches?.('[data-bs-toggle="dropdown"]')
+                    ? event.target
+                    : event.target?.querySelector?.('[data-bs-toggle="dropdown"]');
+                const dropdown = toggle?.closest?.('.dropdown, .dropup, .dropend, .dropstart');
+
+                if (!toggle || !dropdown?.closest('.admin-table')) {
+                    return;
+                }
+
+                const menu = dropdown.querySelector('.dropdown-menu');
+                if (!menu) {
+                    return;
+                }
+
+                tableDropdownState.set(toggle, {
+                    menu,
+                    parent: menu.parentNode,
+                    nextSibling: menu.nextSibling,
+                    toggle,
+                });
+
+                document.body.appendChild(menu);
+                menu.classList.add('admin-floating-dropdown-menu');
+                requestAnimationFrame(() => positionTableDropdown(toggle, menu));
+            });
+
+            document.addEventListener('shown.bs.dropdown', (event) => {
+                const toggle = event.target?.matches?.('[data-bs-toggle="dropdown"]')
+                    ? event.target
+                    : event.target?.querySelector?.('[data-bs-toggle="dropdown"]');
+                const state = toggle ? tableDropdownState.get(toggle) : null;
+                if (state) {
+                    positionTableDropdown(state.toggle, state.menu);
+                }
+            });
+
+            document.addEventListener('hide.bs.dropdown', (event) => {
+                const toggle = event.target?.matches?.('[data-bs-toggle="dropdown"]')
+                    ? event.target
+                    : event.target?.querySelector?.('[data-bs-toggle="dropdown"]');
+                const state = toggle ? tableDropdownState.get(toggle) : null;
+                if (!state) {
+                    return;
+                }
+
+                state.menu.classList.remove('admin-floating-dropdown-menu');
+                state.menu.removeAttribute('style');
+
+                if (state.nextSibling) {
+                    state.parent.insertBefore(state.menu, state.nextSibling);
+                } else {
+                    state.parent.appendChild(state.menu);
+                }
+
+                tableDropdownState.delete(toggle);
+            });
+
+            window.addEventListener('resize', () => {
+                document.querySelectorAll('.admin-table .dropdown.show [data-bs-toggle="dropdown"]').forEach((toggle) => {
+                    const state = tableDropdownState.get(toggle);
+                    if (state) {
+                        positionTableDropdown(state.toggle, state.menu);
+                    }
+                });
+            });
+
+            document.addEventListener('scroll', () => {
+                document.querySelectorAll('.admin-table .dropdown.show [data-bs-toggle="dropdown"]').forEach((toggle) => {
+                    window.bootstrap?.Dropdown.getInstance(toggle)?.hide();
+                });
+            }, true);
+
             document.querySelectorAll('.setting-card-input').forEach((input) => {
                 input.addEventListener('change', () => {
                     const card = input.closest('.setting-card');

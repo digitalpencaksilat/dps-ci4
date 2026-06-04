@@ -304,6 +304,8 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('peserta-tanding', 'Admin\\Sekretariat\\PesertaTandingController::index');
     $routes->get('kompetisi-tanding/by-pendaftar/(:num)', 'Admin\\Sekretariat\\PesertaTandingController::byPendaftar/$1');
     $routes->get('peserta-tanding/(:num)', 'Admin\\Sekretariat\\PesertaTandingController::show/$1');
+    $routes->get('peserta-tanding/(:num)/edit-kelas', 'Admin\\Sekretariat\\PesertaTandingController::editKelas/$1');
+    $routes->get('peserta-tanding/(:num)/pindah-pool', 'Admin\\Sekretariat\\PesertaTandingController::pindahPool/$1');
     $routes->post('peserta-tanding', 'Admin\\Sekretariat\\PesertaTandingController::store');
     $routes->post('peserta-tanding/(:num)/update', 'Admin\\Sekretariat\\PesertaTandingController::update/$1');
     $routes->get('pengadaan-medali', 'Admin\\Sekretariat\\PengadaanMedaliController::index');

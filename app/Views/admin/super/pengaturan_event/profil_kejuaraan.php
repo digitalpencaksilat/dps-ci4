@@ -42,11 +42,10 @@
             <div class="d-flex flex-wrap gap-3">
                 <?php foreach (($categoryCards ?? []) as $card) : ?>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox"
+                        <input class="form-check-input category-card-toggle" type="checkbox"
                                name="card_<?= esc($card['key']) ?>"
                                id="card_<?= esc($card['key']) ?>"
                                value="1"
-                               style="accent-color: #dc3545;"
                                <?= !empty($card['active']) ? 'checked' : '' ?>>
                         <label class="form-check-label" for="card_<?= esc($card['key']) ?>">
                             <i class="<?= esc($card['icon']) ?> me-1"></i><?= esc($card['label']) ?>
@@ -61,4 +60,17 @@
         </div>
     </form>
 </section>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<style>
+.category-card-toggle:checked {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+.category-card-toggle:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}
+</style>
 <?= $this->endSection() ?>

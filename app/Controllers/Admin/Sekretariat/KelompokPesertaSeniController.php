@@ -83,6 +83,41 @@ class KelompokPesertaSeniController extends BaseController
         return redirect()->to(base_url('admin/sekretariat/kelompok-seni/' . $id))->with('status', true)->with('message', 'Kelompok seni berhasil diperbarui.');
     }
 
+    public function ajaxEditKelompok(int $id)
+    {
+        $service = new SekretariatPesertaKontingenService();
+        $row = $service->getKelompokSeniDetail($id);
+        if ($row === null) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        }
+
+        return $this->response->setJSON([
+            'id_kelompok_peserta_seni' => $row->id_kelompok_peserta_seni,
+            'id_kompetisi_seni' => $row->id_kompetisi_seni,
+            'keterangan' => $row->keterangan ?? '',
+            'kompetisiOptions' => $service->listKompetisiSeni(),
+        ]);
+    }
+
+    public function ajaxPindahPool(int $id)
+    {
+        $service = new SekretariatPesertaKontingenService();
+        $row = $service->getKelompokSeniDetail($id);
+        if ($row === null) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        }
+
+        return $this->response->setJSON([
+            'id_kelompok_peserta_seni' => $row->id_kelompok_peserta_seni,
+            'id_kompetisi_seni' => $row->id_kompetisi_seni,
+            'jenis_seni' => $row->jenis_seni ?? '',
+            'nama_seni' => $row->nama_seni ?? '',
+            'nomor_undi' => $row->nomor_undi ?? 0,
+            'keterangan' => $row->keterangan ?? '',
+            'poolOptions' => $service->listPoolSeniForKelompok($id),
+        ]);
+    }
+
     public function delete(int $id)
     {
         try {

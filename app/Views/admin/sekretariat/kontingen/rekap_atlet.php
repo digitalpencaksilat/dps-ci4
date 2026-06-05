@@ -50,7 +50,7 @@
                             ?>
                             <tr>
                                 <td>
-                                    <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-uppercase text-admin-brand"><?= esc($row->nama_kontingen ?: '-') ?></a>
+                                    <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-uppercase text-danger"><?= esc($row->nama_kontingen ?: '-') ?></a>
                                 </td>
                                 <td><?= esc((string) ($row->provinsi ?? '-')) ?></td>
                                 <td class="text-end"><?= esc((string) $jumlahTanding) ?></td>
@@ -62,7 +62,27 @@
                                 <td class="text-end"><?= esc((string) $totalIdCard) ?> lembar</td>
                                 <td class="text-end"><?= esc((string) ((int) ($row->jumlah_official ?? 0))) ?></td>
                                 <td class="text-end">
-                                    <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="btn btn-sm btn-outline-danger rounded-pill">Detail</a>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Aksi
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item" href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>">
+                                                    <i class="fas fa-eye me-2"></i>Detail
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form method="post" action="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen . '/delete') ?>" onsubmit="return confirmAdminAction(this, 'Hapus kontingen?', 'Kontingen <?= esc($row->nama_kontingen, 'attr') ?> akan dihapus dari sistem.', 'Hapus')">
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="fas fa-trash-alt me-2"></i>Hapus
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

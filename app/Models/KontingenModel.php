@@ -47,7 +47,7 @@ class KontingenModel extends Model
         return $this->db->table($this->table . ' k')
             ->select([
                 'k.*',
-                "DATE_FORMAT(k.tanggal_daftar, '%a, %d %M %Y') AS tanggal_daftar_formatted",
+                'k.tanggal_daftar',
                 '(SELECT status_pembayaran FROM pembayaran WHERE pembayaran.id_pembayaran = k.id_pembayaran) AS status_pembayaran',
                 '(SELECT COUNT(*) FROM pendaftar WHERE pendaftar.id_kontingen = k.id_kontingen) AS jumlah_pendaftar',
                 '(SELECT COUNT(*) FROM peserta_tanding pt JOIN pendaftar p ON p.id_pendaftar = pt.id_pendaftar WHERE p.id_kontingen = k.id_kontingen) AS jumlah_peserta_tanding',

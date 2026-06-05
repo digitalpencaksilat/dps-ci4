@@ -308,6 +308,8 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('peserta-tanding/(:num)', 'Admin\\Sekretariat\\PesertaTandingController::show/$1');
     $routes->get('peserta-tanding/(:num)/edit-kelas', 'Admin\\Sekretariat\\PesertaTandingController::editKelas/$1');
     $routes->get('peserta-tanding/(:num)/pindah-pool', 'Admin\\Sekretariat\\PesertaTandingController::pindahPool/$1');
+    $routes->get('peserta-tanding/(:num)/ajax-edit-kelas', 'Admin\\Sekretariat\\PesertaTandingController::ajaxEditKelas/$1');
+    $routes->get('peserta-tanding/(:num)/ajax-pindah-pool', 'Admin\\Sekretariat\\PesertaTandingController::ajaxPindahPool/$1');
     $routes->post('peserta-tanding', 'Admin\\Sekretariat\\PesertaTandingController::store');
     $routes->post('peserta-tanding/(:num)/update', 'Admin\\Sekretariat\\PesertaTandingController::update/$1');
     $routes->get('pengadaan-medali', 'Admin\\Sekretariat\\PengadaanMedaliController::index');
@@ -320,6 +322,8 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->post('kelompok-seni/(:num)/delete', 'Admin\\Sekretariat\\KelompokPesertaSeniController::delete/$1');
     $routes->post('kelompok-seni/(:num)/anggota', 'Admin\\Sekretariat\\KelompokPesertaSeniController::addMember/$1');
     $routes->post('kelompok-seni/(:num)/anggota/(:num)/delete', 'Admin\\Sekretariat\\KelompokPesertaSeniController::deleteMember/$1/$2');
+    $routes->get('kelompok-seni/(:num)/ajax-edit-kelompok', 'Admin\\Sekretariat\\KelompokPesertaSeniController::ajaxEditKelompok/$1');
+    $routes->get('kelompok-seni/(:num)/ajax-pindah-pool', 'Admin\\Sekretariat\\KelompokPesertaSeniController::ajaxPindahPool/$1');
     $routes->get('kelas-tanding', 'Admin\\Sekretariat\\KelasTandingController::index');
     $routes->get('kelas-tanding/(:num)', 'Admin\\Sekretariat\\KelasTandingController::show/$1');
     $routes->get('pool-tanding', 'Admin\\Sekretariat\\PoolTandingController::index');

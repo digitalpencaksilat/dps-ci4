@@ -74,6 +74,40 @@ class PesertaTandingController extends BaseController
         return redirect()->to(base_url('admin/sekretariat/peserta-tanding/' . $id))->with('status', true)->with('message', 'Peserta tanding berhasil diperbarui.');
     }
 
+    public function ajaxEditKelas(int $id)
+    {
+        $service = new SekretariatPesertaKontingenService();
+        $row = $service->getPesertaTandingDetail($id);
+        if ($row === null) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        }
+
+        return $this->response->setJSON([
+            'id_peserta_tanding' => $row->id_peserta_tanding,
+            'id_kompetisi_tanding' => $row->id_kompetisi_tanding,
+            'keterangan' => $row->keterangan ?? '',
+            'kompetisiOptions' => $service->listKompetisiTanding(),
+        ]);
+    }
+
+    public function ajaxPindahPool(int $id)
+    {
+        $service = new SekretariatPesertaKontingenService();
+        $row = $service->getPesertaTandingDetail($id);
+        if ($row === null) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        }
+
+        return $this->response->setJSON([
+            'id_peserta_tanding' => $row->id_peserta_tanding,
+            'id_kompetisi_tanding' => $row->id_kompetisi_tanding,
+            'label' => $row->label ?? '-',
+            'nama_kategori_usia' => $row->nama_kategori_usia ?? '-',
+            'keterangan' => $row->keterangan ?? '',
+            'poolOptions' => $service->listPoolTandingForPeserta($id),
+        ]);
+    }
+
     public function delete(int $id)
     {
         try {

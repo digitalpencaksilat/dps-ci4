@@ -8,18 +8,6 @@
     'toolbarClass' => 'mb-4',
     'actions' => [
         [
-            'tag' => 'a',
-            'href' => base_url('admin/super/kategori-usia'),
-            'label' => 'Kategori Usia',
-            'class' => 'btn-outline-secondary',
-        ],
-        [
-            'tag' => 'a',
-            'href' => base_url('admin/super/sub-kategori-seni'),
-            'label' => 'Sub Kategori Seni',
-            'class' => 'btn-outline-secondary',
-        ],
-        [
             'tag' => 'button',
             'label' => 'Tambah Kategori Lomba',
             'class' => 'btn-danger',
@@ -29,7 +17,6 @@
             ],
         ],
     ],
-    'meta' => '<span class="status-badge neutral">Total: ' . esc((string) count($rows ?? [])) . '</span>',
 ]) ?>
 
 <section class="admin-card">

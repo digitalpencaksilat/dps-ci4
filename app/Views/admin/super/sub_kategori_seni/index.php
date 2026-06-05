@@ -8,18 +8,6 @@
     'toolbarClass' => 'mb-4',
     'actions' => [
         [
-            'tag' => 'a',
-            'href' => base_url('admin/super/kategori-usia'),
-            'label' => 'Kategori Usia',
-            'class' => 'btn-outline-secondary',
-        ],
-        [
-            'tag' => 'a',
-            'href' => base_url('admin/super/kategori-lomba'),
-            'label' => 'Kategori Lomba',
-            'class' => 'btn-outline-secondary',
-        ],
-        [
             'tag' => 'button',
             'label' => 'Ubah Peserta Per Pool',
             'class' => 'btn-outline-danger',
@@ -38,7 +26,6 @@
             ],
         ],
     ],
-    'meta' => '<span class="status-badge neutral">Total: ' . esc((string) count($rows ?? [])) . '</span>',
 ]) ?>
 
 <section class="admin-card">

@@ -108,4 +108,83 @@ class EventProfileService
             'domain_hosting' => 'permit_empty|max_length[255]|valid_url_strict[https,http]',
         ];
     }
+
+    /**
+     * Default category cards configuration.
+     *
+     * @return array<int, array{key: string, label: string, icon: string, description: string, image: string, active: bool}>
+     */
+    public static function defaultCategoryCards(): array
+    {
+        return [
+            [
+                'key'         => 'tanding',
+                'label'       => 'Tanding',
+                'icon'        => 'fa-solid fa-hand-fist',
+                'description' => 'Full body contact sesuai aturan IPSI terbaru.',
+                'image'       => 'assets/images/landing/landing-category-tanding.jpg',
+                'active'      => true,
+            ],
+            [
+                'key'         => 'tunggal',
+                'label'       => 'Tunggal',
+                'icon'        => 'fa-solid fa-user',
+                'description' => 'Peragaan jurus baku tangan kosong & senjata.',
+                'image'       => 'assets/images/landing/landing-category-tunggal.jpg',
+                'active'      => true,
+            ],
+            [
+                'key'         => 'ganda',
+                'label'       => 'Ganda',
+                'icon'        => 'fa-solid fa-users',
+                'description' => 'Koreografi tempur dua pesilat.',
+                'image'       => 'assets/images/landing/landing-category-ganda.jpg',
+                'active'      => true,
+            ],
+            [
+                'key'         => 'regu',
+                'label'       => 'Regu',
+                'icon'        => 'fa-solid fa-users-viewfinder',
+                'description' => 'Kekompakan gerak tiga pesilat dalam satu tim.',
+                'image'       => 'assets/images/landing/landing-category-beregu.jpg',
+                'active'      => true,
+            ],
+        ];
+    }
+
+    /**
+     * Load current category cards from DB, falling back to defaults.
+     *
+     * @return array<int, array{key: string, label: string, icon: string, description: string, image: string, active: bool}>
+     */
+    public function getCategoryCards(): array
+    {
+        $raw = get_setting('landing_category_cards');
+        if ($raw !== null && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+
+        return self::defaultCategoryCards();
+    }
+
+    /**
+     * Save category cards visibility config.
+     *
+     * @param array<string, bool> $activeMap  e.g. ['tanding' => true, 'tunggal' => false, ...]
+     */
+    public function saveCategoryCards(array $activeMap): void
+    {
+        $cards = $this->getCategoryCards();
+        foreach ($cards as &$card) {
+            if (isset($activeMap[$card['key']])) {
+                $card['active'] = (bool) $activeMap[$card['key']];
+            }
+        }
+        unset($card);
+
+        (new SettingWriterService())->setString('landing_category_cards', json_encode($cards, JSON_UNESCAPED_UNICODE));
+    }
 }

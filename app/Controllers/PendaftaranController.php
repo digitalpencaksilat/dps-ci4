@@ -147,6 +147,7 @@ class PendaftaranController extends BaseController
             'contact_person' => (string) (get_setting('contact_person') ?? ''),
             'countdown' => (string) (get_setting('countdown') ?? ''),
             'fight_category' => (string) (get_setting('fight_category') ?? ''),
+            'category_cards' => (new \App\Services\Admin\Super\EventProfileService())->getCategoryCards(),
         ];
     }
 }

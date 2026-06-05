@@ -35,6 +35,25 @@
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
+        <div class="col-12">
+            <hr class="my-2">
+            <label class="form-label fw-semibold">Kategori Pertandingan di Landing Page</label>
+            <p class="text-muted small mb-3">Centang kategori yang ingin ditampilkan sebagai card di halaman utama. Ukuran card akan menyesuaikan otomatis.</p>
+            <div class="d-flex flex-wrap gap-3">
+                <?php foreach (($categoryCards ?? []) as $card) : ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                               name="card_<?= esc($card['key']) ?>"
+                               id="card_<?= esc($card['key']) ?>"
+                               value="1"
+                               <?= !empty($card['active']) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="card_<?= esc($card['key']) ?>">
+                            <i class="<?= esc($card['icon']) ?> me-1"></i><?= esc($card['label']) ?>
+                        </label>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
         <div class="col-12 d-flex flex-wrap gap-2">
             <button type="submit" class="btn btn-danger rounded-pill">Simpan Profil Kejuaraan</button>
             <a href="<?= base_url('admin/super/dashboard-pengaturan-event') ?>" class="btn btn-outline-secondary rounded-pill">Batal</a>

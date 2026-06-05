@@ -21,6 +21,7 @@ class EventProfileController extends BaseController
             'fields' => $this->eventProfileService->labels(),
             'values' => $this->eventProfileService->currentValues(),
             'errors' => session()->getFlashdata('errors') ?? [],
+            'categoryCards' => $this->eventProfileService->getCategoryCards(),
         ], 'Profil Kejuaraan'));
     }
 
@@ -38,6 +39,13 @@ class EventProfileController extends BaseController
         }
 
         $this->eventProfileService->save($payload);
+
+        $cardKeys = ['tanding', 'tunggal', 'ganda', 'regu'];
+        $activeMap = [];
+        foreach ($cardKeys as $key) {
+            $activeMap[$key] = (bool) $this->request->getPost('card_' . $key);
+        }
+        $this->eventProfileService->saveCategoryCards($activeMap);
 
         return redirect()->to(base_url('admin/super/pengaturan-event/profil-kejuaraan'))->with('status', true)->with('message', 'Profil kejuaraan berhasil diperbarui.');
     }

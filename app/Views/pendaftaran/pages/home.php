@@ -109,28 +109,42 @@
     </div>
 </section>
 
+<?php
+$activeCards = array_filter($event['category_cards'] ?? [], fn($c) => !empty($c['active']));
+$cardCount = count($activeCards);
+?>
+<?php if ($cardCount > 0) : ?>
 <section class="py-5 bg-white border-top">
     <div class="container py-5">
         <div class="section-title text-center mb-5 reveal">
             <h2>Kategori Pertandingan</h2>
             <p class="text-muted">Kelas yang diperlombakan untuk <?= esc($event['fight_category'] ?: '-') ?></p>
         </div>
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-3 reveal">
-                <div class="category-card-modern"><img src="<?= base_url('assets/images/landing/landing-category-tanding.jpg') ?>" alt="Tanding" class="category-img-modern"><div class="category-overlay-modern"><i class="fa-solid fa-hand-fist"></i><h4>Tanding</h4><p>Full body contact sesuai aturan IPSI terbaru.</p></div></div>
-            </div>
-            <div class="col-md-6 col-lg-3 reveal">
-                <div class="category-card-modern"><img src="<?= base_url('assets/images/landing/landing-category-tunggal.jpg') ?>" alt="Tunggal" class="category-img-modern"><div class="category-overlay-modern"><i class="fa-solid fa-user"></i><h4>Tunggal</h4><p>Peragaan jurus baku tangan kosong & senjata.</p></div></div>
-            </div>
-            <div class="col-md-6 col-lg-3 reveal">
-                <div class="category-card-modern"><img src="<?= base_url('assets/images/landing/landing-category-ganda.jpg') ?>" alt="Ganda" class="category-img-modern"><div class="category-overlay-modern"><i class="fa-solid fa-users"></i><h4>Ganda</h4><p>Koreografi tempur dua pesilat.</p></div></div>
-            </div>
-            <div class="col-md-6 col-lg-3 reveal">
-                <div class="category-card-modern"><img src="<?= base_url('assets/images/landing/landing-category-beregu.jpg') ?>" alt="Beregu" class="category-img-modern"><div class="category-overlay-modern"><i class="fa-solid fa-users-viewfinder"></i><h4>Regu</h4><p>Kekompakan gerak tiga pesilat dalam satu tim.</p></div></div>
-            </div>
+        <div class="row g-4 justify-content-center">
+            <?php
+            $colClass = match ($cardCount) {
+                1 => 'col-md-8 col-lg-6',
+                2 => 'col-md-6 col-lg-5',
+                3 => 'col-md-6 col-lg-4',
+                default => 'col-md-6 col-lg-3',
+            };
+            ?>
+            <?php foreach ($activeCards as $card) : ?>
+                <div class="<?= $colClass ?> reveal">
+                    <div class="category-card-modern">
+                        <img src="<?= base_url($card['image']) ?>" alt="<?= esc($card['label']) ?>" class="category-img-modern">
+                        <div class="category-overlay-modern">
+                            <i class="<?= esc($card['icon']) ?>"></i>
+                            <h4><?= esc($card['label']) ?></h4>
+                            <p><?= esc($card['description']) ?></p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <section class="py-5 bg-dot-dark-section">
     <div class="container py-5">

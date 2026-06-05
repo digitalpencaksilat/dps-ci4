@@ -46,6 +46,7 @@
                                name="card_<?= esc($card['key']) ?>"
                                id="card_<?= esc($card['key']) ?>"
                                value="1"
+                               style="accent-color: #dc3545;"
                                <?= !empty($card['active']) ? 'checked' : '' ?>>
                         <label class="form-check-label" for="card_<?= esc($card['key']) ?>">
                             <i class="<?= esc($card['icon']) ?> me-1"></i><?= esc($card['label']) ?>

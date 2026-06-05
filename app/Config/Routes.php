@@ -368,6 +368,10 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('jadwal-seni/(:num)', 'Admin\\Sekretariat\\JadwalSeniController::show/$1');
     $routes->post('jadwal-seni/create-pdf-ajax/(:num)/(:num)', 'Admin\\Sekretariat\\JadwalSeniController::createPdfAjax/$1/$2');
     $routes->get('jadwal-seni/get-all-ids-ajax', 'Admin\\Sekretariat\\JadwalSeniController::getAllIdsAjax');
+
+    // Cek Data Arsip
+    $routes->get('cek-data-arsip', 'Admin\Sekretariat\CekDataArsipController::index');
+    $routes->post('cek-data-arsip/detail', 'Admin\Sekretariat\CekDataArsipController::getDetailArsip');
 });
 
 $routes->group('utilities', ['filter' => 'adminrole:super_admin'], static function ($routes): void {

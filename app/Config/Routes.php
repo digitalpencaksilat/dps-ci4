@@ -269,6 +269,7 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('sub-kategori-seni', 'Admin\\Super\\SubKategoriSeniController::store');
     $routes->post('sub-kategori-seni/(:num)/update', 'Admin\\Super\\SubKategoriSeniController::update/$1');
     $routes->post('sub-kategori-seni/(:num)/delete', 'Admin\\Super\\SubKategoriSeniController::delete/$1');
+    $routes->post('sub-kategori-seni/update-max-peserta-per-pool', 'Admin\\Super\\SubKategoriSeniController::updateMaxPesertaPerPool');
     $routes->get('kelas-tanding', 'Admin\\Super\\KelasTandingController::index');
     $routes->get('kelas-tanding/(:num)', 'Admin\\Super\\KelasTandingController::show/$1');
     $routes->get('kelas-tanding/(:num)/edit', 'Admin\\Super\\KelasTandingController::edit/$1');

@@ -123,6 +123,44 @@ class SubKategoriSeniController extends BaseController
         return redirect()->to(base_url('admin/super/sub-kategori-seni'))->with('status', true)->with('message', 'Sub kategori seni berhasil dihapus.');
     }
 
+    public function updateMaxPesertaPerPool(): RedirectResponse
+    {
+        $kategoriLombaIds = $this->request->getPost('id_kategori_lomba');
+        $maxPeserta = (int) $this->request->getPost('max_peserta');
+        $distribusiUlang = (bool) $this->request->getPost('otomatis_distribusi');
+
+        if (empty($kategoriLombaIds) || ! is_array($kategoriLombaIds)) {
+            return redirect()->to(base_url('admin/super/sub-kategori-seni'))
+                ->with('status', false)
+                ->with('message', 'Silahkan pilih minimal satu kategori seni yang akan diubah.');
+        }
+
+        if ($maxPeserta < 1) {
+            return redirect()->to(base_url('admin/super/sub-kategori-seni'))
+                ->with('status', false)
+                ->with('message', 'Jumlah peserta per pool harus lebih dari 0.');
+        }
+
+        $kategoriLombaIds = array_values(array_unique(array_filter(array_map('intval', $kategoriLombaIds))));
+
+        try {
+            $updated = $this->subKategoriSeniService->updateMaxPesertaPerPool($kategoriLombaIds, $maxPeserta, $distribusiUlang);
+        } catch (\Throwable $e) {
+            return redirect()->to(base_url('admin/super/sub-kategori-seni'))
+                ->with('status', false)
+                ->with('message', 'Gagal mengubah jumlah peserta per pool: ' . $e->getMessage());
+        }
+
+        $msg = 'Jumlah peserta per pool berhasil diubah (' . $updated . ' pool terpengaruh).';
+        if ($distribusiUlang) {
+            $msg .= ' Distribusi ulang peserta akan diproses.';
+        }
+
+        return redirect()->to(base_url('admin/super/sub-kategori-seni'))
+            ->with('status', true)
+            ->with('message', $msg);
+    }
+
     private function viewData(array $data, string $title): array
     {
         return $data + [

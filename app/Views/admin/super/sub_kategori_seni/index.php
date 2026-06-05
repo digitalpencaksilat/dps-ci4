@@ -21,6 +21,15 @@
         ],
         [
             'tag' => 'button',
+            'label' => 'Ubah Peserta Per Pool',
+            'class' => 'btn-outline-danger',
+            'attrs' => [
+                'data-bs-toggle' => 'modal',
+                'data-bs-target' => '#modalUbahJumlahPesertaPerPool',
+            ],
+        ],
+        [
+            'tag' => 'button',
             'label' => 'Tambah Sub Kategori Seni',
             'class' => 'btn-danger',
             'attrs' => [
@@ -182,6 +191,66 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-danger rounded-pill" <?= empty($kategoriLombaRows) ? 'disabled' : '' ?>>Simpan Sub Kategori Seni</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalUbahJumlahPesertaPerPool" tabindex="-1" aria-labelledby="modalUbahJumlahPesertaPerPoolLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <form action="<?= base_url('admin/super/sub-kategori-seni/update-max-peserta-per-pool') ?>" method="post" class="modal-content">
+            <?= csrf_field() ?>
+            <div class="modal-header align-items-start">
+                <div>
+                    <h5 class="modal-title" id="modalUbahJumlahPesertaPerPoolLabel">Ubah Jumlah Peserta Per Pool</h5>
+                    <p class="muted-copy mb-0 small">Mengubah jumlah peserta per pool akan merubah struktur bagan. Harap mengacak ulang bagan dan membuat jadwal baru jika diperlukan.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6">
+                        <label class="form-label fw-semibold d-block">Pilih Kategori Lomba Seni</label>
+                        <?php if (empty($kategoriLombaRows)) : ?>
+                            <div class="alert alert-warning small mb-0">Belum ada Kategori Lomba Seni.</div>
+                        <?php else : ?>
+                            <div style="max-height: 250px; overflow-y: auto;">
+                                <?php foreach (($kategoriLombaRows ?? []) as $kategoriLomba) : ?>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" name="id_kategori_lomba[]" value="<?= esc((string) $kategoriLomba->id_kategori_lomba) ?>" id="ubahPool_kl_<?= esc((string) $kategoriLomba->id_kategori_lomba) ?>">
+                                        <label class="form-check-label" for="ubahPool_kl_<?= esc((string) $kategoriLomba->id_kategori_lomba) ?>">
+                                            <?= esc($kategoriLomba->nama_kategori_usia ?? '-') ?>
+                                            <span class="muted-copy small text-capitalize">/ <?= esc($kategoriLomba->jenis_kelamin ?? '-') ?></span>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="form-text text-danger mt-1">Pilih minimal satu kategori.</div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="mb-3">
+                            <label for="ubah_pool_max_peserta" class="form-label fw-semibold">Jumlah Peserta Per Pool</label>
+                            <input type="number" min="1" class="form-control" id="ubah_pool_max_peserta" name="max_peserta" required>
+                            <div class="form-text">Ganda dihitung 1, beregu dihitung 1.</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="otomatis_distribusi" id="ubah_pool_otomatis_distribusi" value="1">
+                                <label class="form-check-label" for="ubah_pool_otomatis_distribusi">Otomatis distribusikan peserta dan acak bagan?</label>
+                            </div>
+                            <div class="form-text">Setelah mengubah kapasitas per pool, sebaran peserta dan bagan dapat diacak ulang dan disesuaikan.</div>
+                        </div>
+                        <div class="alert alert-warning small mb-0">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                            <strong>Perhatian!</strong> Mengubah jumlah peserta per pool akan merubah struktur bagan. Harap mengacak ulang bagan dan membuat jadwal baru.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-danger rounded-pill" <?= empty($kategoriLombaRows) ? 'disabled' : '' ?>>Simpan Perubahan</button>
             </div>
         </form>
     </div>

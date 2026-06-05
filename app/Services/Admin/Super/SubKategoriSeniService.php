@@ -60,4 +60,61 @@ class SubKategoriSeniService
             throw new RuntimeException('Transaksi sub kategori seni gagal.');
         }
     }
+
+    /**
+     * Update max_peserta di semua pool (kompetisi_seni) milik sub_kategori_seni
+     * yang berada di bawah kategori_lomba yang dipilih.
+     *
+     * @param list<int> $kategoriLombaIds
+     * @return int Jumlah pool yang di-update
+     */
+    public function updateMaxPesertaPerPool(array $kategoriLombaIds, int $maxPeserta, bool $distribusiUlang = false): int
+    {
+        $db = db_connect();
+        $updatedCount = 0;
+
+        $db->transStart();
+
+        try {
+            foreach ($kategoriLombaIds as $idKategoriLomba) {
+                $subKategoriRows = $this->subKategoriSeniModel
+                    ->where('id_kategori_lomba', (int) $idKategoriLomba)
+                    ->findAll();
+
+                foreach ($subKategoriRows as $subKategori) {
+                    $db->table('kompetisi_seni')
+                        ->where('id_sub_kategori_seni', (int) $subKategori->id_sub_kategori_seni)
+                        ->update(['max_peserta' => $maxPeserta]);
+
+                    $updatedCount += $db->affectedRows();
+
+                    if ($distribusiUlang) {
+                        $this->distribusikanKelompokPesertaSeni((int) $subKategori->id_sub_kategori_seni);
+                    }
+                }
+            }
+        } catch (\Throwable $error) {
+            $db->transRollback();
+            throw $error;
+        }
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            throw new RuntimeException('Gagal mengubah jumlah peserta per pool.');
+        }
+
+        return $updatedCount;
+    }
+
+    /**
+     * Distribusi ulang kelompok peserta seni ke pool.
+     * Placeholder — implementasi detail bisa ditambah nanti sesuai kebutuhan.
+     */
+    private function distribusikanKelompokPesertaSeni(int $idSubKategoriSeni): void
+    {
+        log_message('info', '[SubKategoriSeni] Distribusi ulang diminta untuk id_sub_kategori_seni={id}', [
+            'id' => $idSubKategoriSeni,
+        ]);
+    }
 }

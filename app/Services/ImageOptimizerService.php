@@ -12,11 +12,38 @@ class ImageOptimizerService
         string $baseName,
         int $maxSide = 1600,
         int $jpgQuality = 82,
-        int $pngCompression = 6
+        int $pngCompression = 6,
+        bool $fallbackToRaw = false
     ): string {
-        $meta = $this->detectImageMeta($uploaded);
         $this->ensureDirectory($targetDir);
 
+        try {
+            $meta = $this->detectImageMeta($uploaded);
+
+            return $this->processWithGd($uploaded, $targetDir, $baseName, $meta, $maxSide, $jpgQuality, $pngCompression);
+        } catch (\RuntimeException $e) {
+            if (! $fallbackToRaw) {
+                throw $e;
+            }
+
+            log_message('warning', '[ImageOptimizer] Optimasi gagal untuk file "{basename}", menyimpan file asli. Alasan: {reason}', [
+                'basename' => $baseName,
+                'reason'   => $e->getMessage(),
+            ]);
+
+            return $this->storeRawFallback($uploaded, $targetDir, $baseName, $this->resolveExtension($uploaded));
+        }
+    }
+
+    private function processWithGd(
+        UploadedFile $uploaded,
+        string $targetDir,
+        string $baseName,
+        array $meta,
+        int $maxSide,
+        int $jpgQuality,
+        int $pngCompression
+    ): string {
         $source = $this->createSourceImage($uploaded->getTempName(), $meta['type']);
         if ($source === false) {
             throw new \RuntimeException('Gagal memproses file gambar yang diunggah.');
@@ -59,6 +86,38 @@ class ImageOptimizerService
         }
 
         return $fileName;
+    }
+
+    private function storeRawFallback(
+        UploadedFile $uploaded,
+        string $targetDir,
+        string $baseName,
+        string $extension
+    ): string {
+        $fileName = $baseName . '.' . $extension;
+        $targetPath = rtrim($targetDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
+
+        $tempPath = $uploaded->getTempName();
+        if (! is_file($tempPath)) {
+            throw new \RuntimeException('File upload sementara tidak ditemukan untuk fallback.');
+        }
+
+        if (! copy($tempPath, $targetPath)) {
+            throw new \RuntimeException('Gagal menyimpan file asli (fallback).');
+        }
+
+        return $fileName;
+    }
+
+    private function resolveExtension(UploadedFile $uploaded): string
+    {
+        $ext = strtolower((string) $uploaded->getExtension());
+
+        if ($ext === 'jpeg') {
+            return 'jpg';
+        }
+
+        return in_array($ext, ['jpg', 'png'], true) ? $ext : 'jpg';
     }
 
     public function detectImageMeta(UploadedFile $uploaded): array

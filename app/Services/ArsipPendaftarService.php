@@ -77,7 +77,7 @@ class ArsipPendaftarService
         $slug = $this->slugify($jenisArsip, 'arsip');
         $name = 'arsip-peserta-' . $idPendaftar . '-' . $slug . '-' . date('YmdHis') . '-' . $this->randomSuffix();
 
-        return (new ImageOptimizerService())->optimizeAndStore($uploaded, $targetDir, $name, 1600, 82, 6);
+        return (new ImageOptimizerService())->optimizeAndStore($uploaded, $targetDir, $name, 1600, 82, 6, fallbackToRaw: true);
     }
 
     private function deletePhysicalFile(string $fileName): void

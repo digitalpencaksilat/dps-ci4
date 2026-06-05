@@ -289,7 +289,7 @@ class UploadedFilePayload
         $targetDir = FCPATH . 'uploads/bukti-pembayaran';
         $name = 'bukti-pembayaran-kontingen-' . $this->idKontingen . '-' . date('YmdHis') . '-' . $this->randomSuffix();
 
-        return (new ImageOptimizerService())->optimizeAndStore($this->file, $targetDir, $name, 1600, 82, 6);
+        return (new ImageOptimizerService())->optimizeAndStore($this->file, $targetDir, $name, 1600, 82, 6, fallbackToRaw: true);
     }
 
     private function randomSuffix(): string

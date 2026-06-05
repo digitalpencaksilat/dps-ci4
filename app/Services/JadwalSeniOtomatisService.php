@@ -516,10 +516,6 @@ class JadwalSeniOtomatisService
 
         $ok = $this->db->table('penampilan_seni')->insert([
             'id_kelompok_peserta_seni' => $idKelompokPesertaSeni,
-            'status_penampilan' => null,
-            'nilai_akhir' => null,
-            'waktu_tampil' => null,
-            'catatan_nilai_sama' => null,
         ]);
 
         return $ok ? (int) $this->db->insertID() : 0;

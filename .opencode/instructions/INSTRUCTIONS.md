@@ -13,6 +13,7 @@ This repository is a CodeIgniter 4 application for a pencak silat registration a
 
 ## Working Rules
 
+- NEVER use `sudo` for any file operation in this project. All files are owned by the current user (`uphori1a`) with full permissions. Commands like `sudo tee`, `sudo sed`, `sudo mv`, `sudo cp`, `sudo rm`, `sudo chmod`, or `sudo chown` are unnecessary and must not be used.
 - Prefer small, focused changes that match the existing CodeIgniter structure.
 - Keep controllers thin when practical; put reusable database logic in models or services already present in the codebase.
 - Use CodeIgniter helpers and services consistently with existing files.

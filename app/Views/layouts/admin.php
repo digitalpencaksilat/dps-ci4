@@ -231,6 +231,20 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <?php endif; ?>
 
                     <?php if ($adminRole === 'sekretariat') : ?>
+                    <?php $isStatistikMenu = in_array(($activeMenu ?? ''), ['statistik_pendaftaran', 'statistik_tanding', 'statistik_seni'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isStatistikMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminStatistikSubmenu" role="button" aria-expanded="<?= $isStatistikMenu ? 'true' : 'false' ?>" aria-controls="adminStatistikSubmenu">
+                            <span class="label-block"><i class="fas fa-chart-pie"></i><span>Statistik</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isStatistikMenu ? 'show' : '' ?>" id="adminStatistikSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_pendaftaran' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik') ?>">Progress Pendaftaran</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik/tanding') ?>">Statistik Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik/seni') ?>">Statistik Seni</a>
+                            </div>
+                        </div>
+                    </div>
                     <div>
                         <a class="admin-nav-link <?= ($activeMenu ?? '') === 'kontingen' ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminKontingenSubmenu" role="button" aria-expanded="<?= ($activeMenu ?? '') === 'kontingen' ? 'true' : 'false' ?>" aria-controls="adminKontingenSubmenu">
                             <span class="label-block"><i class="fas fa-people-group"></i><span>Data Kontingen</span></span>
@@ -246,7 +260,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <?php $isAtletMenu = in_array(($activeMenu ?? ''), ['data_atlet', 'data_bpjs', 'peserta_tanding', 'kelompok_seni', 'cek_data_arsip'], true); ?>
                     <div>
                         <a class="admin-nav-link <?= $isAtletMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminAtletSubmenu" role="button" aria-expanded="<?= $isAtletMenu ? 'true' : 'false' ?>" aria-controls="adminAtletSubmenu">
-                            <span class="label-block"><i class="fas fa-users"></i><span>Atlet</span></span>
+                            <span class="label-block"><i class="fas fa-users"></i><span>Data Atlet</span></span>
                             <i class="fas fa-chevron-right chevron"></i>
                         </a>
                         <div class="admin-submenu collapse <?= $isAtletMenu ? 'show' : '' ?>" id="adminAtletSubmenu">
@@ -256,20 +270,6 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'data_bpjs' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/data-bpjs') ?>">Data BPJS</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'peserta_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/peserta-tanding') ?>">Peserta Tanding</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kelompok_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kelompok-seni') ?>">Peserta Seni</a>
-                            </div>
-                        </div>
-                    </div>
-                    <?php $isStatistikMenu = in_array(($activeMenu ?? ''), ['statistik_pendaftaran', 'statistik_tanding', 'statistik_seni'], true); ?>
-                    <div>
-                        <a class="admin-nav-link <?= $isStatistikMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminStatistikSubmenu" role="button" aria-expanded="<?= $isStatistikMenu ? 'true' : 'false' ?>" aria-controls="adminStatistikSubmenu">
-                            <span class="label-block"><i class="fas fa-chart-pie"></i><span>Statistik</span></span>
-                            <i class="fas fa-chevron-right chevron"></i>
-                        </a>
-                        <div class="admin-submenu collapse <?= $isStatistikMenu ? 'show' : '' ?>" id="adminStatistikSubmenu">
-                            <div class="admin-submenu-inner">
-                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_pendaftaran' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik') ?>">Progress Pendaftaran</a>
-                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik/tanding') ?>">Statistik Tanding</a>
-                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'statistik_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/statistik/seni') ?>">Statistik Seni</a>
                             </div>
                         </div>
                     </div>
@@ -285,20 +285,6 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pool_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pool-tanding') ?>">Daftar Pool</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pertandingan_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pertandingan-tanding') ?>">Daftar Pertandingan</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'kuota_prestasi_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/kuota-prestasi-tanding') ?>">Kuota Kelas Prestasi</a>
-                            </div>
-                        </div>
-                    </div>
-                    <?php $isPesilatTerbaikMenu = in_array(($activeMenu ?? ''), ['pesilat_terbaik_pertandingan_tanding', 'pesilat_terbaik_battle_seni', 'pesilat_terbaik_pool_seni'], true); ?>
-                    <div>
-                        <a class="admin-nav-link <?= $isPesilatTerbaikMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminPesilatTerbaikSubmenu" role="button" aria-expanded="<?= $isPesilatTerbaikMenu ? 'true' : 'false' ?>" aria-controls="adminPesilatTerbaikSubmenu">
-                            <span class="label-block"><i class="fas fa-ranking-star"></i><span>Pesilat Terbaik</span></span>
-                            <i class="fas fa-chevron-right chevron"></i>
-                        </a>
-                        <div class="admin-submenu collapse <?= $isPesilatTerbaikMenu ? 'show' : '' ?>" id="adminPesilatTerbaikSubmenu">
-                            <div class="admin-submenu-inner">
-                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pesilat_terbaik_pertandingan_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pesilat-terbaik/pertandingan-tanding') ?>">Urutan Poin Tanding</a>
-                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pesilat_terbaik_battle_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pesilat-terbaik/battle-seni') ?>">Urutan Poin Battle</a>
-                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pesilat_terbaik_pool_seni' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pesilat-terbaik/pool-seni') ?>">Urutan Poin Pool</a>
                             </div>
                         </div>
                     </div>
@@ -350,7 +336,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
-                    <?php $isToolsMenu = in_array(($activeMenu ?? ''), ['pengadaan_medali', 'nomor_sertifikat'], true); ?>
+                    <?php $isToolsMenu = in_array(($activeMenu ?? ''), ['pengadaan_medali', 'nomor_sertifikat', 'pencetakan_id_card'], true); ?>
                     <div>
                         <a class="admin-nav-link <?= $isToolsMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminToolsSubmenu" role="button" aria-expanded="<?= $isToolsMenu ? 'true' : 'false' ?>" aria-controls="adminToolsSubmenu">
                             <span class="label-block"><i class="fas fa-screwdriver-wrench"></i><span>Tools</span></span>
@@ -358,6 +344,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         </a>
                         <div class="admin-submenu collapse <?= $isToolsMenu ? 'show' : '' ?>" id="adminToolsSubmenu">
                             <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pencetakan_id_card' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/id-card') ?>">Cetak ID Card</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pengadaan_medali' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pengadaan-medali') ?>">Pengadaan Medali</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'nomor_sertifikat' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/nomor-sertifikat') ?>">Nomor Sertifikat</a>
                             </div>

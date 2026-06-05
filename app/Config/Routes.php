@@ -377,6 +377,19 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     // Cek Data Arsip
     $routes->get('cek-data-arsip', 'Admin\Sekretariat\CekDataArsipController::index');
     $routes->post('cek-data-arsip/detail', 'Admin\Sekretariat\CekDataArsipController::getDetailArsip');
+
+    // ID Card
+    $routes->get('id-card', 'Admin\Sekretariat\IdCardController::index');
+    $routes->get('id-card/pengaturan-tata-letak/(:segment)', 'Admin\Sekretariat\IdCardController::pengaturanTataLetak/$1');
+    $routes->post('id-card/simpan-tata-letak', 'Admin\Sekretariat\IdCardController::simpanTataLetak');
+    $routes->post('id-card/upload-background', 'Admin\Sekretariat\IdCardController::uploadBackground');
+    $routes->get('id-card/preview', 'Admin\Sekretariat\IdCardController::preview');
+    $routes->get('id-card/cetak-per-kontingen', 'Admin\Sekretariat\IdCardController::cetakPerKontingen');
+    $routes->get('id-card/cetak-per-peserta', 'Admin\Sekretariat\IdCardController::cetakPerPeserta');
+    $routes->post('id-card/proses-cetak-batch', 'Admin\Sekretariat\IdCardController::prosesCetakBatch');
+    $routes->get('id-card/cetak/(:segment)/(:num)', 'Admin\Sekretariat\IdCardController::cetakSingle/$1/$2');
+    $routes->get('id-card/api/peserta-tanding/(:num)', 'Admin\Sekretariat\IdCardController::apiPesertaTanding/$1');
+    $routes->get('id-card/api/peserta-seni/(:num)', 'Admin\Sekretariat\IdCardController::apiPesertaSeni/$1');
 });
 
 $routes->group('utilities', ['filter' => 'adminrole:super_admin'], static function ($routes): void {

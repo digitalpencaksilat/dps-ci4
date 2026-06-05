@@ -4,6 +4,40 @@ Semua perubahan penting pada project ini akan dicatat di file ini.
 
 Format changelog ini mengikuti gaya sederhana berbasis versi.
 
+## v0.5.1 - 2026-06-05
+
+### Added
+
+- Fitur **Set Match Sequence** untuk jadwal tanding — route, controller, model `updateUrutanPartai`, view drag-drop dengan jQuery UI sortable.
+- Fitur **Import Jadwal Tanding & Seni** dari file Excel dengan parity 100% terhadap CI3, termasuk commit service untuk tanding, seni battle, dan seni pool.
+- Auto-fix bracket bentrok saat import jadwal tanding — validasi dan perbaikan otomatis sesuai logic CI3.
+- Fitur **Swap Athlete** jadwal tanding dan seni lengkap dengan service `JadwalTandingSwapService` dan `JadwalSeniPoolSwapService`.
+
+### Changed
+
+- Modul gelanggang dan alur PDF jadwal diselaraskan dengan parity CI3, termasuk merge PDF multi-gelanggang via `PdfMergeService`.
+- Tema admin dan kontingen diperbarui: warna sidebar, tipografi, dan konsistensi tombol mengikuti tema DPS `Merah Sport Arena`.
+- Penomoran jadwal tanding diperbaiki lintas tanding dan seni agar konsisten.
+- Mode jadwal di halaman super admin ditambah untuk mendukung multiple scheduling run.
+
+### Fixed
+
+- **Set Schedule Pattern:** `acakUrutanPertandingan` diperbaiki parity CI3, PDF direktori tanding diregenerate setelah update pola.
+- **Set Schedule Pattern:** `getPertandinganPola` kini menggunakan raw SQL karena Query Builder CI4 melakukan escaping pada `orderBy` sehingga mengacaukan hasil.
+- **Set Schedule Pattern:** `syncJadwalTandingRange` tidak lagi mencoba update kolom yang tidak ada di tabel penjadwalan.
+- **JadwalSeniOtomatisService:** insert `penampilan_seni` tidak lagi menyertakan kolom noneksisten (`status_penampilan`, `nilai_akhir`, `waktu_tampil`, `catatan_nilai_sama`).
+- **Import Battle Seni:** toleransi typo referensi `winner` (misal `id_winner` vs `winner_id`) pada file Excel import.
+- **Query sub kategori:** hasil query sub kategori seni dan battle kini ditangani baik sebagai object maupun array.
+- **jQuery UI sortable:** posisi script dipindah ke section scripts (setelah jQuery layout), tombol `Update` diwarnai merah tema DPS, jQuery UI dimuat secara dynamic.
+- **Set Match Sequence:** layout presisi nomor partai masuk list item drag-drop, duplikasi jQuery seni dihilangkan.
+- **Operasi Basis Data:** sinkronkan parity operasi basis data, penjadwalan otomatis, db sync, dan hapus data preview diperbaiki.
+- **PdfMergeService:** runtime merge PDF gelanggang diperbaiki agar tidak gagal di tengah proses.
+
+### Housekeeping
+
+- Hapus file debug `debug_bracket.php`, `debug_excel.php`, `debug_grouping.php` dari root project.
+- Tambah aturan `NEVER use sudo` di `.opencode/instructions/INSTRUCTIONS.md`.
+
 ## v0.5.0 - 2026-05-28
 
 ### Added

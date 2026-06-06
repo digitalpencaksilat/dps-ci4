@@ -56,6 +56,7 @@ class AdminRoleFilter implements FilterInterface
             'kontingen' => base_url('kontingen/dashboard'),
             'bendahara' => base_url('admin/bendahara/dashboard'),
             'sekretariat' => base_url('admin/sekretariat/dashboard'),
+            'printer' => base_url('admin/printer/dashboard'),
             'super_admin' => base_url('admin/super/dashboard'),
             default => null,
         };

@@ -35,6 +35,12 @@ $adminPanels = [
         'home' => 'admin/sekretariat/dashboard',
         'footer' => 'Digital Pencak Silat Sekretariat Panel',
     ],
+    'printer' => [
+        'label' => 'Printer Panel',
+        'area' => 'Area Admin Printer',
+        'home' => 'admin/printer/dashboard',
+        'footer' => 'Digital Pencak Silat Printer Panel',
+    ],
     'super_admin' => [
         'label' => 'Super Admin Panel',
         'area' => 'Area Super Admin',
@@ -350,6 +356,31 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
+
+                    <?php if ($adminRole === 'printer') : ?>
+                    <?php $isPencetakanMenu = in_array(($activeMenu ?? ''), ['printer_cetak_tanding', 'printer_cetak_seni'], true); ?>
+                    <div>
+                        <a class="admin-nav-link <?= $isPencetakanMenu ? 'active' : '' ?>"
+                           data-bs-toggle="collapse" href="#printerCetakSubmenu" role="button"
+                           aria-expanded="<?= $isPencetakanMenu ? 'true' : 'false' ?>"
+                           aria-controls="printerCetakSubmenu">
+                            <span class="label-block"><i class="fas fa-certificate"></i><span>Pencetakan Sertifikat</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isPencetakanMenu ? 'show' : '' ?>" id="printerCetakSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'printer_cetak_tanding' ? 'active' : '' ?>"
+                                   href="<?= base_url('admin/printer/cetak-tanding') ?>">Peserta Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'printer_cetak_seni' ? 'active' : '' ?>"
+                                   href="<?= base_url('admin/printer/cetak-seni') ?>">Peserta Seni</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="admin-nav-link <?= ($activeMenu ?? '') === 'printer_tata_letak' ? 'active' : '' ?>"
+                       href="<?= base_url('admin/printer/pengaturan-tata-letak') ?>">
+                        <span class="label-block"><i class="fas fa-pen-ruler"></i><span>Tata Letak Sertifikat</span></span>
+                    </a>
                     <?php endif; ?>
                 </nav>
             </div>

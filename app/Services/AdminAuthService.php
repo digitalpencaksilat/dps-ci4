@@ -50,6 +50,7 @@ class AdminAuthService
         return match ($role) {
             'bendahara' => base_url('admin/bendahara/dashboard'),
             'sekretariat' => base_url('admin/sekretariat/dashboard'),
+            'printer' => base_url('admin/printer/dashboard'),
             'super_admin' => base_url('admin/super/dashboard'),
             default => base_url('admin'),
         };

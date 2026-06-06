@@ -392,6 +392,25 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('id-card/api/peserta-seni/(:num)', 'Admin\Sekretariat\IdCardController::apiPesertaSeni/$1');
 });
 
+// ============================================================
+// PRINTER
+// ============================================================
+$routes->group('admin/printer', ['filter' => 'adminrole:printer'], static function ($routes): void {
+    $routes->get('/', 'Admin\PrinterController::dashboard');
+    $routes->get('dashboard', 'Admin\PrinterController::dashboard');
+    $routes->get('pengaturan-tata-letak', 'Admin\PrinterController::pengaturanTataLetak');
+    $routes->post('simpan-tata-letak', 'Admin\PrinterController::simpanTataLetak');
+    $routes->post('upload-background', 'Admin\PrinterController::uploadBackground');
+    $routes->post('update-domain-hosting', 'Admin\PrinterController::updateDomainHosting');
+    $routes->post('update-hide-background', 'Admin\PrinterController::updateHideBackground');
+    $routes->get('preview', 'Admin\PrinterController::preview');
+    $routes->get('cetak-tanding', 'Admin\PrinterController::cetakTandingList');
+    $routes->get('cetak-seni', 'Admin\PrinterController::cetakSeniList');
+    $routes->get('cetak/(:segment)/(:num)', 'Admin\PrinterController::cetakSingle/$1/$2');
+    $routes->get('api/peserta-tanding/(:num)', 'Admin\PrinterController::apiPesertaTanding/$1');
+    $routes->get('api/peserta-seni/(:num)', 'Admin\PrinterController::apiPesertaSeni/$1');
+});
+
 $routes->group('utilities', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
     $routes->get('db-sync', 'Utilities\\DbSyncController::index');
 });

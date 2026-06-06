@@ -4,9 +4,9 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header pb-0">
-                <h6 class="card-title mb-1">Cek Data Arsip Peserta</h6>
-                <p class="text-muted small mb-0">Verifikasi kelengkapan dokumen arsip yang telah diupload oleh peserta</p>
+            <div class="card-header bg-danger-subtle border-danger-subtle pb-0">
+                <h6 class="card-title text-danger fw-semibold mb-1">Cek Data Arsip Peserta</h6>
+                <p class="text-muted small mb-3">Verifikasi kelengkapan dokumen arsip yang telah diupload oleh peserta</p>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -126,11 +126,18 @@
 <?= $this->section('scripts') ?>
 <script>
 const csrfName = '<?= csrf_token() ?>';
-let csrfHash = '<?= csrf_hash() ?>';
+const csrfCookieName = '<?= config('Security')->cookieName ?? 'csrf_cookie_name' ?>';
 
-function updateCsrfToken(response) {
-    const newToken = response.headers.get('X-CSRF-TOKEN');
-    if (newToken) csrfHash = newToken;
+function getCsrfHash() {
+    // Baca CSRF token dari cookie (CI4 cookie-based CSRF)
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === csrfCookieName) {
+            return decodeURIComponent(value);
+        }
+    }
+    return '<?= csrf_hash() ?>'; // fallback
 }
 
 function showImageModal(imageUrl, jenisArsip, namaPeserta) {
@@ -149,7 +156,7 @@ function lihatDetailArsip(idPendaftar) {
 
     const bodyParams = new URLSearchParams();
     bodyParams.append('id_pendaftar', idPendaftar);
-    bodyParams.append(csrfName, csrfHash);
+    bodyParams.append(csrfName, getCsrfHash()); // Baca token fresh dari cookie
 
     fetch('<?= base_url("admin/sekretariat/cek-data-arsip/detail") ?>', {
         method: 'POST',
@@ -159,10 +166,7 @@ function lihatDetailArsip(idPendaftar) {
         },
         body: bodyParams.toString()
     })
-    .then(response => {
-        updateCsrfToken(response);
-        return response.text();
-    })
+    .then(response => response.text())
     .then(html => {
         body.innerHTML = html;
     })

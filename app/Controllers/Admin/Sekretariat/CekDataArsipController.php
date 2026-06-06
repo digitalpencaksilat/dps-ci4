@@ -59,6 +59,9 @@ class CekDataArsipController extends BaseController
 
         helper('arsip_pendaftar');
 
+        // Sertakan token CSRF baru di header setiap respons (regenerate=true)
+        $this->response->setHeader('X-CSRF-TOKEN', csrf_hash());
+
         $idPendaftar = (int) $this->request->getPost('id_pendaftar');
         if ($idPendaftar <= 0) {
             return $this->response->setBody('<div class="alert alert-danger">ID peserta tidak valid.</div>');

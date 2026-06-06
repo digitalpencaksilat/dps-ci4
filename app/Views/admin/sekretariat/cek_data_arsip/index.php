@@ -1,17 +1,17 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-danger-subtle border-danger-subtle pb-0">
-                <h6 class="card-title text-danger fw-semibold mb-1">Cek Data Arsip Peserta</h6>
-                <p class="text-muted small mb-3">Verifikasi kelengkapan dokumen arsip yang telah diupload oleh peserta</p>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle admin-datatable-export" id="tabelCekDataArsip" data-export-config='{"scrollX": true, "ordering": true}'>
-                        <thead class="table-light">
+<section class="admin-card">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <p class="eyebrow mb-1">Sekretariat</p>
+            <h3 class="section-title h4 mb-0">Cek Data Arsip Peserta</h3>
+            <p class="muted-copy mb-0 mt-2">Verifikasi kelengkapan dokumen arsip yang telah diupload oleh peserta.</p>
+        </div>
+    </div>
+    <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
+                    <table class="table admin-table admin-datatable-export align-middle mb-0" id="tabelCekDataArsip" data-export-config='{"scrollX": true, "ordering": true}'>
+                        <thead>
                             <tr>
                                 <th>Nama</th>
                                 <th>Kontingen</th>
@@ -72,11 +72,8 @@
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    </div></div>
+</section>
 
 <div class="modal fade" id="modalZoomImage" tabindex="-1" aria-labelledby="modalZoomImageLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -126,18 +123,11 @@
 <?= $this->section('scripts') ?>
 <script>
 const csrfName = '<?= csrf_token() ?>';
-const csrfCookieName = '<?= config('Security')->cookieName ?? 'csrf_cookie_name' ?>';
+let csrfHash = '<?= csrf_hash() ?>';
 
-function getCsrfHash() {
-    // Baca CSRF token dari cookie (CI4 cookie-based CSRF)
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const [name, value] = cookie.trim().split('=');
-        if (name === csrfCookieName) {
-            return decodeURIComponent(value);
-        }
-    }
-    return '<?= csrf_hash() ?>'; // fallback
+function updateCsrfToken(response) {
+    const newToken = response.headers.get('X-CSRF-TOKEN');
+    if (newToken) csrfHash = newToken;
 }
 
 function showImageModal(imageUrl, jenisArsip, namaPeserta) {
@@ -156,7 +146,7 @@ function lihatDetailArsip(idPendaftar) {
 
     const bodyParams = new URLSearchParams();
     bodyParams.append('id_pendaftar', idPendaftar);
-    bodyParams.append(csrfName, getCsrfHash()); // Baca token fresh dari cookie
+    bodyParams.append(csrfName, csrfHash);
 
     fetch('<?= base_url("admin/sekretariat/cek-data-arsip/detail") ?>', {
         method: 'POST',
@@ -166,7 +156,10 @@ function lihatDetailArsip(idPendaftar) {
         },
         body: bodyParams.toString()
     })
-    .then(response => response.text())
+    .then(response => {
+        updateCsrfToken(response); // refresh token dari response (regenerate=true)
+        return response.text();
+    })
     .then(html => {
         body.innerHTML = html;
     })

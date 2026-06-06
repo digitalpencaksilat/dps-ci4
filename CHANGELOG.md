@@ -4,6 +4,44 @@ Semua perubahan penting pada project ini akan dicatat di file ini.
 
 Format changelog ini mengikuti gaya sederhana berbasis versi.
 
+## v0.5.2 - 2026-06-07
+
+### Added
+
+- Komponen CSS reusable di `admin.css`: `.status-badge` (5 varian), `.medal-badge` (emas/perak/perunggu), `.bg-corner-blue`/`.bg-corner-red` untuk skor sudut tanding/seni, dan `.bg-blue`/`.bg-red` alias untuk kompatibilitas shared components seni.
+- Filter jenis kelamin pada dropdown ganti kelas/kategori: dropdown peserta tanding dan kelompok seni kini hanya menampilkan kelas/kategori yang sesuai dengan jenis kelamin atlet.
+- Validasi server-side jenis kelamin di `updateKelompokSeni()` via `assertKelompokSeniEligible()` untuk mencegah assign kategori dengan gender berbeda.
+
+### Changed
+
+- **UI/UX Admin:** Unifikasi tema konsisten lintas semua modul admin (gelanggang, super, sekretariat, printer, bendahara) — 45 file view + 1 CSS.
+  - Tombol primer: `btn-info`/`btn-success`/`btn-primary` → `btn-admin-brand` (merah #c60000).
+  - Dropdown Aksi: icon-only circle → `btn-danger` pill dengan label "Aksi" jelas.
+  - Tombol sekunder/netral: `btn-secondary`/`btn-outline-secondary` → `btn-soft` (abu netral).
+  - Hapus `btn-dark`, `btn-light` kecuali kasus kontras banner.
+  - Badge status: Bootstrap ad-hoc `bg-*` → `.status-badge` tema (success/warning/danger/info/neutral).
+  - Badge medali: inline hex `background-color:#cd7f32` → `.medal-badge perunggu`.
+- **Warna Token:** Migrasi hex hardcode ke CSS vars untuk chart ApexCharts (`--brand-primary`, `--admin-accent-dark`), SweetAlert confirmButtonColor, form switch, dan inline gradient.
+- **Skor Sudut:** Header tanding/seni `bg-info`/`bg-danger` → `.bg-corner-blue`/`.bg-corner-red` (token `--corner-blue` #0d6efd, `--corner-red` #c60000).
+- **Empty State:** Tambah 7 tabel dengan pesan "Belum ada..." yang friendly di sekretariat index views.
+- **Aksesibilitas:** Tambah `aria-label` pada icon-only buttons (printer generate, gelanggang actions).
+- **Filter Gender:**
+  - Admin `ajaxEditKelas()` sekarang memanggil `getKompetisiTandingByPendaftar()` dengan filter `jenis_kelamin`.
+  - Admin `ajaxEditKelompok()` sekarang memanggil `listKompetisiSeniPendaftaran()` dengan `where` clause `jenis_kelamin`.
+  - Kontingen `availableKompetisi()` sekarang filter kategori seni berdasarkan jenis kelamin atlet yang tersedia di kontingen.
+- **Card Header Cek Data Arsip:** Selaraskan tema dengan `bg-danger-subtle` + `border-danger-subtle`, title `text-danger fw-semibold`.
+
+### Fixed
+
+- **CSRF Error Modal:** Fix error "The action you requested is not allowed" saat klik detail peserta kedua di cek data arsip — ganti logic baca CSRF token dari cookie (cookie-based regeneration) bukan dari response header yang tidak ada.
+- **Gender Mismatch Prevention:** Admin dan kontingen tidak bisa lagi pilih kelas/kategori dengan jenis kelamin berbeda dari atlet — validasi client-side (dropdown filter) + server-side (`assertEligible` throw RuntimeException).
+- **Konsistensi Visual:** Fragmentasi warna Bootstrap ad-hoc dihilangkan, semua admin UI sekarang pakai identitas brand DPS (merah #c60000, emas #c5a017).
+
+### Housekeeping
+
+- Hapus file audit Hermes (`ui-ux-deep-audit.md`, `ui-ux-deep-review-*.md`) dari repo — dipindah ke `~/.hermes/documentation/`.
+- Net -438 baris kode setelah refactor UI (354 ditambah, 792 dihapus) — kode lebih ringkas dengan komponen reusable.
+
 ## v0.5.1 - 2026-06-05
 
 ### Added

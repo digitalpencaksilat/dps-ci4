@@ -121,6 +121,8 @@ class SertifikatService
                 'ku.nama_kategori_usia',
                 'ku.jenis_kelamin',
                 'kt.label',
+                'kl.jenis_perlombaan',
+                'kom.nomor_pool',
                 'pmt.jenis_medali',
             ])
             ->join('pendaftar p', 'p.id_pendaftar = pt.id_pendaftar')
@@ -189,6 +191,8 @@ class SertifikatService
                 'ku.jenis_kelamin',
                 'sks.nama_seni',
                 'sks.jenis_seni',
+                'sks.sistem_penampilan',
+                'kom.nomor_pool',
                 'pms.jenis_medali',
             ])
             ->join('pendaftar p', 'p.id_pendaftar = ps.id_pendaftar')
@@ -284,6 +288,156 @@ class SertifikatService
         }
         $seni = strtoupper(trim((string) ($p->jenis_seni ?? '') . ' ' . (string) ($p->nama_seni ?? '')));
         return trim("JUARA {$medali} {$seni} {$jk} {$usia}");
+    }
+
+    // ============================================================
+    //  Nomor Sertifikat (generate / reset / statistik)
+    // ============================================================
+
+    /**
+     * Nomor urut berikutnya: MAX(prefix sebelum '/') dari kedua tabel + 1.
+     */
+    public function getNextNomorUrut(): int
+    {
+        $sql = "
+            SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(nomor_sertifikat, '/', 1) AS UNSIGNED)), 0) + 1 AS next_urut
+            FROM (
+                SELECT nomor_sertifikat FROM peserta_tanding WHERE nomor_sertifikat IS NOT NULL AND nomor_sertifikat != ''
+                UNION ALL
+                SELECT nomor_sertifikat FROM peserta_seni WHERE nomor_sertifikat IS NOT NULL AND nomor_sertifikat != ''
+            ) AS combined
+        ";
+        $row = db_connect()->query($sql)->getRow();
+        return (int) ($row->next_urut ?? 1);
+    }
+
+    /**
+     * Suffix nomor sertifikat (mis. "HAKA/XI/2026") dari settings.
+     */
+    public function nomorSertifikatSuffix(): string
+    {
+        return trim((string) (get_setting('nomor_sertifikat_suffix') ?? ''));
+    }
+
+    /**
+     * Build string nomor sertifikat lengkap, mis. "0001/HAKA/XI/2026".
+     */
+    public function buildNomorSertifikat(?int $urut = null): string
+    {
+        if ($urut === null) {
+            $urut = $this->getNextNomorUrut();
+        }
+        $suffix = $this->nomorSertifikatSuffix();
+        $nomor  = sprintf('%04d', $urut);
+        return $suffix !== '' ? $nomor . '/' . $suffix : $nomor;
+    }
+
+    /**
+     * Generate nomor untuk SATU peserta tanding (idempotent).
+     */
+    public function generateNomorTandingSingle(int $id): string
+    {
+        $db  = db_connect();
+        $row = $db->table('peserta_tanding')->select('nomor_sertifikat')
+            ->where('id_peserta_tanding', $id)->get()->getRow();
+        if ($row && ! empty($row->nomor_sertifikat)) {
+            return (string) $row->nomor_sertifikat;
+        }
+        $nomor = $this->buildNomorSertifikat();
+        $db->table('peserta_tanding')->where('id_peserta_tanding', $id)
+            ->update(['nomor_sertifikat' => $nomor]);
+        return $nomor;
+    }
+
+    /**
+     * Generate nomor untuk SATU peserta seni (idempotent).
+     */
+    public function generateNomorSeniSingle(int $id): string
+    {
+        $db  = db_connect();
+        $row = $db->table('peserta_seni')->select('nomor_sertifikat')
+            ->where('id_peserta_seni', $id)->get()->getRow();
+        if ($row && ! empty($row->nomor_sertifikat)) {
+            return (string) $row->nomor_sertifikat;
+        }
+        $nomor = $this->buildNomorSertifikat();
+        $db->table('peserta_seni')->where('id_peserta_seni', $id)
+            ->update(['nomor_sertifikat' => $nomor]);
+        return $nomor;
+    }
+
+    /**
+     * Batch: generate nomor untuk semua peserta yang belum punya nomor.
+     * Urutan tanding lalu seni, by ID ASC. Counter naik tiap iterasi.
+     *
+     * @return array{generated:int,skipped:int}
+     */
+    public function generateBulkNomorSertifikat(): array
+    {
+        $db        = db_connect();
+        $generated = 0;
+        $skipped   = 0;
+        $urut      = $this->getNextNomorUrut();
+        $suffix    = $this->nomorSertifikatSuffix();
+
+        $assign = static function (string $table, string $pk, $id) use ($db, &$urut, $suffix, &$generated, &$skipped): void {
+            $nomor = sprintf('%04d', $urut) . ($suffix !== '' ? '/' . $suffix : '');
+            $db->table($table)->where($pk, $id)->update(['nomor_sertifikat' => $nomor]);
+            if ($db->affectedRows() > 0) {
+                $generated++;
+                $urut++;
+            } else {
+                $skipped++;
+            }
+        };
+
+        $tanding = $db->table('peserta_tanding')->select('id_peserta_tanding')
+            ->groupStart()->where('nomor_sertifikat', null)->orWhere('nomor_sertifikat', '')->groupEnd()
+            ->orderBy('id_peserta_tanding', 'ASC')->get()->getResult();
+        foreach ($tanding as $r) {
+            $assign('peserta_tanding', 'id_peserta_tanding', $r->id_peserta_tanding);
+        }
+
+        $seni = $db->table('peserta_seni')->select('id_peserta_seni')
+            ->groupStart()->where('nomor_sertifikat', null)->orWhere('nomor_sertifikat', '')->groupEnd()
+            ->orderBy('id_peserta_seni', 'ASC')->get()->getResult();
+        foreach ($seni as $r) {
+            $assign('peserta_seni', 'id_peserta_seni', $r->id_peserta_seni);
+        }
+
+        return ['generated' => $generated, 'skipped' => $skipped];
+    }
+
+    /**
+     * Reset semua nomor sertifikat (set NULL di kedua tabel).
+     */
+    public function resetSemuaNomorSertifikat(): void
+    {
+        $db = db_connect();
+        $db->table('peserta_tanding')->set('nomor_sertifikat', null)->where('1=1', null, false)->update();
+        $db->table('peserta_seni')->set('nomor_sertifikat', null)->where('1=1', null, false)->update();
+    }
+
+    /**
+     * Statistik nomor sertifikat: total, sudah (punya nomor), belum.
+     *
+     * @return array{total:int,sudah:int,belum:int}
+     */
+    public function getStatistikNomorSertifikat(): array
+    {
+        $db = db_connect();
+        $totalT = (int) $db->table('peserta_tanding')->countAll();
+        $sudahT = (int) $db->table('peserta_tanding')
+            ->where('nomor_sertifikat IS NOT NULL', null, false)
+            ->where("nomor_sertifikat != ''", null, false)->countAllResults();
+        $totalS = (int) $db->table('peserta_seni')->countAll();
+        $sudahS = (int) $db->table('peserta_seni')
+            ->where('nomor_sertifikat IS NOT NULL', null, false)
+            ->where("nomor_sertifikat != ''", null, false)->countAllResults();
+
+        $total = $totalT + $totalS;
+        $sudah = $sudahT + $sudahS;
+        return ['total' => $total, 'sudah' => $sudah, 'belum' => $total - $sudah];
     }
 
     // ============================================================

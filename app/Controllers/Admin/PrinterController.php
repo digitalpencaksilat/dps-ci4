@@ -28,6 +28,8 @@ class PrinterController extends BaseController
             'domainHosting'  => $this->service->domainHosting(),
             'hideBg'         => $this->service->hideSertifikatBackground(),
             'statistik'      => $this->service->getStatistik(),
+            'suffix'         => $this->service->nomorSertifikatSuffix(),
+            'statNomor'      => $this->service->getStatistikNomorSertifikat(),
         ], 'Dashboard Printer'));
     }
 
@@ -217,6 +219,71 @@ class PrinterController extends BaseController
             'nomor'      => $p->nomor_sertifikat ?? '',
             'qrcode_url' => $this->service->qrcodeUrl('seni', $id),
         ]);
+    }
+
+    // ============================================================
+    //  Nomor Sertifikat
+    // ============================================================
+
+    public function updateNomorSertifikatSuffix(): RedirectResponse
+    {
+        $suffix = trim((string) $this->request->getPost('nomor_sertifikat_suffix'));
+        (new SettingWriterService())->setString('nomor_sertifikat_suffix', $suffix);
+        return redirect()->to(base_url('admin/printer/dashboard'))
+            ->with('status', true)->with('message', 'Suffix nomor sertifikat berhasil disimpan.');
+    }
+
+    /**
+     * AJAX: generate nomor sertifikat untuk satu peserta.
+     * POST: jenis (tanding|seni), id
+     */
+    public function generateNomorSertifikatAjax(): \CodeIgniter\HTTP\Response
+    {
+        $jenis = (string) $this->request->getPost('jenis');
+        $id    = (int) $this->request->getPost('id');
+
+        if (! in_array($jenis, ['tanding', 'seni'], true) || $id <= 0) {
+            return $this->response->setJSON([
+                'status'    => false,
+                'message'   => 'Parameter tidak valid.',
+                'csrf_hash' => csrf_hash(),
+            ]);
+        }
+
+        $nomor = $jenis === 'tanding'
+            ? $this->service->generateNomorTandingSingle($id)
+            : $this->service->generateNomorSeniSingle($id);
+
+        return $this->response->setJSON([
+            'status'    => true,
+            'nomor'     => $nomor,
+            'csrf_hash' => csrf_hash(),
+        ]);
+    }
+
+    public function generateSemuaNomorSertifikat(): RedirectResponse
+    {
+        $result = $this->service->generateBulkNomorSertifikat();
+        return redirect()->to(base_url('admin/printer/dashboard'))
+            ->with('status', true)
+            ->with('message', "Berhasil generate {$result['generated']} nomor sertifikat." . ($result['skipped'] > 0 ? " ({$result['skipped']} dilewati)" : ''));
+    }
+
+    public function resetNomorSertifikat(): RedirectResponse
+    {
+        $input = (string) $this->request->getPost('pass_code');
+        if ($input !== env('DEV_SECURITY_PASSCODE', '4321')) {
+            return redirect()->to(base_url('admin/printer/dashboard'))
+                ->with('status', false)->with('message', 'Passcode salah! Reset dibatalkan.');
+        }
+        $this->service->resetSemuaNomorSertifikat();
+        return redirect()->to(base_url('admin/printer/dashboard'))
+            ->with('status', true)->with('message', 'Semua nomor sertifikat berhasil direset.');
+    }
+
+    public function statistikNomorSertifikatAjax(): \CodeIgniter\HTTP\Response
+    {
+        return $this->response->setJSON($this->service->getStatistikNomorSertifikat());
     }
 
     // ============================================================

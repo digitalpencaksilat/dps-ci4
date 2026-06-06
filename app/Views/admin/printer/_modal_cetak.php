@@ -46,21 +46,4 @@
         </form>
     </div>
 </div>
-
-<script>
-(function () {
-    var modalEl = document.getElementById('modalPrintSertifikat');
-    var modal = new bootstrap.Modal(modalEl);
-
-    window.printSertifikat = function (btn) {
-        var d = btn.dataset;
-        document.getElementById('formPrintSertifikat').setAttribute('action', d.link);
-        document.getElementById('pmNomor').value     = d.nomor || '';
-        document.getElementById('pmNama').value       = d.nama || '';
-        document.getElementById('pmKategori').value   = d.kategori || '';
-        document.getElementById('pmKontingen').value  = d.kontingen || '';
-        document.getElementById('pmSekolah').value    = d.sekolah || '';
-        modal.show();
-    };
-})();
-</script>
+<?php /* JS untuk modal ini ada di section('scripts') view pemanggil (cetak_tanding/cetak_seni). */ ?>

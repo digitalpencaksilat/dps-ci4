@@ -106,6 +106,71 @@
     </div>
 </div>
 
+<!-- Pengaturan & Generate Nomor Sertifikat -->
+<?php
+$progressPct = ($statNomor['total'] ?? 0) > 0
+    ? round(($statNomor['sudah'] / $statNomor['total']) * 100)
+    : 0;
+$previewSuffix = $suffix !== '' ? '/' . $suffix : '';
+?>
+<section class="admin-card mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div>
+            <p class="eyebrow mb-1">Penomoran</p>
+            <h3 class="section-title h5 mb-0"><i class="fa-solid fa-certificate text-warning me-2"></i>Pengaturan &amp; Generate Nomor Sertifikat</h3>
+        </div>
+        <span class="badge bg-light text-dark border fs-6"><?= esc((string) ($statNomor['sudah'] ?? 0)) ?> / <?= esc((string) ($statNomor['total'] ?? 0)) ?> tergenerate</span>
+    </div>
+
+    <div class="row g-4">
+        <!-- Suffix & preview -->
+        <div class="col-lg-6">
+            <form action="<?= base_url('admin/printer/update-nomor-sertifikat-suffix') ?>" method="post">
+                <?= csrf_field() ?>
+                <label class="form-label fw-semibold">Suffix Nomor Sertifikat</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="inputSuffix" name="nomor_sertifikat_suffix"
+                           value="<?= esc($suffix) ?>" placeholder="HAKA/XI/2026">
+                    <button type="submit" class="btn btn-outline-secondary px-3">Simpan</button>
+                </div>
+                <div class="form-text">Format akhir: <code id="previewNomor">0001<?= esc($previewSuffix) ?></code></div>
+            </form>
+        </div>
+
+        <!-- Progress -->
+        <div class="col-lg-6">
+            <label class="form-label fw-semibold">Progress Generate</label>
+            <div class="progress" style="height: 1.5rem;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: <?= $progressPct ?>%;"
+                     aria-valuenow="<?= $progressPct ?>" aria-valuemin="0" aria-valuemax="100">
+                    <?= $progressPct ?>%
+                </div>
+            </div>
+            <p class="text-muted small mb-0 mt-1">
+                <?= esc((string) ($statNomor['belum'] ?? 0)) ?> peserta belum memiliki nomor sertifikat.
+            </p>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="d-flex flex-wrap gap-2">
+        <form action="<?= base_url('admin/printer/generate-semua-nomor-sertifikat') ?>" method="post" id="formGenerateSemua">
+            <?= csrf_field() ?>
+            <button type="button" class="btn btn-success rounded-pill px-4" id="btnGenerateSemua" <?= ($statNomor['belum'] ?? 0) < 1 ? 'disabled' : '' ?>>
+                <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Generate Semua (Belum Ada)
+            </button>
+        </form>
+        <form action="<?= base_url('admin/printer/reset-nomor-sertifikat') ?>" method="post" id="formResetNomor">
+            <?= csrf_field() ?>
+            <input type="hidden" name="pass_code" id="resetPasscode">
+            <button type="button" class="btn btn-outline-danger rounded-pill px-4" id="btnResetNomor">
+                <i class="fa-solid fa-rotate-left me-1"></i> Reset Semua Nomor
+            </button>
+        </form>
+    </div>
+</section>
+
 <!-- Aksi Cetak -->
 <div class="row g-4">
     <div class="col-md-6">
@@ -152,4 +217,69 @@
     </div>
 </div>
 
+<!-- Modal Reset dihapus: konfirmasi reset kini memakai SweetAlert (lihat section scripts). -->
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    (function () {
+        // Live preview suffix
+        var input = document.getElementById('inputSuffix');
+        var preview = document.getElementById('previewNomor');
+        if (input && preview) {
+            input.addEventListener('input', function () {
+                var val = this.value.trim();
+                preview.textContent = '0001' + (val ? '/' + val : '');
+            });
+        }
+
+        // Konfirmasi Generate Semua (SweetAlert)
+        var btnGenerate = document.getElementById('btnGenerateSemua');
+        if (btnGenerate) {
+            btnGenerate.addEventListener('click', function () {
+                Swal.fire({
+                    title: 'Generate Semua Nomor?',
+                    text: 'Nomor sertifikat akan dibuat untuk semua peserta yang belum memilikinya.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Generate',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#198754'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        document.getElementById('formGenerateSemua').submit();
+                    }
+                });
+            });
+        }
+
+        // Konfirmasi Reset Semua Nomor (SweetAlert + input passcode)
+        var btnReset = document.getElementById('btnResetNomor');
+        if (btnReset) {
+            btnReset.addEventListener('click', function () {
+                Swal.fire({
+                    title: 'Reset Semua Nomor?',
+                    html: 'Tindakan ini menghapus <strong>semua</strong> nomor sertifikat (tanding &amp; seni) dan tidak dapat dibatalkan.<br>Masukkan passcode keamanan untuk melanjutkan.',
+                    icon: 'warning',
+                    input: 'password',
+                    inputPlaceholder: 'Passcode keamanan',
+                    inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+                    showCancelButton: true,
+                    confirmButtonText: 'Reset',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#dc3545',
+                    inputValidator: function (value) {
+                        if (!value) { return 'Passcode wajib diisi!'; }
+                    }
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        document.getElementById('resetPasscode').value = result.value;
+                        document.getElementById('formResetNomor').submit();
+                    }
+                });
+            });
+        }
+    })();
+</script>
 <?= $this->endSection() ?>

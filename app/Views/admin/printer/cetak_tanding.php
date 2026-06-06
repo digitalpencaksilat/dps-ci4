@@ -21,6 +21,7 @@
                         <th>Kontingen</th>
                         <th class="d-none d-md-table-cell">Kategori</th>
                         <th class="d-none d-lg-table-cell">Kelas</th>
+                        <th>Medali</th>
                         <th>Nomor</th>
                         <th>Status</th>
                         <th class="text-end no-export">Aksi</th>
@@ -30,6 +31,7 @@
                     <?php foreach ($data as $p) : ?>
                         <?php
                         $kelas = $p->label ? 'Kelas ' . $p->label : '-';
+                        $showPool = ($p->jenis_perlombaan ?? '') === 'pemasalan' && ($p->nomor_pool ?? null) !== null && $p->nomor_pool !== '';
                         $kategoriPeserta = strtoupper(trim('PESERTA ' . ($p->nama_kategori_usia ?? '') . ' ' . ucwords((string) ($p->jenis_kelamin ?? '')) . ($p->label ? ' Kelas ' . $p->label : '')));
                         $isJuara = ! empty($p->jenis_medali);
                         $medaliLabel = ['emas' => 'I', 'perak' => 'II', 'perunggu' => 'III'][$p->jenis_medali ?? ''] ?? '';
@@ -40,8 +42,40 @@
                             <td class="fw-semibold text-capitalize"><?= esc($p->nama_pendaftar) ?></td>
                             <td class="text-capitalize"><?= esc($p->nama_kontingen) ?></td>
                             <td class="d-none d-md-table-cell text-capitalize small"><?= esc(($p->nama_kategori_usia ?? '') . ' ' . ($p->jenis_kelamin ?? '')) ?></td>
-                            <td class="d-none d-lg-table-cell"><?= esc($kelas) ?></td>
-                            <td><?= $p->nomor_sertifikat ? '<code>' . esc($p->nomor_sertifikat) . '</code>' : '<span class="text-muted">—</span>' ?></td>
+                            <td class="d-none d-lg-table-cell">
+                                <?= esc($kelas) ?>
+                                <?php if ($showPool) : ?>
+                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle ms-1">Pool <?= esc((string) $p->nomor_pool) ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td data-order="<?= esc($p->jenis_medali ?? '', 'attr') ?>">
+                                <?php if ($isJuara) : ?>
+                                    <?php
+                                    $medaliBadge = [
+                                        'emas'     => ['bg' => 'bg-warning text-dark', 'icon' => '🥇', 'text' => 'Emas'],
+                                        'perak'    => ['bg' => 'bg-secondary', 'icon' => '🥈', 'text' => 'Perak'],
+                                        'perunggu' => ['bg' => 'text-dark', 'icon' => '🥉', 'text' => 'Perunggu', 'style' => 'background-color:#cd7f32;color:#fff !important;'],
+                                    ][$p->jenis_medali];
+                                    ?>
+                                    <span class="badge <?= esc($medaliBadge['bg'], 'attr') ?>" <?= isset($medaliBadge['style']) ? 'style="' . esc($medaliBadge['style'], 'attr') . '"' : '' ?>>
+                                        <?= $medaliBadge['icon'] ?> <?= esc($medaliBadge['text']) ?>
+                                    </span>
+                                <?php else : ?>
+                                    <span class="text-muted">—</span>
+                                <?php endif; ?>
+                            </td>
+                            <td data-order="<?= esc((string) ($p->nomor_sertifikat ?? ''), 'attr') ?>">
+                                <span class="nomor-cell">
+                                    <?= $p->nomor_sertifikat ? '<code class="text-success">' . esc($p->nomor_sertifikat) . '</code>' : '<span class="text-muted">—</span>' ?>
+                                </span>
+                                <?php if (! $p->nomor_sertifikat) : ?>
+                                    <button type="button" class="btn btn-sm btn-link p-0 ms-1 btn-generate-nomor"
+                                        data-jenis="tanding" data-id="<?= esc((string) $p->id_peserta_tanding, 'attr') ?>"
+                                        title="Generate nomor sertifikat">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    </button>
+                                <?php endif; ?>
+                            </td>
                             <td>
                                 <?php if (($p->status_sertifikat ?? '') === 'sudah_dicetak') : ?>
                                     <span class="badge bg-success">Dicetak</span>
@@ -94,14 +128,16 @@
 
 <?= view('admin/printer/_modal_cetak') ?>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
-$(function () {
-    $('#tableCetakTanding').DataTable({
-        pageLength: 25,
-        order: [[0, 'asc']],
-        columnDefs: [{ orderable: false, targets: -1 }],
-        language: { search: 'Cari:', lengthMenu: 'Tampil _MENU_', info: 'Menampilkan _START_–_END_ dari _TOTAL_', paginate: { next: '›', previous: '‹' } }
-    });
-});
+    window.PRINTER_GENERATE_URL = '<?= base_url('admin/printer/generate-nomor-sertifikat') ?>';
+    window.CSRF_NAME  = '<?= csrf_token() ?>';
+    window.CSRF_HASH  = '<?= csrf_hash() ?>';
+</script>
+<script src="<?= base_url('assets/js/admin/printer-cetak.js') ?>"></script>
+<script>
+    initPrinterCetakTable('#tableCetakTanding');
 </script>
 <?= $this->endSection() ?>

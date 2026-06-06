@@ -409,6 +409,13 @@ $routes->group('admin/printer', ['filter' => 'adminrole:printer'], static functi
     $routes->get('cetak/(:segment)/(:num)', 'Admin\PrinterController::cetakSingle/$1/$2');
     $routes->get('api/peserta-tanding/(:num)', 'Admin\PrinterController::apiPesertaTanding/$1');
     $routes->get('api/peserta-seni/(:num)', 'Admin\PrinterController::apiPesertaSeni/$1');
+
+    // Nomor sertifikat
+    $routes->post('update-nomor-sertifikat-suffix', 'Admin\PrinterController::updateNomorSertifikatSuffix');
+    $routes->post('generate-nomor-sertifikat', 'Admin\PrinterController::generateNomorSertifikatAjax');
+    $routes->post('generate-semua-nomor-sertifikat', 'Admin\PrinterController::generateSemuaNomorSertifikat');
+    $routes->post('reset-nomor-sertifikat', 'Admin\PrinterController::resetNomorSertifikat');
+    $routes->get('statistik-nomor-sertifikat', 'Admin\PrinterController::statistikNomorSertifikatAjax');
 });
 
 $routes->group('utilities', ['filter' => 'adminrole:super_admin'], static function ($routes): void {

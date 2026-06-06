@@ -65,12 +65,12 @@
 <?= $this->section('scripts') ?>
 <style>
 .category-card-toggle:checked {
-    background-color: #dc3545 !important;
-    border-color: #dc3545 !important;
+    background-color: var(--brand-primary, #c60000) !important;
+    border-color: var(--brand-primary, #c60000) !important;
 }
 .category-card-toggle:focus {
-    border-color: #dc3545 !important;
-    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+    border-color: var(--brand-primary, #c60000) !important;
+    box-shadow: 0 0 0 0.25rem rgba(198, 0, 0, 0.25) !important;
 }
 </style>
 <?= $this->endSection() ?>

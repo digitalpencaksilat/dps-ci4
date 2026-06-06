@@ -46,7 +46,7 @@
                                 <td>Rp <?= number_format((int) $row->nominal_tagihan, 0, ',', '.') ?></td>
                                 <td>
                                     <?php if (!empty($row->foto)) : ?>
-                                        <a href="<?= base_url('uploads/bukti-pembayaran/' . $row->foto) ?>" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill">Lihat</a>
+                                        <a href="<?= base_url('uploads/bukti-pembayaran/' . $row->foto) ?>" target="_blank" class="btn btn-sm btn-soft rounded-pill">Lihat</a>
                                     <?php else : ?>
                                         <span class="muted-copy">-</span>
                                     <?php endif; ?>
@@ -58,9 +58,9 @@
                                         <?php endif; ?>
 
                                         <?php if ($row->status_tagihan === 'menunggu' && !empty($row->id_pembayaran)) : ?>
-                                            <form method="post" action="<?= base_url('admin/bendahara/pembayaran/biaya-kontingen/' . $row->id_pembayaran . '/konfirmasi') ?>">
+                                            <form method="post" action="<?= base_url('admin/bendahara/pembayaran/biaya-kontingen/' . $row->id_pembayaran . '/konfirmasi') ?>" onsubmit="return confirmAdminAction(this, 'Konfirmasi pembayaran ini?', 'Status tagihan biaya kontingen akan berubah menjadi lunas.', 'Ya, konfirmasi')">
                                                 <?= csrf_field() ?>
-                                                <button type="submit" class="btn btn-sm btn-success rounded-pill">Konfirmasi</button>
+                                                <button type="submit" class="btn btn-sm btn-danger rounded-pill">Konfirmasi</button>
                                             </form>
                                             <form method="post" action="<?= base_url('admin/bendahara/pembayaran/biaya-kontingen/' . $row->id_pembayaran . '/tolak') ?>" onsubmit="return confirmAdminAction(this, 'Tolak pembayaran ini?', 'Pembayaran biaya kontingen akan ditolak dan dikembalikan ke status tagihan aktif.', 'Ya, Tolak')">
                                                 <?= csrf_field() ?>

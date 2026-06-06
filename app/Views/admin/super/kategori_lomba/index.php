@@ -50,12 +50,26 @@
                             <td><?= esc((string) ($row->semua_dapat_medali ?? '-')) ?></td>
                             <td class="text-end"><?= esc((string) ($row->kuota_peserta ?? '-')) ?></td>
                             <td class="text-end">
-                                <div class="d-inline-flex gap-2">
-                                    <a href="<?= base_url('admin/super/kategori-lomba/' . $row->id_kategori_lomba . '/edit') ?>" class="btn btn-sm btn-outline-secondary rounded-pill">Edit</a>
-                                    <form action="<?= base_url('admin/super/kategori-lomba/' . $row->id_kategori_lomba . '/delete') ?>" method="post" onsubmit="return confirmAdminAction(this, 'Hapus kategori lomba?', 'Data kategori yang sudah dipakai sub kategori seni, kelas tanding, atau peserta mungkin tidak dapat dihapus.', 'Hapus')">
-                                        <?= csrf_field() ?>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Hapus</button>
-                                    </form>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Aksi
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="<?= base_url('admin/super/kategori-lomba/' . $row->id_kategori_lomba . '/edit') ?>">
+                                                <i class="fas fa-pen me-2"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form action="<?= base_url('admin/super/kategori-lomba/' . $row->id_kategori_lomba . '/delete') ?>" method="post" onsubmit="return confirmAdminAction(this, 'Hapus kategori lomba?', 'Data kategori yang sudah dipakai sub kategori seni, kelas tanding, atau peserta mungkin tidak dapat dihapus.', 'Hapus')">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="fas fa-trash-alt me-2"></i>Hapus
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
                                 </div>
                             </td>
                         </tr>

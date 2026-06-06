@@ -34,15 +34,15 @@ $formatMedali = static function ($medali, ?string $babak): string {
     }
 
     if ($value === 'emas' && $babak === 'Final') {
-        return '<span class="badge text-white" style="background-color:#ffb322">Emas</span>';
+        return '<span class="medal-badge emas">Emas</span>';
     }
 
     if ($value === 'perak' && $babak === 'Final') {
-        return '<span class="badge text-white" style="background-color:#b0b0b0">Perak</span>';
+        return '<span class="medal-badge perak">Perak</span>';
     }
 
     if ($value === 'perunggu' && in_array($babak, ['Semi Final', 'Perebutan Juara Tiga'], true)) {
-        return '<span class="badge text-white" style="background-color:#7c4800">Perunggu</span>';
+        return '<span class="medal-badge perunggu">Perunggu</span>';
     }
 
     return esc((string) $medali);

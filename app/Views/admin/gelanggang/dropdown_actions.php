@@ -1,40 +1,40 @@
-<div class="dropstart">
-    <button type="button" id="dropdown<?= $gelanggang->id_gelanggang ?>" class="btn btn-default m-0 font-weight-normal shadow-none" 
+<div class="dropdown">
+    <button type="button" id="dropdown<?= $gelanggang->id_gelanggang ?>" class="btn btn-sm btn-danger rounded-pill dropdown-toggle px-3"
             data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fas fa-ellipsis-v"></i>
+        <i class="fas fa-bars me-1"></i>Aksi
     </button>
-    <ul class="dropdown-menu shadow-lg" style="min-width: 200px;">
-        <li class="dropdown-item">
-            <form action="<?= base_url('admin/gelanggang/delete/' . $gelanggang->id_gelanggang) ?>" method="post">
-                <?= csrf_field() ?>
-                <button type="button" class="btn btn-default shadow-none m-0 w-100 text-start"
-                        onclick="if(confirm('Apakah Anda yakin? Gelanggang ini dan semua jadwal tanding/seni di dalamnya akan dihapus!')) this.form.submit();">
-                    <i class="fas fa-trash me-2"></i>Hapus
-                </button>
-            </form>
+    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="min-width: 220px;">
+        <li>
+            <button type="button" class="dropdown-item"
+                    data-bs-toggle="modal" data-bs-target="#modalMergeByDate<?= $gelanggang->id_gelanggang ?>"
+                    onclick="loadAvailableDates(<?= $gelanggang->id_gelanggang ?>)">
+                <i class="fas fa-calendar-day me-2"></i>Merge PDF (Per Tanggal)
+            </button>
         </li>
-        <li><hr class="dropdown-divider"></li>
-        <li class="dropdown-item">
-            <form action="<?= base_url('admin/gelanggang/merge/' . $gelanggang->id_gelanggang) ?>" method="post">
+        <li>
+            <form action="<?= base_url('admin/gelanggang/merge/' . $gelanggang->id_gelanggang) ?>" method="post"
+                  onsubmit="return confirmAdminAction(this, 'Merge PDF Semua Jadwal?', 'PDF jadwal yang di-merge akan diunduh.', 'Ya, Unduh')">
                 <?= csrf_field() ?>
-                <button type="button" class="btn btn-default shadow-none m-0 w-100 text-start"
-                        onclick="if(confirm('Apakah Anda yakin? PDF Jadwal yang di-merge akan diunduh!')) this.form.submit();">
+                <button type="submit" class="dropdown-item">
                     <i class="fas fa-file-pdf me-2"></i>Merge PDF (Semua)
                 </button>
             </form>
         </li>
-        <li class="dropdown-item">
-            <button type="button" class="btn btn-default shadow-none m-0 w-100 text-start" 
-                    data-bs-toggle="modal" data-bs-target="#modalMergeByDate<?= $gelanggang->id_gelanggang ?>" 
-                    onclick="loadAvailableDates(<?= $gelanggang->id_gelanggang ?>)">
-                <i class="fas fa-calendar-day me-2"></i>Merge PDF (Per Tanggal)
-            </button>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <form action="<?= base_url('admin/gelanggang/delete/' . $gelanggang->id_gelanggang) ?>" method="post"
+                  onsubmit="return confirmAdminAction(this, 'Hapus gelanggang?', 'Gelanggang <?= esc($gelanggang->nama_gelanggang, 'attr') ?> beserta seluruh jadwal tanding/seni di dalamnya akan dihapus permanen.', 'Hapus')">
+                <?= csrf_field() ?>
+                <button type="submit" class="dropdown-item text-danger">
+                    <i class="fas fa-trash-alt me-2"></i>Hapus
+                </button>
+            </form>
         </li>
     </ul>
 </div>
 
 <!-- Modal Merge by Date -->
-<div class="modal fade" id="modalMergeByDate<?= $gelanggang->id_gelanggang ?>" tabindex="-1" 
+<div class="modal fade" id="modalMergeByDate<?= $gelanggang->id_gelanggang ?>" tabindex="-1"
      aria-labelledby="modalMergeByDateLabel<?= $gelanggang->id_gelanggang ?>" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -58,8 +58,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Download PDF</button>
+                    <button type="button" class="btn btn-soft rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-admin-brand rounded-pill px-4">
+                        <i class="fas fa-download me-2"></i>Download PDF
+                    </button>
                 </div>
             </form>
         </div>

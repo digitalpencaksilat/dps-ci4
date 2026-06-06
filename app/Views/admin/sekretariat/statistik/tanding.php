@@ -32,10 +32,15 @@
 <?= $this->section('scripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-    const stackedBar = (categories, series) => ({ chart: { type: 'bar', stacked: true, toolbar: { show: false } }, series, colors: ['#16a34a', '#dc2626'], plotOptions: { bar: { borderRadius: 4, horizontal: false } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: '#f1f5f9' }, legend: { position: 'bottom' } });
-    const horizontalBar = (categories, data, color) => ({ chart: { type: 'bar', toolbar: { show: false } }, series: [{ name: 'Total', data }], colors: [color], plotOptions: { bar: { horizontal: true, borderRadius: 6 } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: '#f1f5f9' } });
+    const cssVar = (name, fallback) => (getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback);
+    const brandPrimary = cssVar('--brand-primary', '#c60000');
+    const brandDark = cssVar('--admin-accent-dark', '#8f0b14');
+    const successColor = cssVar('--admin-success', '#0f9f6e');
+    const gridColor = cssVar('--admin-border', '#f1f5f9');
+    const stackedBar = (categories, series) => ({ chart: { type: 'bar', stacked: true, toolbar: { show: false } }, series, colors: [successColor, brandPrimary], plotOptions: { bar: { borderRadius: 4, horizontal: false } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: gridColor }, legend: { position: 'bottom' } });
+    const horizontalBar = (categories, data, color) => ({ chart: { type: 'bar', toolbar: { show: false } }, series: [{ name: 'Total', data }], colors: [color], plotOptions: { bar: { horizontal: true, borderRadius: 6 } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: gridColor } });
     new ApexCharts(document.querySelector('#chartTandingPayment'), stackedBar(<?= json_encode($stats['paymentByCategory']['categories'] ?? []) ?>, <?= json_encode($stats['paymentByCategory']['series'] ?? []) ?>)).render();
-    new ApexCharts(document.querySelector('#chartTandingPool'), horizontalBar(<?= json_encode($stats['poolByCategory']['categories'] ?? []) ?>, <?= json_encode($stats['poolByCategory']['series'] ?? []) ?>, '#0284c7')).render();
-    new ApexCharts(document.querySelector('#chartTandingMatches'), horizontalBar(<?= json_encode($stats['matchesByCategory']['categories'] ?? []) ?>, <?= json_encode($stats['matchesByCategory']['series'] ?? []) ?>, '#b91c1c')).render();
+    new ApexCharts(document.querySelector('#chartTandingPool'), horizontalBar(<?= json_encode($stats['poolByCategory']['categories'] ?? []) ?>, <?= json_encode($stats['poolByCategory']['series'] ?? []) ?>, brandDark)).render();
+    new ApexCharts(document.querySelector('#chartTandingMatches'), horizontalBar(<?= json_encode($stats['matchesByCategory']['categories'] ?? []) ?>, <?= json_encode($stats['matchesByCategory']['series'] ?? []) ?>, brandPrimary)).render();
 </script>
 <?= $this->endSection() ?>

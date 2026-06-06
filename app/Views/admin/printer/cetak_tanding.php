@@ -45,19 +45,19 @@
                             <td class="d-none d-lg-table-cell">
                                 <?= esc($kelas) ?>
                                 <?php if ($showPool) : ?>
-                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle ms-1">Pool <?= esc((string) $p->nomor_pool) ?></span>
+                                    <span class="badge bg-corner-blue ms-1">Pool <?= esc((string) $p->nomor_pool) ?></span>
                                 <?php endif; ?>
                             </td>
                             <td data-order="<?= esc($p->jenis_medali ?? '', 'attr') ?>">
                                 <?php if ($isJuara) : ?>
                                     <?php
                                     $medaliBadge = [
-                                        'emas'     => ['bg' => 'bg-warning text-dark', 'icon' => '🥇', 'text' => 'Emas'],
-                                        'perak'    => ['bg' => 'bg-secondary', 'icon' => '🥈', 'text' => 'Perak'],
-                                        'perunggu' => ['bg' => 'text-dark', 'icon' => '🥉', 'text' => 'Perunggu', 'style' => 'background-color:#cd7f32;color:#fff !important;'],
+                                        'emas'     => ['cls' => 'medal-badge emas', 'icon' => '🥇', 'text' => 'Emas'],
+                                        'perak'    => ['cls' => 'medal-badge perak', 'icon' => '🥈', 'text' => 'Perak'],
+                                        'perunggu' => ['cls' => 'medal-badge perunggu', 'icon' => '🥉', 'text' => 'Perunggu'],
                                     ][$p->jenis_medali];
                                     ?>
-                                    <span class="badge <?= esc($medaliBadge['bg'], 'attr') ?>" <?= isset($medaliBadge['style']) ? 'style="' . esc($medaliBadge['style'], 'attr') . '"' : '' ?>>
+                                    <span class="<?= esc($medaliBadge['cls'], 'attr') ?>">
                                         <?= $medaliBadge['icon'] ?> <?= esc($medaliBadge['text']) ?>
                                     </span>
                                 <?php else : ?>
@@ -71,16 +71,16 @@
                                 <?php if (! $p->nomor_sertifikat) : ?>
                                     <button type="button" class="btn btn-sm btn-link p-0 ms-1 btn-generate-nomor"
                                         data-jenis="tanding" data-id="<?= esc((string) $p->id_peserta_tanding, 'attr') ?>"
-                                        title="Generate nomor sertifikat">
+                                        title="Generate nomor sertifikat" aria-label="Generate nomor sertifikat">
                                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                                     </button>
                                 <?php endif; ?>
                             </td>
                             <td>
                                 <?php if (($p->status_sertifikat ?? '') === 'sudah_dicetak') : ?>
-                                    <span class="badge bg-success">Dicetak</span>
+                                    <span class="status-badge success">Dicetak</span>
                                 <?php else : ?>
-                                    <span class="badge bg-secondary">Belum</span>
+                                    <span class="status-badge neutral">Belum</span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-end">

@@ -118,8 +118,8 @@ $idJadwal    = (int) ($jadwal->id_jadwal_seni ?? 0);
                     </div>
 
                     <div class="d-flex flex-wrap gap-2 justify-content-end">
-                        <a href="<?= base_url($routePrefix . '/' . $idJadwal) ?>" class="btn btn-secondary">Batal</a>
-                        <button type="submit" class="btn btn-primary">
+                        <a href="<?= base_url($routePrefix . '/' . $idJadwal) ?>" class="btn btn-soft rounded-pill px-4">Batal</a>
+                        <button type="submit" class="btn btn-admin-brand rounded-pill px-4">
                             <i class="fas fa-save me-1"></i> Update Urutan
                         </button>
                     </div>

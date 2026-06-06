@@ -40,10 +40,10 @@ foreach ($errors as $e) {
                         <form action="<?= base_url('admin/super/import-excel-data/commit') ?>" method="post" class="m-0" onsubmit="return confirmAdminAction(this, 'Konfirmasi Import?', 'Data dari Excel akan disimpan ke database. Pastikan sudah preview dengan benar.', 'Ya, Import')">
                             <?= csrf_field() ?>
                             <input type="hidden" name="token" value="<?= esc($token) ?>">
-                            <button type="submit" class="btn btn-dark rounded-pill">Konfirmasi Import</button>
+                            <button type="submit" class="btn btn-admin-brand rounded-pill">Konfirmasi Import</button>
                         </form>
                     <?php else: ?>
-                        <a href="<?= base_url('admin/super/import-excel-data') ?>" class="btn btn-dark rounded-pill">Unggah Ulang</a>
+                        <a href="<?= base_url('admin/super/import-excel-data') ?>" class="btn btn-outline-danger rounded-pill">Unggah Ulang</a>
                     <?php endif; ?>
                 </div>
             </div>

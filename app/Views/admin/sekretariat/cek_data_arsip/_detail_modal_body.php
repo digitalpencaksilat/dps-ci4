@@ -41,7 +41,7 @@
                                     </span>
                                 </div>
                                 <div class="d-grid gap-1">
-                                    <a href="<?= $fileUrl ?>" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <a href="<?= $fileUrl ?>" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill">
                                         <i class="fas fa-external-link-alt me-1"></i>Buka di Tab Baru
                                     </a>
                                     <a href="<?= $fileUrl ?>" download class="btn btn-outline-secondary btn-sm">

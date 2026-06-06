@@ -31,9 +31,15 @@
 <?= $this->section('scripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-    const donut = (labels, series) => ({ chart: { type: 'donut' }, labels, series, colors: ['#dc2626', '#0284c7', '#7c3aed'], legend: { position: 'bottom' }, dataLabels: { enabled: true }, stroke: { width: 0 } });
-    const stackedBar = (categories, series) => ({ chart: { type: 'bar', stacked: true, toolbar: { show: false } }, series, colors: ['#dc2626', '#0284c7', '#7c3aed'], plotOptions: { bar: { borderRadius: 4 } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: '#f1f5f9' }, legend: { position: 'bottom' } });
-    const horizontalBar = (categories, data) => ({ chart: { type: 'bar', toolbar: { show: false } }, series: [{ name: 'Pool', data }], colors: ['#0f766e'], plotOptions: { bar: { horizontal: true, borderRadius: 6 } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: '#f1f5f9' } });
+    const cssVar = (name, fallback) => (getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback);
+    const brandPrimary = cssVar('--brand-primary', '#c60000');
+    const brandGold = cssVar('--brand-secondary', '#c5a017');
+    const brandDark = cssVar('--admin-accent-dark', '#8f0b14');
+    const gridColor = cssVar('--admin-border', '#f1f5f9');
+    const seniColors = [brandPrimary, brandGold, brandDark];
+    const donut = (labels, series) => ({ chart: { type: 'donut' }, labels, series, colors: seniColors, legend: { position: 'bottom' }, dataLabels: { enabled: true }, stroke: { width: 0 } });
+    const stackedBar = (categories, series) => ({ chart: { type: 'bar', stacked: true, toolbar: { show: false } }, series, colors: seniColors, plotOptions: { bar: { borderRadius: 4 } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: gridColor }, legend: { position: 'bottom' } });
+    const horizontalBar = (categories, data) => ({ chart: { type: 'bar', toolbar: { show: false } }, series: [{ name: 'Pool', data }], colors: [brandDark], plotOptions: { bar: { horizontal: true, borderRadius: 6 } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: gridColor } });
     new ApexCharts(document.querySelector('#chartSeniJenisDistribution'), donut(<?= json_encode($stats['jenisDistribution']['labels'] ?? []) ?>, <?= json_encode($stats['jenisDistribution']['series'] ?? []) ?>)).render();
     new ApexCharts(document.querySelector('#chartSeniJenisByCategory'), stackedBar(<?= json_encode($stats['jenisByCategory']['categories'] ?? []) ?>, <?= json_encode($stats['jenisByCategory']['series'] ?? []) ?>)).render();
     new ApexCharts(document.querySelector('#chartSeniPoolByCategory'), horizontalBar(<?= json_encode($stats['poolByCategory']['categories'] ?? []) ?>, <?= json_encode($stats['poolByCategory']['series'] ?? []) ?>)).render();

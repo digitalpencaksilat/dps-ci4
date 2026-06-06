@@ -21,7 +21,7 @@ $columns = [
 ?>
 <div class="row g-4">
     <div class="col-12">
-        <section class="admin-card border-0 shadow-sm" style="background:linear-gradient(135deg,#fff8eb 0%,#ffe0b8 100%);">
+        <section class="admin-card border-0 shadow-sm" style="background:linear-gradient(135deg, var(--admin-surface-soft) 0%, var(--admin-accent-soft) 100%);">
             <div class="card-body p-4 p-lg-5 d-flex flex-column flex-lg-row justify-content-between gap-4 align-items-start">
                 <div>
                     <p class="eyebrow mb-2">Migrasi Data</p>
@@ -41,7 +41,7 @@ $columns = [
     <div class="col-12 col-xl-5">
         <section class="admin-card h-100">
             <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-start gap-3 rounded-4 p-4 text-white mb-4" style="background:linear-gradient(135deg,#d35400 0%,#f39c12 100%);">
+                <div class="d-flex justify-content-between align-items-start gap-3 rounded-4 p-4 text-white mb-4" style="background:linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-dark) 100%);">
                     <div>
                         <p class="eyebrow text-white-50 mb-2">Template Excel</p>
                         <h3 class="h5 mb-2">Gunakan format resmi</h3>
@@ -95,7 +95,7 @@ $columns = [
                 </div>
                 <form action="<?= base_url('admin/super/import-excel-data/preview') ?>" method="post" enctype="multipart/form-data" id="formImportExcel">
                     <?= csrf_field() ?>
-                    <label for="file_excel" class="border border-2 border-secondary-subtle rounded-4 p-5 w-100 text-center d-block mb-3" id="dropzone" style="cursor:pointer;background:linear-gradient(180deg,#fff 0%,#f7f7f7 100%);">
+                    <label for="file_excel" class="border border-2 border-secondary-subtle rounded-4 p-5 w-100 text-center d-block mb-3" id="dropzone" style="cursor:pointer;background:var(--admin-bg-soft);">
                         <div class="display-6 mb-3">+</div>
                         <div class="fw-semibold mb-1" id="fileNameLabel">Tarik & lepaskan file di sini</div>
                         <div class="text-muted small" id="fileMetaLabel">atau klik untuk memilih file dari komputer</div>
@@ -104,7 +104,7 @@ $columns = [
                     <div class="alert alert-danger d-none" id="fileError"></div>
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-outline-secondary rounded-pill" id="btnReset" disabled>Hapus</button>
-                        <button type="submit" class="btn btn-dark rounded-pill" id="btnSubmit" disabled>Pratinjau Data</button>
+                        <button type="submit" class="btn btn-admin-brand rounded-pill" id="btnSubmit" disabled>Pratinjau Data</button>
                     </div>
                 </form>
                 <hr class="my-4">

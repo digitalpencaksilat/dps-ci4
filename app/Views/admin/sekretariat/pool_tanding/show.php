@@ -109,8 +109,8 @@ $poolLabel = ($row->jenis_perlombaan ?? '') === 'pemasalan' ? ' Pool ' . ($row->
                                 <td><?= esc($item->nama_kontingen ?? '-') ?></td>
                                 <td class="text-end no-export">
                                     <div class="dropdown d-inline-block">
-                                        <button class="btn btn-sm btn-outline-secondary rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Aksi peserta">
-                                            <i class="fas fa-ellipsis-v"></i>
+                                        <button class="btn btn-sm btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Aksi
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                             <li>

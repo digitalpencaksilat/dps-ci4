@@ -11,8 +11,8 @@
         <div class="d-flex flex-wrap gap-2 align-items-start">
             <a href="<?= base_url('admin/super/jadwal-tanding') ?>" class="btn btn-danger rounded-pill">Jadwal Tanding</a>
             <a href="<?= base_url('admin/super/jadwal-tanding/penjadwalan-otomatis') ?>" class="btn btn-danger rounded-pill">Otomatis Tanding</a>
-            <a href="<?= base_url('admin/super/jadwal-seni') ?>" class="btn btn-outline-secondary rounded-pill">Jadwal Seni</a>
-            <a href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>" class="btn btn-outline-secondary rounded-pill">Otomatis Seni</a>
+            <a href="<?= base_url('admin/super/jadwal-seni') ?>" class="btn btn-outline-danger rounded-pill">Jadwal Seni</a>
+            <a href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>" class="btn btn-outline-danger rounded-pill">Otomatis Seni</a>
         </div>
     </div>
 </section>
@@ -35,18 +35,18 @@
         </section>
     </div>
     <div class="col-12 col-xl-6">
-        <section class="admin-card h-100 border border-secondary-subtle">
+        <section class="admin-card h-100 border border-danger-subtle">
             <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                 <div>
                     <p class="eyebrow mb-1">Shortcut Utama</p>
                     <h3 class="h4 section-title mb-1">Penjadwalan Otomatis Seni</h3>
                     <p class="muted-copy mb-0">Akses cepat ke generate pool dan battle seni beserta validasi parity yang sedang dimigrasikan ke CI4.</p>
                 </div>
-                <span class="status-badge success"><i class="fas fa-masks-theater"></i></span>
+                <span class="status-badge danger"><i class="fas fa-masks-theater"></i></span>
             </div>
             <div class="d-flex flex-wrap gap-2">
-                <a href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>" class="btn btn-secondary rounded-pill">Buka Otomatis Seni</a>
-                <a href="<?= base_url('admin/super/jadwal-seni/overview') ?>" class="btn btn-outline-secondary rounded-pill">Lihat Overview Seni</a>
+                <a href="<?= base_url('admin/super/jadwal-seni/penjadwalan-otomatis') ?>" class="btn btn-danger rounded-pill">Buka Otomatis Seni</a>
+                <a href="<?= base_url('admin/super/jadwal-seni/overview') ?>" class="btn btn-outline-danger rounded-pill">Lihat Overview Seni</a>
             </div>
         </section>
     </div>

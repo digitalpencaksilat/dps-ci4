@@ -109,7 +109,7 @@ $summary = $summary ?? [];
                             <div class="d-flex flex-wrap gap-2">
                                 <button type="submit" class="btn btn-danger rounded-pill" id="btnDistribusiTanding" <?= empty($kategoriRows) ? 'disabled' : '' ?>>Distribusikan</button>
                                 <a class="btn btn-outline-secondary rounded-pill" href="<?= base_url('admin/super/generate-bagan-tanding-dari-jadwal') ?>">Generate Bagan dari Jadwal</a>
-                                <a class="btn btn-outline-primary rounded-pill" href="<?= base_url('admin/super/drawing-tanding/laporan-hasil-drawing-bagan') ?>">Laporan Hasil Drawing</a>
+                                <a class="btn btn-outline-danger rounded-pill" href="<?= base_url('admin/super/drawing-tanding/laporan-hasil-drawing-bagan') ?>">Laporan Hasil Drawing</a>
                             </div>
                         </form>
                     </div>

@@ -131,7 +131,7 @@
                     <div class="super-mode-link mt-4">
                         <form action="<?= base_url('admin/super/operasi-basis-data/buat-pool-baru') ?>" method="post" class="w-100">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-success w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Buat Pool Baru?', 'Pool baru akan dibuat untuk kategori yang belum memiliki pool atau kapasitasnya sudah penuh.', 'Ya, Buat')">Buat Pool</button>
+                            <button type="submit" class="btn btn-admin-brand w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Buat Pool Baru?', 'Pool baru akan dibuat untuk kategori yang belum memiliki pool atau kapasitasnya sudah penuh.', 'Ya, Buat')">Buat Pool</button>
                         </form>
                     </div>
                 </section>
@@ -154,7 +154,7 @@
                     <div class="super-mode-link mt-4">
                         <form action="<?= base_url('admin/super/operasi-basis-data/buat-kategori-partai-tambahan') ?>" method="post" class="w-100">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-info w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Buat Kategori Partai Tambahan?', 'Pool berketerangan Partai Tambahan akan ditambahkan untuk kelas tanding yang membutuhkan.', 'Ya, Buat')">Buat Kategori Tambahan</button>
+                            <button type="submit" class="btn btn-admin-brand w-100 rounded-pill" onclick="return confirmAdminAction(this.closest('form'), 'Buat Kategori Partai Tambahan?', 'Pool berketerangan Partai Tambahan akan ditambahkan untuk kelas tanding yang membutuhkan.', 'Ya, Buat')">Buat Kategori Tambahan</button>
                         </form>
                     </div>
                 </section>

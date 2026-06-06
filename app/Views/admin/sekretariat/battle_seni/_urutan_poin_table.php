@@ -88,7 +88,4 @@ $formatPeserta = static function (?string $anggota, ?string $kontingen, ?string 
         </table>
     </div>
 </div>
-<style>
-    .bg-blue { background-color: #0d6efd !important; color: #fff; }
-    .bg-red { background-color: #dc3545 !important; color: #fff; }
-</style>
+

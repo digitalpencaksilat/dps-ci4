@@ -19,10 +19,10 @@
         </button>
 
         <!-- Download All Schedules Button -->
-        <form action="<?= base_url('admin/gelanggang/merge-all') ?>" method="post" class="d-inline-block">
+        <form action="<?= base_url('admin/gelanggang/merge-all') ?>" method="post" class="d-inline-block"
+              onsubmit="return confirmAdminAction(this, 'Download Semua Jadwal?', 'Semua jadwal PDF dari seluruh gelanggang akan di-merge dan diunduh.', 'Ya, Unduh')">
             <?= csrf_field() ?>
-            <button type="button" class="btn btn-outline-danger rounded-pill px-4 mb-3 ms-2" 
-                    onclick="if(confirm('Apakah Anda yakin? Semua Jadwal PDF akan diunduh!')) this.form.submit();">
+            <button type="submit" class="btn btn-outline-danger rounded-pill px-4 mb-3 ms-2">
                 <i class="fas fa-file-pdf me-2"></i>Download Semua Jadwal
             </button>
         </form>
@@ -38,15 +38,8 @@
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        if (document.getElementById('tabelGelanggang')) {
-            new DataTable('#tabelGelanggang', {
-                autoWidth: false,
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                responsive: true
-            });
+        if (typeof window.initAdminDataTable === 'function') {
+            window.initAdminDataTable('#tabelGelanggang', { ordering: true });
         }
     });
 

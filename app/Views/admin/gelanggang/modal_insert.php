@@ -46,8 +46,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button class="btn btn-primary" type="submit">Tambah</button>
+                    <button type="button" class="btn btn-soft rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button class="btn btn-admin-brand rounded-pill px-4" type="submit">
+                        <i class="fas fa-plus me-2"></i>Tambah
+                    </button>
                 </div>
             </form>
         </div>

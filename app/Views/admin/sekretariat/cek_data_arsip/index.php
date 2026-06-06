@@ -89,13 +89,13 @@
                 <img id="zoomedImage" src="" class="img-fluid rounded" style="max-height: 70vh;" alt="Preview">
             </div>
             <div class="modal-footer">
-                <a id="downloadImageBtn" href="" download class="btn btn-primary btn-sm">
+                <a id="downloadImageBtn" href="" download class="btn btn-admin-brand btn-sm rounded-pill px-3">
                     <i class="fas fa-download me-1"></i>Download
                 </a>
-                <a id="openNewTabBtn" href="" target="_blank" class="btn btn-outline-secondary btn-sm">
+                <a id="openNewTabBtn" href="" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill px-3">
                     <i class="fas fa-external-link-alt me-1"></i>Buka di Tab Baru
                 </a>
-                <button type="button" class="btn btn-dark btn-sm" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-soft btn-sm rounded-pill px-3" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -116,7 +116,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-soft btn-sm rounded-pill px-3" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>

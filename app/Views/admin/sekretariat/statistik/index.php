@@ -57,18 +57,24 @@
 <?= $this->section('scripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-    const statistikColors = ['#b91c1c', '#ef4444', '#f97316', '#0f766e', '#0ea5e9', '#7c3aed'];
-    const lineOptions = (categories, data, color) => ({ chart: { type: 'area', toolbar: { show: false } }, series: [{ name: 'Total', data }], colors: [color], dataLabels: { enabled: false }, stroke: { curve: 'smooth', width: 3 }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05 } }, xaxis: { categories }, yaxis: { labels: { formatter: (value) => Math.round(value) } }, grid: { borderColor: '#f1f5f9' }, tooltip: { y: { formatter: (value) => value + ' data' } } });
+    const cssVar = (name, fallback) => (getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback);
+    const brandPrimary = cssVar('--brand-primary', '#c60000');
+    const brandDark = cssVar('--admin-accent-dark', '#8f0b14');
+    const brandGold = cssVar('--brand-secondary', '#c5a017');
+    const gridColor = cssVar('--admin-border', '#f1f5f9');
+    // Palet selaras tema: turunan merah brand + emas sebagai aksen sekunder.
+    const statistikColors = [brandPrimary, '#e23b3b', brandGold, brandDark, '#d98324', '#a30000'];
+    const lineOptions = (categories, data, color) => ({ chart: { type: 'area', toolbar: { show: false } }, series: [{ name: 'Total', data }], colors: [color], dataLabels: { enabled: false }, stroke: { curve: 'smooth', width: 3 }, fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05 } }, xaxis: { categories }, yaxis: { labels: { formatter: (value) => Math.round(value) } }, grid: { borderColor: gridColor }, tooltip: { y: { formatter: (value) => value + ' data' } } });
     const donutOptions = (labels, series) => ({ chart: { type: 'donut' }, labels, series, colors: statistikColors, legend: { position: 'bottom' }, dataLabels: { enabled: true }, stroke: { width: 0 } });
-    const barOptions = (categories, data, color) => ({ chart: { type: 'bar', toolbar: { show: false } }, series: [{ name: 'Total', data }], colors: [color], plotOptions: { bar: { horizontal: true, borderRadius: 6, distributed: false } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: '#f1f5f9' } });
+    const barOptions = (categories, data, color) => ({ chart: { type: 'bar', toolbar: { show: false } }, series: [{ name: 'Total', data }], colors: [color], plotOptions: { bar: { horizontal: true, borderRadius: 6, distributed: false } }, dataLabels: { enabled: false }, xaxis: { categories }, grid: { borderColor: gridColor } });
 
-    new ApexCharts(document.querySelector('#chartKontingenProgress'), lineOptions(<?= json_encode($stats['kontingenProgress']['categories'] ?? []) ?>, <?= json_encode($stats['kontingenProgress']['series'] ?? []) ?>, '#b91c1c')).render();
-    new ApexCharts(document.querySelector('#chartPendaftarProgress'), lineOptions(<?= json_encode($stats['pendaftarProgress']['categories'] ?? []) ?>, <?= json_encode($stats['pendaftarProgress']['series'] ?? []) ?>, '#dc2626')).render();
+    new ApexCharts(document.querySelector('#chartKontingenProgress'), lineOptions(<?= json_encode($stats['kontingenProgress']['categories'] ?? []) ?>, <?= json_encode($stats['kontingenProgress']['series'] ?? []) ?>, brandPrimary)).render();
+    new ApexCharts(document.querySelector('#chartPendaftarProgress'), lineOptions(<?= json_encode($stats['pendaftarProgress']['categories'] ?? []) ?>, <?= json_encode($stats['pendaftarProgress']['series'] ?? []) ?>, brandDark)).render();
     new ApexCharts(document.querySelector('#chartTandingBreakdown'), donutOptions(<?= json_encode($stats['tandingBreakdown']['labels'] ?? []) ?>, <?= json_encode($stats['tandingBreakdown']['series'] ?? []) ?>)).render();
     new ApexCharts(document.querySelector('#chartSeniBreakdown'), donutOptions(<?= json_encode($stats['seniBreakdown']['labels'] ?? []) ?>, <?= json_encode($stats['seniBreakdown']['series'] ?? []) ?>)).render();
-    new ApexCharts(document.querySelector('#chartKontingenProvinsi'), barOptions(<?= json_encode($stats['kontingenProvinsi']['categories'] ?? []) ?>, <?= json_encode($stats['kontingenProvinsi']['series'] ?? []) ?>, '#7c3aed')).render();
-    new ApexCharts(document.querySelector('#chartPendaftarProvinsi'), barOptions(<?= json_encode($stats['pendaftarProvinsi']['categories'] ?? []) ?>, <?= json_encode($stats['pendaftarProvinsi']['series'] ?? []) ?>, '#0f766e')).render();
-    new ApexCharts(document.querySelector('#chartKontingenKabupaten'), barOptions(<?= json_encode($stats['kontingenKabupaten']['categories'] ?? []) ?>, <?= json_encode($stats['kontingenKabupaten']['series'] ?? []) ?>, '#ea580c')).render();
-    new ApexCharts(document.querySelector('#chartPendaftarKabupaten'), barOptions(<?= json_encode($stats['pendaftarKabupaten']['categories'] ?? []) ?>, <?= json_encode($stats['pendaftarKabupaten']['series'] ?? []) ?>, '#0284c7')).render();
+    new ApexCharts(document.querySelector('#chartKontingenProvinsi'), barOptions(<?= json_encode($stats['kontingenProvinsi']['categories'] ?? []) ?>, <?= json_encode($stats['kontingenProvinsi']['series'] ?? []) ?>, brandPrimary)).render();
+    new ApexCharts(document.querySelector('#chartPendaftarProvinsi'), barOptions(<?= json_encode($stats['pendaftarProvinsi']['categories'] ?? []) ?>, <?= json_encode($stats['pendaftarProvinsi']['series'] ?? []) ?>, brandGold)).render();
+    new ApexCharts(document.querySelector('#chartKontingenKabupaten'), barOptions(<?= json_encode($stats['kontingenKabupaten']['categories'] ?? []) ?>, <?= json_encode($stats['kontingenKabupaten']['series'] ?? []) ?>, brandDark)).render();
+    new ApexCharts(document.querySelector('#chartPendaftarKabupaten'), barOptions(<?= json_encode($stats['pendaftarKabupaten']['categories'] ?? []) ?>, <?= json_encode($stats['pendaftarKabupaten']['series'] ?? []) ?>, '#e23b3b')).render();
 </script>
 <?= $this->endSection() ?>

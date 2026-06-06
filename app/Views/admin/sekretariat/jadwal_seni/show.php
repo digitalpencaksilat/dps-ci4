@@ -29,12 +29,12 @@
                         <div class="card-body px-0">
                             <?php if (session()->get('level') === 'super_admin'): ?>
                                 <div class="mb-3 d-flex flex-wrap gap-2 px-3 px-md-0">
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalImportExcelBattle">
+                                    <button type="button" class="btn btn-outline-danger rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalImportExcelBattle">
                                         <i class="fas fa-file-excel me-1"></i> Import Excel Battle
                                     </button>
                                     <div class="dropdown">
-                                        <button class="btn btn-secondary bg-dark text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Edit Schedule
+                                        <button class="btn btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-pen me-1"></i> Edit Schedule
                                         </button>
                                         <div class="dropdown-menu">
                                             <a class="dropdown-item" href="<?= base_url(($routePrefix === 'admin/sekretariat/jadwal-seni' ? 'admin/super/jadwal-seni' : $routePrefix) . '/pengaturan-urutan-partai-seni/' . (int) ($jadwal->id_jadwal_seni ?? 0)) ?>">
@@ -64,7 +64,7 @@
                         <div class="card-body px-0">
                             <?php if (session()->get('level') === 'super_admin'): ?>
                                 <div class="mb-3 d-flex flex-wrap gap-2 px-3 px-md-0">
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalImportExcelPool">
+                                    <button type="button" class="btn btn-outline-danger rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalImportExcelPool">
                                         <i class="fas fa-file-excel me-1"></i> Import Excel Pool
                                     </button>
                                 </div>
@@ -72,8 +72,8 @@
                             <?php if (session()->get('level') === 'super_admin' && ! empty($poolDetails ?? [])): ?>
                                 <div class="mb-3 d-flex flex-wrap gap-2 px-3 px-md-0">
                                     <div class="dropdown">
-                                        <button class="btn btn-secondary bg-dark text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Edit Schedule
+                                        <button class="btn btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-pen me-1"></i> Edit Schedule
                                         </button>
                                         <div class="dropdown-menu">
                                             <a class="dropdown-item" href="<?= base_url(($routePrefix === 'admin/sekretariat/jadwal-seni' ? 'admin/super/jadwal-seni' : $routePrefix) . '/pengaturan-urutan-partai-seni/' . (int) ($jadwal->id_jadwal_seni ?? 0)) ?>">
@@ -108,13 +108,6 @@
         </div>
     </div>
 </div>
-
-<style>
-.bg-blue { background-color: #0d6efd !important; color: #fff; }
-.bg-red { background-color: #dc3545 !important; color: #fff; }
-.bg-info-gradient { background: linear-gradient(180deg, #0dcaf0, #0d6efd) !important; }
-.bg-danger-gradient { background: linear-gradient(180deg, #dc3545, #a71d2a) !important; }
-</style>
 
 <?php if (session()->get('level') === 'super_admin'): ?>
     <?php $seniRoutePrefix = ($routePrefix === 'admin/sekretariat/jadwal-seni' ? 'admin/super/jadwal-seni' : $routePrefix); ?>

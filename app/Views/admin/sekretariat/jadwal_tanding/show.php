@@ -39,8 +39,8 @@
                 <?php if (session()->get('level') === 'super_admin'): ?>
                     <div class="mb-3 d-flex flex-wrap gap-2">
                         <div class="dropdown">
-                            <button class="btn btn-secondary bg-dark text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Edit Schedule
+                            <button class="btn btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-pen me-1"></i> Edit Schedule
                             </button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="<?= base_url(($routePrefix === 'admin/sekretariat/jadwal-tanding' ? 'admin/super/jadwal-tanding' : $routePrefix) . '/pengaturan-urutan-partai-tanding/' . (int) $jadwal->id_jadwal_tanding) ?>">
@@ -51,7 +51,7 @@
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalTukarAtlet">Swap Athletes</button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalImportExcel">
+                        <button type="button" class="btn btn-outline-danger rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalImportExcel">
                             <i class="fas fa-file-excel me-1"></i> Import Excel
                         </button>
                     </div>
@@ -69,9 +69,9 @@
                                     <th></th>
                                     <th class="text-center">Match</th>
                                     <th class="text-center">Class</th>
-                                    <th class="bg-info text-white text-center">Blue</th>
+                                    <th class="bg-corner-blue text-center">Blue</th>
                                     <th class="text-center">Round</th>
-                                    <th class="bg-danger text-white text-center">Red</th>
+                                    <th class="bg-corner-red text-center">Red</th>
                                     <th class="text-center">Winner</th>
                                     <th></th>
                                 </tr>
@@ -105,9 +105,9 @@
                                         </td>
                                         <td class="align-middle text-capitalize text-center">
                                             <span class="fw-bold d-block"><?= esc($partai->babak ?? '-') ?></span>
-                                            <span class="badge <?= (int) ($partai->skor_biru ?? 0) > (int) ($partai->skor_merah ?? 0) ? 'bg-blue' : 'bg-dark' ?>"><?= esc((string) ($partai->skor_biru ?? 0)) ?></span>
+                                            <span class="badge <?= (int) ($partai->skor_biru ?? 0) > (int) ($partai->skor_merah ?? 0) ? 'bg-corner-blue' : 'bg-dark' ?>"><?= esc((string) ($partai->skor_biru ?? 0)) ?></span>
                                             <span class="text-muted">-</span>
-                                            <span class="badge <?= (int) ($partai->skor_merah ?? 0) > (int) ($partai->skor_biru ?? 0) ? 'bg-red' : 'bg-dark' ?>"><?= esc((string) ($partai->skor_merah ?? 0)) ?></span>
+                                            <span class="badge <?= (int) ($partai->skor_merah ?? 0) > (int) ($partai->skor_biru ?? 0) ? 'bg-corner-red' : 'bg-dark' ?>"><?= esc((string) ($partai->skor_merah ?? 0)) ?></span>
                                         </td>
                                         <td class="align-middle text-capitalize text-center">
                                             <?php if (empty($partai->nama_atlet_merah)): ?>

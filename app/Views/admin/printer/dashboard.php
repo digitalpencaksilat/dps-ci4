@@ -43,9 +43,9 @@
         <div class="admin-card p-3 text-center h-100">
             <p class="eyebrow mb-1">Background</p>
             <?php if ($hasBackground) : ?>
-                <span class="badge bg-success fs-6">Tersedia</span>
+                <span class="status-badge success fs-6">Tersedia</span>
             <?php else : ?>
-                <span class="badge bg-secondary fs-6">Belum diunggah</span>
+                <span class="status-badge neutral fs-6">Belum diunggah</span>
             <?php endif; ?>
             <p class="text-muted small mb-0">sertifikat.png</p>
         </div>
@@ -53,7 +53,7 @@
     <div class="col-6 col-lg-3">
         <div class="admin-card p-3 text-center h-100">
             <p class="eyebrow mb-1">Background Cetak</p>
-            <span class="badge <?= $hideBg ? 'bg-warning text-dark' : 'bg-success' ?> fs-6"><?= $hideBg ? 'Disembunyikan' : 'Ditampilkan' ?></span>
+            <span class="status-badge <?= $hideBg ? 'warning' : 'success' ?> fs-6"><?= $hideBg ? 'Disembunyikan' : 'Ditampilkan' ?></span>
             <p class="text-muted small mb-0">saat mencetak</p>
         </div>
     </div>
@@ -87,7 +87,7 @@
                 <form action="<?= base_url('admin/printer/update-domain-hosting') ?>" method="post" class="d-flex gap-2">
                     <?= csrf_field() ?>
                     <input type="url" name="domain_hosting" class="form-control" value="<?= esc($domainHosting) ?>" placeholder="<?= base_url() ?>">
-                    <button type="submit" class="btn btn-outline-secondary rounded-pill px-4">Simpan</button>
+                    <button type="submit" class="btn btn-admin-brand rounded-pill px-4">Simpan</button>
                 </form>
                 <div class="form-text">Base URL untuk link QR Code pada sertifikat.</div>
             </div>
@@ -119,7 +119,7 @@ $previewSuffix = $suffix !== '' ? '/' . $suffix : '';
             <p class="eyebrow mb-1">Penomoran</p>
             <h3 class="section-title h5 mb-0"><i class="fa-solid fa-certificate text-warning me-2"></i>Pengaturan &amp; Generate Nomor Sertifikat</h3>
         </div>
-        <span class="badge bg-light text-dark border fs-6"><?= esc((string) ($statNomor['sudah'] ?? 0)) ?> / <?= esc((string) ($statNomor['total'] ?? 0)) ?> tergenerate</span>
+        <span class="status-badge neutral fs-6"><?= esc((string) ($statNomor['sudah'] ?? 0)) ?> / <?= esc((string) ($statNomor['total'] ?? 0)) ?> tergenerate</span>
     </div>
 
     <div class="row g-4">
@@ -131,7 +131,7 @@ $previewSuffix = $suffix !== '' ? '/' . $suffix : '';
                 <div class="input-group">
                     <input type="text" class="form-control" id="inputSuffix" name="nomor_sertifikat_suffix"
                            value="<?= esc($suffix) ?>" placeholder="HAKA/XI/2026">
-                    <button type="submit" class="btn btn-outline-secondary px-3">Simpan</button>
+                    <button type="submit" class="btn btn-admin-brand px-3">Simpan</button>
                 </div>
                 <div class="form-text">Format akhir: <code id="previewNomor">0001<?= esc($previewSuffix) ?></code></div>
             </form>
@@ -157,7 +157,7 @@ $previewSuffix = $suffix !== '' ? '/' . $suffix : '';
     <div class="d-flex flex-wrap gap-2">
         <form action="<?= base_url('admin/printer/generate-semua-nomor-sertifikat') ?>" method="post" id="formGenerateSemua">
             <?= csrf_field() ?>
-            <button type="button" class="btn btn-success rounded-pill px-4" id="btnGenerateSemua" <?= ($statNomor['belum'] ?? 0) < 1 ? 'disabled' : '' ?>>
+            <button type="button" class="btn btn-admin-brand rounded-pill px-4" id="btnGenerateSemua" <?= ($statNomor['belum'] ?? 0) < 1 ? 'disabled' : '' ?>>
                 <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Generate Semua (Belum Ada)
             </button>
         </form>
@@ -245,7 +245,7 @@ $previewSuffix = $suffix !== '' ? '/' . $suffix : '';
                     showCancelButton: true,
                     confirmButtonText: 'Ya, Generate',
                     cancelButtonText: 'Batal',
-                    confirmButtonColor: '#198754'
+                    confirmButtonColor: '#c60000'
                 }).then(function (result) {
                     if (result.isConfirmed) {
                         document.getElementById('formGenerateSemua').submit();
@@ -268,7 +268,7 @@ $previewSuffix = $suffix !== '' ? '/' . $suffix : '';
                     showCancelButton: true,
                     confirmButtonText: 'Reset',
                     cancelButtonText: 'Batal',
-                    confirmButtonColor: '#dc3545',
+                    confirmButtonColor: '#c60000',
                     inputValidator: function (value) {
                         if (!value) { return 'Passcode wajib diisi!'; }
                     }

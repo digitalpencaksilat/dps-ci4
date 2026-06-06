@@ -369,7 +369,7 @@ $showValidation = session('status') === false;
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-soft rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -382,9 +382,9 @@ $showValidation = session('status') === false;
     --schedule-muted: rgba(15, 23, 42, 0.62);
     --schedule-line: rgba(15, 23, 42, 0.10);
     /* Match project brand: red accents (instead of CI3 blue). */
-    --schedule-soft: rgba(220, 53, 69, 0.10);
-    --schedule-accent: #dc3545;
-    --schedule-sky: #ef4444;
+    --schedule-soft: rgba(198, 0, 0, 0.10);
+    --schedule-accent: var(--brand-primary, #c60000);
+    --schedule-sky: var(--admin-accent-dark, #8f0b14);
 }
 
 .ci3-schedule-card .ci3-panel-card { border: 1px solid var(--schedule-line); border-radius: 14px; }

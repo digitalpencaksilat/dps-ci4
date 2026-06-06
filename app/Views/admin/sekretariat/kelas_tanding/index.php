@@ -9,6 +9,9 @@
     <div class="admin-table-wrap"><div class="table-shell admin-table-scroller"><table class="table admin-table admin-datatable-export align-middle mb-0">
         <thead><tr><th>Kategori Usia</th><th>Jenis Kelamin</th><th>Rentang Berat Badan</th><th>Kelas</th><th>Jumlah Peserta</th><th>Jumlah Peserta Lunas</th><th>Max Peserta</th><th>Kuota Tersedia</th><th>Jumlah Pool</th><th>Jenis Perlombaan</th><th class="text-end no-export">Aksi</th></tr></thead>
         <tbody>
+            <?php if (($rows ?? []) === []) : ?>
+                <tr><td colspan="11" class="text-center muted-copy py-4">Belum ada kelas tanding.</td></tr>
+            <?php endif; ?>
             <?php foreach (($rows ?? []) as $row) : ?>
                 <?php $kuotaTersedia = (int) ($row->max_peserta ?? 0) - (int) ($row->jumlah_peserta_tanding ?? 0); ?>
                 <tr>

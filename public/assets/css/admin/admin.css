@@ -1177,6 +1177,57 @@ body.admin-sidebar-collapsed .btn-admin-logout {
     background: rgba(107, 114, 128, 0.14);
 }
 
+.status-badge.info {
+    color: #1565c0;
+    background: rgba(21, 101, 192, 0.14);
+}
+
+.status-badge.danger {
+    color: var(--admin-accent-dark);
+    background: var(--admin-accent-soft);
+}
+
+/* Badge medali — utilitas tema (gantikan inline hex) */
+.medal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.medal-badge.emas {
+    background: #d4a017;
+}
+
+.medal-badge.perak {
+    background: #8c9094;
+}
+
+.medal-badge.perunggu {
+    background: #b06a2c;
+}
+
+/* Skor sudut tanding — pakai token corner resmi (gantikan bg-info/bg-danger/bg-blue/bg-red ad-hoc) */
+.bg-corner-blue {
+    background-color: var(--corner-blue) !important;
+    color: #fff !important;
+}
+
+.bg-corner-red {
+    background-color: var(--corner-red) !important;
+    color: #fff !important;
+}
+
+/* Alias skor sudut seni (dipakai shared_components/detail_jadwal_seni) */
+.bg-blue { background-color: var(--corner-blue) !important; color: #fff; }
+.bg-red { background-color: var(--corner-red) !important; color: #fff; }
+.bg-info-gradient { background: linear-gradient(180deg, #1e88e5, var(--corner-blue)) !important; }
+.bg-danger-gradient { background: linear-gradient(180deg, var(--corner-red), #8f1414) !important; }
+
 #kontingenTabs .nav-link {
     color: var(--admin-accent-dark);
     background: var(--admin-accent-soft);

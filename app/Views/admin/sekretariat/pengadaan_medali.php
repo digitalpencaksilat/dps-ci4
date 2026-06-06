@@ -37,7 +37,7 @@ $totalPerunggu = (int) array_sum(array_column($data_prediksi_medali_seni, 'perun
                     <div class="small muted-copy mb-1">Perunggu</div>
                     <div class="h3 section-title mb-0"><?= esc((string) $totalPerunggu) ?></div>
                 </div>
-                <i class="fas fa-medal" style="color: #7c4800; font-size: var(--fa-font-size-lg)"></i>
+                <i class="fas fa-medal fs-3" style="color: #b06a2c"></i>
             </div>
         </div>
     </div>

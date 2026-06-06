@@ -44,13 +44,31 @@
                             <td class="text-end"><?= esc((string) ($row->max_umur ?? '-')) ?></td>
                             <td><?= esc((string) ($row->acuan_tanggal ?? '-')) ?></td>
                             <td class="text-end">
-                                <div class="d-inline-flex gap-2">
-                                    <a href="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia) ?>" class="btn btn-sm btn-outline-secondary rounded-pill">Detail</a>
-                                    <a href="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/edit') ?>" class="btn btn-sm btn-outline-secondary rounded-pill">Edit</a>
-                                    <form action="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/delete') ?>" method="post" onsubmit="return confirmAdminAction(this, 'Hapus kategori usia?', 'Data kategori yang sudah dipakai lomba atau peserta mungkin tidak dapat dihapus.', 'Hapus')">
-                                        <?= csrf_field() ?>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Hapus</button>
-                                    </form>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Aksi
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia) ?>">
+                                                <i class="fas fa-eye me-2"></i>Detail
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/edit') ?>">
+                                                <i class="fas fa-pen me-2"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form action="<?= base_url('admin/super/kategori-usia/' . $row->id_kategori_usia . '/delete') ?>" method="post" onsubmit="return confirmAdminAction(this, 'Hapus kategori usia?', 'Data kategori yang sudah dipakai lomba atau peserta mungkin tidak dapat dihapus.', 'Hapus')">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="fas fa-trash-alt me-2"></i>Hapus
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
                                 </div>
                             </td>
                         </tr>

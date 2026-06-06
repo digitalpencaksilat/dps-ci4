@@ -173,6 +173,7 @@ class IdCardController extends BaseController
 
             $mainView = 'print/id_card/pages/peserta_tanding';
             $barcodeValue = IdCardService::barcodeValueTanding((int) $peserta->id_peserta_tanding);
+            $filename = $this->buildCardFilename($peserta->nama_kontingen ?? '', 'Tanding', (int) $peserta->id_peserta_tanding);
         } else {
             $peserta = $this->idCardService->getCardDataSeni($id);
             if ($peserta === null) {
@@ -182,8 +183,14 @@ class IdCardController extends BaseController
             $dataPenampilan = $this->idCardService->getPenampilanSeniData((int) $peserta->id_kompetisi_seni);
             $dataBattle = $this->idCardService->getBattleSeniData((int) $peserta->id_kompetisi_seni);
 
+            // Kompute partai untuk mode battle (parity dengan legacy multiple_kartu)
+            $partai = (($peserta->sistem_penampilan ?? 'pool') === 'battle')
+                ? get_partai_battle_seni($dataBattle, (int) ($peserta->id_kelompok_peserta_seni ?? 0))
+                : [];
+
             $mainView = 'print/id_card/pages/peserta_seni';
             $barcodeValue = IdCardService::barcodeValueSeni((int) $peserta->id_peserta_seni);
+            $filename = $this->buildCardFilename($peserta->nama_kontingen ?? '', 'Seni', (int) $peserta->id_peserta_seni);
         }
 
         return view('print/id_card/template', [
@@ -196,6 +203,8 @@ class IdCardController extends BaseController
             'layout'           => $this->idCardService->getLayoutConfig(),
             'background_url'   => $this->idCardService->backgroundUrl(),
             'barcode_value'    => $barcodeValue,
+            'card_filename'    => $filename,
+            'card_type'        => $tipe,
             'is_preview'       => false,
         ]);
     }
@@ -215,8 +224,21 @@ class IdCardController extends BaseController
             ->get()
             ->getResult();
 
+        // Load all kontingen data untuk DataTables
+        $dataKontingen = [];
+        foreach ($kontingenRows as $k) {
+            $dataKontingen[] = [
+                'id_kontingen'   => $k->id_kontingen,
+                'nama_kontingen' => $k->nama_kontingen,
+                'jml_tanding'    => $k->jml_tanding,
+                'jml_seni'       => $k->jml_seni,
+                'jml_total'      => (int)$k->jml_tanding + (int)$k->jml_seni,
+            ];
+        }
+
         return view('admin/sekretariat/id_card/cetak_per_kontingen', $this->viewData([
             'kontingenRows' => $kontingenRows,
+            'dataKontingen' => $dataKontingen,
         ], 'Cetak ID Card Per Kontingen'));
     }
 
@@ -229,8 +251,14 @@ class IdCardController extends BaseController
             ->get()
             ->getResult();
 
+        // Load semua peserta untuk client-side DataTables
+        $dataPesertaTanding = $this->idCardService->getListPesertaTanding();
+        $dataPesertaSeni = $this->idCardService->getListPesertaSeni();
+
         return view('admin/sekretariat/id_card/cetak_per_peserta', $this->viewData([
-            'kontingenRows' => $kontingenRows,
+            'kontingenRows'      => $kontingenRows,
+            'dataPesertaTanding' => $dataPesertaTanding,
+            'dataPesertaSeni'    => $dataPesertaSeni,
         ], 'Cetak ID Card Per Peserta'));
     }
 
@@ -279,10 +307,21 @@ class IdCardController extends BaseController
 
     /**
      * Process batch print: accepts POST arrays and renders all cards.
+     *
+     * Accepted POST keys:
+     *  - id_kontingen[]        : daftar id kontingen → diekspansi ke semua peserta tanding+seni
+     *  - id_peserta_tanding[]  : daftar id peserta tanding tertentu
+     *  - id_peserta_seni[]     : daftar id peserta seni tertentu
+     *  - scale                 : 2 (Normal), 3 (HD/default), 4 (Ultra HD) — kualitas html2canvas
      */
     public function prosesCetakBatch(): string
     {
         helper('kartu_peserta');
+
+        $kontingenIds = array_values(array_unique(array_filter(array_map(
+            'intval',
+            (array) $this->request->getPost('id_kontingen')
+        ))));
 
         $tandingIds = array_values(array_unique(array_filter(array_map(
             'intval',
@@ -294,8 +333,29 @@ class IdCardController extends BaseController
             (array) $this->request->getPost('id_peserta_seni')
         ))));
 
+        // Ekspansi: id_kontingen → semua peserta tanding & seni di kontingen tsb
+        if ($kontingenIds !== []) {
+            foreach ($kontingenIds as $idKontingen) {
+                $tandingIds = array_merge(
+                    $tandingIds,
+                    $this->idCardService->getPesertaTandingIdsByKontingen($idKontingen)
+                );
+                $seniIds = array_merge(
+                    $seniIds,
+                    $this->idCardService->getPesertaSeniIdsByKontingen($idKontingen)
+                );
+            }
+            $tandingIds = array_values(array_unique($tandingIds));
+            $seniIds = array_values(array_unique($seniIds));
+        }
+
         if ($tandingIds === [] && $seniIds === []) {
             return 'Tidak ada peserta yang dipilih.';
+        }
+
+        $scale = (int) ($this->request->getPost('scale') ?? 4);
+        if ($scale < 2 || $scale > 10) {
+            $scale = 4;
         }
 
         $cards = [];
@@ -316,6 +376,11 @@ class IdCardController extends BaseController
                 'peserta'       => $peserta,
                 'partai'        => $partai,
                 'barcode_value' => IdCardService::barcodeValueTanding((int) $peserta->id_peserta_tanding),
+                'filename'      => $this->buildCardFilename(
+                    $peserta->nama_kontingen ?? '',
+                    'Tanding',
+                    (int) $peserta->id_peserta_tanding
+                ),
             ];
         }
 
@@ -326,12 +391,24 @@ class IdCardController extends BaseController
             }
             $dataPenampilan = $this->idCardService->getPenampilanSeniData((int) $peserta->id_kompetisi_seni);
             $dataBattle = $this->idCardService->getBattleSeniData((int) $peserta->id_kompetisi_seni);
+
+            // Kompute partai untuk mode battle (parity dengan legacy)
+            $partaiSeni = (($peserta->sistem_penampilan ?? 'pool') === 'battle')
+                ? get_partai_battle_seni($dataBattle, (int) ($peserta->id_kelompok_peserta_seni ?? 0))
+                : [];
+
             $cards[] = [
                 'type'            => 'seni',
                 'peserta'         => $peserta,
+                'partai'          => $partaiSeni,
                 'data_penampilan' => $dataPenampilan,
                 'data_battle'     => $dataBattle,
                 'barcode_value'   => IdCardService::barcodeValueSeni((int) $peserta->id_peserta_seni),
+                'filename'        => $this->buildCardFilename(
+                    $peserta->nama_kontingen ?? '',
+                    'Seni',
+                    (int) $peserta->id_peserta_seni
+                ),
             ];
         }
 
@@ -341,8 +418,24 @@ class IdCardController extends BaseController
             'cards'          => $cards,
             'layout'         => $layout,
             'background_url' => $backgroundUrl,
+            'scale'          => $scale,
             'is_iframe'      => true,
         ]);
+    }
+
+    /**
+     * Build a safe filename for the card PNG (parity dengan legacy
+     * multiple_kartu.php: <NamaKontingen>_<Tanding|Seni>_<id>).
+     */
+    private function buildCardFilename(string $namaKontingen, string $tipe, int $id): string
+    {
+        $safe = preg_replace('/[^A-Za-z0-9\-]/', '_', $namaKontingen);
+        $safe = trim((string) $safe, '_');
+        if ($safe === '') {
+            $safe = 'Kartu';
+        }
+
+        return $safe . '_' . $tipe . '_' . $id;
     }
 
     // ============================================================

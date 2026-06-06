@@ -81,11 +81,43 @@
         <section class="admin-card">
             <div class="p-3 text-center">
                 <h6 class="mb-2">Preview</h6>
-                <iframe src="<?= base_url('admin/sekretariat/id-card/preview') ?>"
+                <iframe src="<?= base_url('admin/sekretariat/id-card/preview') ?>?t=<?= time() ?>"
                         style="width:100%; height:550px; border:1px solid #dee2e6; border-radius:8px;"
                         id="previewIframe"></iframe>
+                <div class="text-muted small mt-2">Preview menggunakan satu peserta tanding teratas. Background dan tata letak mengikuti pengaturan terbaru.</div>
             </div>
         </section>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    // Cache-bust iframe preview setelah simpan tata letak.
+    (function () {
+        var iframe = document.getElementById('previewIframe');
+        var form = document.querySelector('form[action$="simpan-tata-letak"]');
+        if (!iframe || !form) return;
+        form.addEventListener('submit', function () {
+            // Setelah redirect ke halaman ini lagi, ?t=<?= time() ?> sudah cache-bust.
+            // Ini hanya sebagai fallback bila redirect tidak terjadi.
+            try {
+                sessionStorage.setItem('id_card_layout_saved', '1');
+            } catch (e) { /* noop */ }
+        });
+
+        try {
+            if (sessionStorage.getItem('id_card_layout_saved') === '1') {
+                sessionStorage.removeItem('id_card_layout_saved');
+                // Force iframe reload lagi setelah halaman load (jika cached)
+                setTimeout(function () {
+                    var src = iframe.src;
+                    iframe.src = src.indexOf('?') >= 0
+                        ? src + '&_=' + Date.now()
+                        : src + '?_=' + Date.now();
+                }, 100);
+            }
+        } catch (e) { /* noop */ }
+    })();
+</script>
 <?= $this->endSection() ?>

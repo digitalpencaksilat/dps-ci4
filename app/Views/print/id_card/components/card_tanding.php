@@ -1,7 +1,20 @@
-<div class="kartu-peserta" style="background-image: url('<?= esc($background_url ?? base_url('uploads/kartu-peserta/atlet.png')) ?>')">
+<?php
+/**
+ * @var object|null $peserta
+ * @var array       $partai
+ * @var string      $background_url
+ */
+$bg = (string) ($background_url ?? '');
+?>
+<div class="kartu-peserta">
+    <?php if ($bg !== '') : ?>
+        <img class="kartu-bg" src="<?= esc($bg) ?>" alt="" aria-hidden="true">
+    <?php endif; ?>
     <div class="atlet-img">
-        <?php if (! empty($peserta->foto)) : ?>
-            <img class="img-fluid" src="<?= base_url('uploads/peserta/foto/') . esc($peserta->foto) ?>" alt="Foto">
+        <?php
+        $fotoPath = ! empty($peserta->foto) ? (FCPATH . 'uploads/peserta/foto/' . $peserta->foto) : '';
+        if ($fotoPath !== '' && is_file($fotoPath)) : ?>
+            <img class="img-fluid" src="<?= base_url('uploads/peserta/foto/') . esc($peserta->foto) ?>" alt="Foto" onerror="this.style.display='none'">
         <?php endif; ?>
     </div>
 

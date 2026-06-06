@@ -9,6 +9,21 @@
         overflow: hidden;
         margin: 0 auto;
     }
+    .kartu-peserta .kartu-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+        pointer-events: none;
+        image-rendering: -webkit-optimize-contrast;
+    }
+    .kartu-peserta > *:not(.kartu-bg) {
+        position: relative;
+        z-index: 1;
+    }
     .kartu-peserta .kategori-lomba {
         font-weight: bold;
         text-align: center;

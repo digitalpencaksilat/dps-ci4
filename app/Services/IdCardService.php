@@ -121,13 +121,17 @@ class IdCardService
     /**
      * Get pertandingan (match) data for a tanding participant.
      *
+     * Mengembalikan baris pertandingan + nomor_partai (dari detail_jadwal_tanding)
+     * + nama_gelanggang (dari jadwal_tanding → gelanggang). Helper
+     * get_partai_pertandingan() butuh kolom-kolom ini sebagai alias.
+     *
      * @return list<object>
      */
     public function getPertandinganData(int $idKompetisiTanding): array
     {
         return db_connect()
             ->table('pertandingan')
-            ->select('pertandingan.*, g.nama_gelanggang')
+            ->select('pertandingan.*, djt.nomor_partai, g.nama_gelanggang', false)
             ->join('detail_jadwal_tanding djt', 'djt.id_pertandingan = pertandingan.id_pertandingan', 'left')
             ->join('jadwal_tanding jt', 'jt.id_jadwal_tanding = djt.id_jadwal_tanding', 'left')
             ->join('gelanggang g', 'g.id_gelanggang = jt.id_gelanggang', 'left')
@@ -172,19 +176,31 @@ class IdCardService
     /**
      * Get penampilan (schedule) data for pool-mode seni.
      *
+     * Tabel `detail_jadwal_seni` tidak punya kolom `id_kompetisi_seni`, jadi
+     * filter id_kompetisi_seni dilakukan via chain:
+     *  detail_jadwal_seni → penampilan_seni → kelompok_peserta_seni.id_kompetisi_seni
+     *
+     * `babak_pool` di-derive dari `penampilan_seni.babak` (alias legacy).
+     *
      * @return list<object>
      */
     public function getPenampilanSeniData(int $idKompetisiSeni): array
     {
         return db_connect()
             ->table('detail_jadwal_seni djs')
-            ->select('djs.*, js.babak_pool, g.nama_gelanggang, kps.id_kelompok_peserta_seni')
+            ->select(
+                'djs.id_detail_jadwal_seni, djs.nomor_partai, '
+                . 'g.nama_gelanggang, '
+                . 'ps.babak AS babak_pool, '
+                . 'ps.id_kelompok_peserta_seni, '
+                . 'kps.id_kompetisi_seni',
+                false
+            )
+            ->join('penampilan_seni ps', 'ps.id_penampilan_seni = djs.id_penampilan_seni')
+            ->join('kelompok_peserta_seni kps', 'kps.id_kelompok_peserta_seni = ps.id_kelompok_peserta_seni')
             ->join('jadwal_seni js', 'js.id_jadwal_seni = djs.id_jadwal_seni')
             ->join('gelanggang g', 'g.id_gelanggang = js.id_gelanggang', 'left')
-            ->join('kompetisi_seni kom', 'kom.id_kompetisi_seni = djs.id_kompetisi_seni')
-            ->join('kelompok_peserta_seni kps', 'kps.id_kompetisi_seni = kom.id_kompetisi_seni', 'left')
-            ->where('djs.id_kompetisi_seni', $idKompetisiSeni)
-            ->where('js.babak_pool IS NOT NULL')
+            ->where('kps.id_kompetisi_seni', $idKompetisiSeni)
             ->orderBy('djs.nomor_partai', 'ASC')
             ->get()
             ->getResult();
@@ -193,20 +209,126 @@ class IdCardService
     /**
      * Get battle seni data for battle-mode seni.
      *
+     * Mengembalikan baris `battle_seni` dengan alias yang dipakai helper
+     * `get_partai_battle_seni()`:
+     *  - id_kompetisi_seni_battle
+     *  - babak_battle
+     *  - id_kelompok_peserta_seni_merah / _biru (di-derive via penampilan_seni)
+     *  - nomor_partai (dari detail_jadwal_seni)
+     *  - nama_gelanggang (dari jadwal_seni → gelanggang)
+     *
      * @return list<object>
      */
     public function getBattleSeniData(int $idKompetisiSeni): array
     {
+        $select = 'bs.id_battle_seni, '
+            . 'bs.id_kompetisi_seni AS id_kompetisi_seni_battle, '
+            . 'bs.nomor_battle, '
+            . 'bs.nomor_battle_selanjutnya, '
+            . 'bs.babak AS babak_battle, '
+            . 'bs.id_penampilan_seni_merah, '
+            . 'bs.id_penampilan_seni_biru, '
+            . '(SELECT id_kelompok_peserta_seni FROM penampilan_seni WHERE id_penampilan_seni = bs.id_penampilan_seni_merah) AS id_kelompok_peserta_seni_merah, '
+            . '(SELECT id_kelompok_peserta_seni FROM penampilan_seni WHERE id_penampilan_seni = bs.id_penampilan_seni_biru) AS id_kelompok_peserta_seni_biru, '
+            . 'djs.nomor_partai, '
+            . 'g.nama_gelanggang';
+
         return db_connect()
             ->table('battle_seni bs')
-            ->select('bs.*, g.nama_gelanggang')
+            ->select($select, false)
             ->join('detail_jadwal_seni djs', 'djs.id_battle_seni = bs.id_battle_seni', 'left')
             ->join('jadwal_seni js', 'js.id_jadwal_seni = djs.id_jadwal_seni', 'left')
             ->join('gelanggang g', 'g.id_gelanggang = js.id_gelanggang', 'left')
-            ->where('bs.id_kompetisi_seni_battle', $idKompetisiSeni)
+            ->where('bs.id_kompetisi_seni', $idKompetisiSeni)
             ->orderBy('bs.nomor_battle', 'ASC')
             ->get()
             ->getResult();
+    }
+
+    /**
+     * Get list peserta tanding with full data for UI (DataTables).
+     * Includes kontingen filter, kategori label, dan foto status.
+     *
+     * @return list<object>
+     */
+    public function getListPesertaTanding(?int $idKontingenFilter = null): array
+    {
+        $query = db_connect()
+            ->table('peserta_tanding pt')
+            ->select([
+                'pt.id_peserta_tanding',
+                'p.nama_pendaftar',
+                'p.foto',
+                'p.id_kontingen',
+                'k.nama_kontingen',
+                'ku.nama_kategori_usia',
+                'ku.jenis_kelamin',
+                'kt.label',
+            ])
+            ->join('pendaftar p', 'p.id_pendaftar = pt.id_pendaftar')
+            ->join('kontingen k', 'k.id_kontingen = p.id_kontingen')
+            ->join('kompetisi_tanding kom', 'kom.id_kompetisi_tanding = pt.id_kompetisi_tanding')
+            ->join('kelas_tanding kt', 'kt.id_kelas_tanding = kom.id_kelas_tanding')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = kt.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia');
+
+        if ($idKontingenFilter !== null) {
+            $query->where('p.id_kontingen', $idKontingenFilter);
+        }
+
+        $results = $query->orderBy('p.nama_pendaftar', 'ASC')->get()->getResult();
+
+        // Hitung has_foto per baris (cek kolom non-empty)
+        foreach ($results as $row) {
+            $row->has_foto = ! empty($row->foto);
+            $row->kategori_label = ($row->nama_kategori_usia ?? '') . ' ' . (ucfirst($row->jenis_kelamin ?? '')) . (isset($row->label) ? ' Kelas ' . $row->label : '');
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get list peserta seni with full data for UI (DataTables).
+     * Includes kontingen filter, kategori label, dan foto status.
+     *
+     * @return list<object>
+     */
+    public function getListPesertaSeni(?int $idKontingenFilter = null): array
+    {
+        $query = db_connect()
+            ->table('peserta_seni ps')
+            ->select([
+                'ps.id_peserta_seni',
+                'p.nama_pendaftar',
+                'p.foto',
+                'p.id_kontingen',
+                'k.nama_kontingen',
+                'ku.nama_kategori_usia',
+                'ku.jenis_kelamin',
+                'sks.nama_seni',
+                'sks.jenis_seni',
+            ])
+            ->join('pendaftar p', 'p.id_pendaftar = ps.id_pendaftar')
+            ->join('kontingen k', 'k.id_kontingen = p.id_kontingen')
+            ->join('kelompok_peserta_seni kps', 'kps.id_kelompok_peserta_seni = ps.id_kelompok_peserta_seni')
+            ->join('kompetisi_seni kom', 'kom.id_kompetisi_seni = kps.id_kompetisi_seni')
+            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = kom.id_sub_kategori_seni')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia');
+
+        if ($idKontingenFilter !== null) {
+            $query->where('p.id_kontingen', $idKontingenFilter);
+        }
+
+        $results = $query->orderBy('p.nama_pendaftar', 'ASC')->get()->getResult();
+
+        // Hitung has_foto per baris + format kategori label
+        foreach ($results as $row) {
+            $row->has_foto = ! empty($row->foto);
+            $row->kategori_label = ($row->nama_kategori_usia ?? '') . ' ' . (ucfirst($row->jenis_kelamin ?? '')) . ' ' . (ucfirst($row->jenis_seni ?? '') . ' ' . ($row->nama_seni ?? ''));
+        }
+
+        return $results;
     }
 
     /**
@@ -353,10 +475,18 @@ class IdCardService
     }
 
     /**
-     * Get background image URL.
+     * Get background image URL. Returns empty string when file does not exist
+     * so the card view can skip emitting an invalid background-image URL.
      */
     public function backgroundUrl(): string
     {
-        return base_url('uploads/kartu-peserta/atlet.png');
+        if (! $this->hasBackground()) {
+            return '';
+        }
+
+        // Cache-bust by file mtime so admin yang baru upload tidak terkena cache lama.
+        $mtime = @filemtime(FCPATH . 'uploads/kartu-peserta/atlet.png') ?: time();
+
+        return base_url('uploads/kartu-peserta/atlet.png') . '?v=' . $mtime;
     }
 }

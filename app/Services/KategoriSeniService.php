@@ -42,7 +42,23 @@ class KategoriSeniService
 
     public function availableKompetisi(int $idKontingen): array
     {
-        return (new SekretariatPesertaKontingenService())->listKompetisiSeniPendaftaran(false);
+        $service = new SekretariatPesertaKontingenService();
+        $allKompetisi = $service->listKompetisiSeniPendaftaran(false);
+        
+        // Ambil jenis kelamin atlet yang tersedia di kontingen ini untuk filter kategori
+        $availableGenders = [];
+        foreach ($service->availablePendaftarForSeni($idKontingen) as $pendaftar) {
+            $gender = strtolower(trim((string) ($pendaftar->jenis_kelamin ?? '')));
+            if ($gender !== '') {
+                $availableGenders[$gender] = true;
+            }
+        }
+        
+        // Filter kompetisi: hanya tampilkan jika ada atlet dengan jenis kelamin yang sesuai
+        return array_values(array_filter($allKompetisi, static function (object $item) use ($availableGenders): bool {
+            $kompetisiGender = strtolower(trim((string) ($item->jenis_kelamin ?? '')));
+            return isset($availableGenders[$kompetisiGender]);
+        }));
     }
 
     public function availablePendaftarByKompetisi(int $idKompetisi, int $idKontingen): array

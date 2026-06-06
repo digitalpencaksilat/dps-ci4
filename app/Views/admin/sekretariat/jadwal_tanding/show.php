@@ -9,7 +9,7 @@
                 <a href="<?= base_url($routePrefix) ?>" class="text-decoration-none muted-copy small mb-2 d-block">
                     <i class="fas fa-arrow-left me-1"></i> Kembali ke Jadwal Tanding
                 </a>
-                <h6 class="card-title">Schedule of Matches at Arena <?= esc($jadwal->nama_gelanggang ?? '-') ?> - <?= esc($jadwal->keterangan_jadwal ?? $jadwal->keterangan ?? '') ?></h6>
+                <h6 class="card-title">Jadwal Pertandingan Arena <?= esc($jadwal->nama_gelanggang ?? '-') ?> - <?= esc($jadwal->keterangan_jadwal ?? $jadwal->keterangan ?? '') ?></h6>
             </div>
             <div class="card-body px-0">
                 <?php if (!empty($bracketBentrokError ?? false)): ?>

@@ -1222,6 +1222,38 @@ body.admin-sidebar-collapsed .btn-admin-logout {
     color: #fff !important;
 }
 
+/* Brand fill untuk header kartu/badge (gantikan bg-primary biru Bootstrap) */
+.bg-admin-brand {
+    background: linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-dark) 100%) !important;
+    color: #fff !important;
+}
+
+/* Teks sudut biru seni/tanding (gantikan text-primary biru Bootstrap ad-hoc) */
+.text-corner-blue {
+    color: var(--corner-blue) !important;
+}
+
+/*
+ * Kompat heading legacy: `.card-header`/`.card-title` di dalam .admin-card
+ * mengikuti bahasa visual tema (header transparan + judul Oswald uppercase),
+ * sehingga view yang belum dimigrasi ke partial page_header tetap seragam.
+ */
+.admin-card > .card-header,
+.admin-card .card-body > .card-header {
+    background: transparent;
+    border-bottom: 0;
+}
+
+.admin-card .card-header .card-title {
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 1.12rem;
+    line-height: 1.2;
+    color: var(--admin-text);
+    margin-bottom: 0.25rem;
+}
+
 /* Alias skor sudut seni (dipakai shared_components/detail_jadwal_seni) */
 .bg-blue { background-color: var(--corner-blue) !important; color: #fff; }
 .bg-red { background-color: var(--corner-red) !important; color: #fff; }

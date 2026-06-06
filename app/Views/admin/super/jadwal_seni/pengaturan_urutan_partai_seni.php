@@ -73,10 +73,10 @@ $idJadwal    = (int) ($jadwal->id_jadwal_seni ?? 0);
                                             </div>
                                             <div class="flex-fill text-center small text-capitalize border-start border-end px-2">
                                                 <?php if (! empty($row->anggota_kelompok_peserta_seni_biru ?? null)): ?>
-                                                    <span class="fw-bold text-primary"><?= esc($row->anggota_kelompok_peserta_seni_biru) ?></span><br>
+                                                    <span class="fw-bold text-corner-blue"><?= esc($row->anggota_kelompok_peserta_seni_biru) ?></span><br>
                                                     <span class="text-muted"><?= esc($row->nama_kontingen_biru ?? '-') ?></span>
                                                 <?php else: ?>
-                                                    <u class="fw-bold text-primary">
+                                                    <u class="fw-bold text-corner-blue">
                                                         <?= ($row->babak_battle ?? '') === 'Perebutan Juara Tiga' ? 'Loser' : 'Winner' ?> of Match <?= esc($row->calon_anggota_kelompok_peserta_seni_biru ?? '?') ?>
                                                     </u>
                                                 <?php endif; ?>

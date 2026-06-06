@@ -2,9 +2,11 @@
 
 <?= $this->section('content') ?>
 <section class="admin-card mb-4">
-    <div class="card-header pb-0 border-bottom-0 bg-transparent px-0">
-        <h6 class="card-title">List of Artistic Match Schedule</h6>
-    </div>
+    <?= view('shared_components/admin/page_header', [
+        'eyebrow'  => 'Sekretariat',
+        'title'    => 'Jadwal Seni',
+        'subtitle' => 'Daftar jadwal penampilan seni per arena.',
+    ]) ?>
     <div class="card-body px-0">
         <?php if (session()->get('level') === 'super_admin'): ?>
             <?php if (session()->get('level') === 'super_admin'): ?>

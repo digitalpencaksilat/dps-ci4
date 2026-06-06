@@ -107,7 +107,7 @@
             </div>
             <div class="modal-body" id="modalDetailArsipBody">
                 <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
+                    <div class="spinner-border text-admin-brand" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
@@ -140,7 +140,7 @@ function showImageModal(imageUrl, jenisArsip, namaPeserta) {
 
 function lihatDetailArsip(idPendaftar) {
     const body = document.getElementById('modalDetailArsipBody');
-    body.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+    body.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-admin-brand" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 
     new bootstrap.Modal(document.getElementById('modalDetailArsip')).show();
 

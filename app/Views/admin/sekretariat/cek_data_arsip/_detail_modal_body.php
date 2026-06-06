@@ -19,7 +19,7 @@
         <?php foreach ($activeArsip as $key => $arsipConfig): ?>
             <div class="col-md-6 col-lg-4 mb-3">
                 <div class="card h-100 shadow-sm">
-                    <div class="card-header py-2 bg-primary text-white">
+                    <div class="card-header py-2 bg-admin-brand text-white">
                         <h6 class="text-white small mb-0 fw-semibold"><?= esc($arsipConfig['nama_arsip']) ?></h6>
                     </div>
                     <div class="card-body p-3">

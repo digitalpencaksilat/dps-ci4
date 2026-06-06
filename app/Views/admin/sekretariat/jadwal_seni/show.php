@@ -9,7 +9,7 @@
                 <a href="<?= base_url($routePrefix) ?>" class="text-decoration-none muted-copy small mb-2 d-block">
                     <i class="fas fa-arrow-left me-1"></i> Kembali ke Jadwal Seni
                 </a>
-                <h6 class="card-title">Artistic Arena Schedule <?= esc($jadwal->nama_gelanggang ?? '-') ?></h6>
+                <h6 class="card-title">Jadwal Seni Arena <?= esc($jadwal->nama_gelanggang ?? '-') ?></h6>
             </div>
         </div>
 

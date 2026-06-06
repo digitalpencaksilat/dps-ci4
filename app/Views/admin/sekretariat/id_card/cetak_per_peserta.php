@@ -136,7 +136,7 @@
                                         <td><?= $i + 1 ?></td>
                                         <td class="fw-semibold"><?= htmlspecialchars(ucwords(strtolower($p->nama_pendaftar))) ?></td>
                                         <td><?= htmlspecialchars($p->nama_kontingen) ?></td>
-                                        <td><span class="badge bg-primary"><?= htmlspecialchars(trim($p->kategori_label)) ?></span></td>
+                                        <td><span class="badge bg-admin-brand"><?= htmlspecialchars(trim($p->kategori_label)) ?></span></td>
                                         <td class="text-center">
                                             <?php if ($p->has_foto): ?>
                                                 <span class="text-success"><i class="fas fa-check-circle"></i></span>

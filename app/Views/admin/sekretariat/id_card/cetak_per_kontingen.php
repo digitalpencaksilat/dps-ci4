@@ -74,7 +74,7 @@
                                     <input type="checkbox" class="form-check-input chk-kontingen" value="<?= $k['id_kontingen'] ?>">
                                 </td>
                                 <td class="fw-semibold"><?= htmlspecialchars($k['nama_kontingen']) ?></td>
-                                <td class="text-center"><span class="badge bg-primary"><?= $k['jml_tanding'] ?></span></td>
+                                <td class="text-center"><span class="badge bg-admin-brand"><?= $k['jml_tanding'] ?></span></td>
                                 <td class="text-center"><span class="badge bg-info"><?= $k['jml_seni'] ?></span></td>
                                 <td class="text-center"><span class="badge bg-secondary"><?= $k['jml_total'] ?></span></td>
                                 <td class="text-center">

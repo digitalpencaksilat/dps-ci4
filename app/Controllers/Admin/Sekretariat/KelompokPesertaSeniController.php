@@ -91,11 +91,14 @@ class KelompokPesertaSeniController extends BaseController
             return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
         }
 
+        // Filter kompetisi seni berdasarkan jenis kelamin kelompok (sama seperti saat create)
+        $kompetisiOptions = $service->listKompetisiSeniPendaftaran(true, ['ku.jenis_kelamin' => $row->jenis_kelamin]);
+
         return $this->response->setJSON([
             'id_kelompok_peserta_seni' => $row->id_kelompok_peserta_seni,
             'id_kompetisi_seni' => $row->id_kompetisi_seni,
             'keterangan' => $row->keterangan ?? '',
-            'kompetisiOptions' => $service->listKompetisiSeni(),
+            'kompetisiOptions' => $kompetisiOptions,
         ]);
     }
 

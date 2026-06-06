@@ -82,11 +82,14 @@ class PesertaTandingController extends BaseController
             return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
         }
 
+        // Filter kompetisi berdasarkan jenis kelamin pendaftar (sama seperti saat create)
+        $kompetisiOptions = $service->getKompetisiTandingByPendaftar((int) $row->id_pendaftar, $id);
+
         return $this->response->setJSON([
             'id_peserta_tanding' => $row->id_peserta_tanding,
             'id_kompetisi_tanding' => $row->id_kompetisi_tanding,
             'keterangan' => $row->keterangan ?? '',
-            'kompetisiOptions' => $service->listKompetisiTanding(),
+            'kompetisiOptions' => $kompetisiOptions,
         ]);
     }
 

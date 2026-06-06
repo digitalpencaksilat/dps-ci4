@@ -768,6 +768,11 @@ class SekretariatPesertaKontingenService
         $members = array_map(static fn (object $row): int => (int) $row->id_pendaftar, $this->listPesertaSeniByKelompok($idKelompok));
         $this->validateSeniMemberCount($idKompetisi, $members);
 
+        // Validasi jenis kelamin: pastikan kompetisi baru sesuai dengan jenis kelamin anggota kelompok
+        if ($newKompetisi !== null && ! empty($members)) {
+            $this->assertKelompokSeniEligible((int) $record->id_kontingen, $idKompetisi, $members);
+        }
+
         $updated = $model->update($idKelompok, [
             'id_kompetisi_seni' => $idKompetisi,
             'status' => (string) ($payload['status'] ?? $record->status ?? 'ok'),

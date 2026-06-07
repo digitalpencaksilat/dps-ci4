@@ -1,6 +1,18 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
+<?php
+$eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
+$exportTitle = 'CEK DATA ARSIP PESERTA';
+$exportFilename = 'Cek Data Arsip - ' . $eventName;
+$brandName = (string) (get_setting('brand_name') ?? 'Digital Pencak Silat');
+$brandAbbr = strtolower((string) (get_setting('brand_abbreviation') ?? 'dps'));
+$brandLogoUrl = base_url('assets/images/brand/' . $brandAbbr . '/logo.png');
+$printHeaderHtml = view('shared_components/print/medal_export_header', [
+    'title' => $exportTitle,
+    'subtitle' => $eventName,
+]);
+?>
 <section class="admin-card">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
         <div>
@@ -10,22 +22,24 @@
         </div>
     </div>
     <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-                    <table class="table admin-table admin-datatable-export align-middle mb-0" id="tabelCekDataArsip" data-export-config='{"scrollX": true, "ordering": true}'>
+                    <table class="table admin-table align-middle mb-0" id="tabelCekDataArsip">
                         <thead>
                             <tr>
+                                <th class="text-center">No</th>
                                 <th>Nama</th>
                                 <th>Kontingen</th>
                                 <th class="text-center">Foto</th>
                                 <?php foreach ($activeArsip as $key => $arsipConfig): ?>
                                     <th class="text-center"><?= esc($arsipConfig['nama_arsip']) ?></th>
                                 <?php endforeach; ?>
-                                <th class="text-center">Aksi</th>
+                                <th class="text-center no-export">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($pendaftarRows as $pendaftar): ?>
+                            <?php foreach ($pendaftarRows as $arsipIndex => $pendaftar): ?>
                                 <?php $arsipList = $arsipGrouped[$pendaftar->id_pendaftar] ?? []; ?>
                                 <tr>
+                                    <td class="text-center fw-semibold"><?= esc((string) ($arsipIndex + 1)) ?></td>
                                     <td>
                                         <span class="fw-semibold text-capitalize"><?= esc($pendaftar->nama_pendaftar) ?></span>
                                     </td>
@@ -63,7 +77,7 @@
                                             <?php endif; ?>
                                         </td>
                                     <?php endforeach; ?>
-                                    <td class="text-center">
+                                    <td class="text-center no-export">
                                         <button class="btn btn-sm btn-danger rounded-pill px-3" onclick="lihatDetailArsip(<?= $pendaftar->id_pendaftar ?>)">
                                             <i class="fas fa-eye me-1"></i>Detail
                                         </button>
@@ -124,6 +138,30 @@
 <script>
 const csrfName = '<?= csrf_token() ?>';
 let csrfHash = '<?= csrf_hash() ?>';
+
+$(document).ready(function() {
+    window.initAdminExportTable('#tabelCekDataArsip', {
+        title: <?= json_encode($exportTitle) ?>,
+        filename: <?= json_encode($exportFilename) ?>,
+        orientation: 'landscape',
+        preset: 'wide-report',
+        themedExport: true,
+        excelUppercase: false,
+        printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+        watermark: {
+            logo: <?= json_encode($brandLogoUrl) ?>,
+            text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+        },
+        // Convert image/badge cells to readable text for Excel & print
+        exportFormatBody: function(data, row, column, node) {
+            if (typeof data !== 'string') return data;
+            if (data.indexOf('<img') !== -1) return 'Ada';
+            if (data.indexOf('Belum Upload') !== -1) return 'Belum Upload';
+            var txt = data.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+            return txt === '—' ? '-' : txt;
+        }
+    });
+});
 
 function updateCsrfToken(response) {
     const newToken = response.headers.get('X-CSRF-TOKEN');

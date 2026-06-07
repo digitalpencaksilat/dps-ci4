@@ -1,6 +1,18 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
+<?php
+$eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
+$exportTitle = 'DATA KONTINGEN';
+$exportFilename = 'Data Kontingen - ' . $eventName;
+$brandName = (string) (get_setting('brand_name') ?? 'Digital Pencak Silat');
+$brandAbbr = strtolower((string) (get_setting('brand_abbreviation') ?? 'dps'));
+$brandLogoUrl = base_url('assets/images/brand/' . $brandAbbr . '/logo.png');
+$printHeaderHtml = view('shared_components/print/medal_export_header', [
+    'title' => $exportTitle,
+    'subtitle' => $eventName,
+]);
+?>
 <section class="admin-card">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
         <div>
@@ -21,9 +33,10 @@
     <?php else : ?>
         <div class="admin-table-wrap">
             <div class="table-shell admin-table-scroller">
-                <table class="table admin-table admin-datatable-export align-middle mb-0">
+                <table class="table admin-table align-middle mb-0" id="tabelDataKontingen">
                     <thead>
                         <tr>
+                            <th class="text-center">No</th>
                             <th>Nama</th>
                             <th>Email</th>
                             <th>Penanggung Jawab</th>
@@ -33,7 +46,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($kontingenRows as $row) : ?>
+                        <?php foreach ($kontingenRows as $kontingenIndex => $row) : ?>
                             <?php
                             $phoneRaw = trim((string) ($row->nomor_telepon_penanggungjawab ?? $row->nomor_telepon_kontingen ?? ''));
                             $phoneDigits = preg_replace('/\D+/', '', $phoneRaw) ?? '';
@@ -42,6 +55,7 @@
                             }
                             ?>
                             <tr>
+                                <td class="text-center fw-semibold"><?= esc((string) ($kontingenIndex + 1)) ?></td>
                                 <td class="text-uppercase">
                                     <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-uppercase text-danger"><?= esc($row->nama_kontingen ?: '-') ?></a>
                                 </td>
@@ -107,4 +121,24 @@
         </form>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    $(document).ready(function() {
+        window.initAdminExportTable('#tabelDataKontingen', {
+            title: <?= json_encode($exportTitle) ?>,
+            filename: <?= json_encode($exportFilename) ?>,
+            orientation: 'landscape',
+            preset: 'wide-report',
+            themedExport: true,
+            excelUppercase: false,
+            printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+            watermark: {
+                logo: <?= json_encode($brandLogoUrl) ?>,
+                text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>

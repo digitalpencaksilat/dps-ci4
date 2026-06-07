@@ -1,8 +1,8 @@
 <?php $isMobile = service('request')->getUserAgent()->isMobile(); ?>
-<table width="100%" class="table admin-table admin-datatable w-100 table-striped table-hover text-sm" id="tabelDetailJadwalseni" caption="Performance">
+<table width="100%" class="table admin-table w-100 table-striped table-hover text-sm" id="tabelDetailJadwalseni" caption="Performance">
     <thead>
         <tr>
-            <?php if (! $isMobile): ?><th></th><?php endif; ?>
+            <?php if (! $isMobile): ?><th class="no-export"></th><?php endif; ?>
             <th class="exportable" width="4%">Match</th>
             <th class="exportable" width="4%">Number</th>
             <th class="none exportable">Round</th>
@@ -49,15 +49,7 @@
                     </td>
                 <?php endif; ?>
                 <td class="text-center align-middle">
-                    <?php if (strtolower($partai_seni->jenis_medali_pool ?? '') === 'emas'): ?>
-                        <span class="badge text-white" style="background-color:#ffb322">Emas</span>
-                    <?php elseif (strtolower($partai_seni->jenis_medali_pool ?? '') === 'perak'): ?>
-                        <span class="badge text-white" style="background-color:#b0b0b0">Perak</span>
-                    <?php elseif (strtolower($partai_seni->jenis_medali_pool ?? '') === 'perunggu'): ?>
-                        <span class="badge text-white" style="background-color:#7c4800">Perunggu</span>
-                    <?php else: ?>
-                        <?= esc($partai_seni->jenis_medali_pool ?? '-') ?>
-                    <?php endif; ?>
+                    <?= view('admin/sekretariat/medal_tally/_medal_badge', ['medal' => strtolower((string) ($partai_seni->jenis_medali_pool ?? ''))]) ?>
                 </td>
                 <td></td>
             </tr>

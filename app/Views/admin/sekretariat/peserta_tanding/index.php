@@ -16,7 +16,10 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
 $eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
 $exportTitle = 'DAFTAR PESERTA TANDING';
 $exportFilename = 'Daftar Peserta Tanding - ' . $eventName;
-$printHeaderHtml = view('shared_components/print/export_header', [
+$brandName = (string) (get_setting('brand_name') ?? 'Digital Pencak Silat');
+$brandAbbr = strtolower((string) (get_setting('brand_abbreviation') ?? 'dps'));
+$brandLogoUrl = base_url('assets/images/brand/' . $brandAbbr . '/logo.png');
+$printHeaderHtml = view('shared_components/print/medal_export_header', [
     'title' => $exportTitle,
     'subtitle' => $eventName,
 ]);
@@ -32,10 +35,11 @@ $printHeaderHtml = view('shared_components/print/export_header', [
     </div>
     <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
         <table class="table admin-table align-middle mb-0" id="tabelPesertaTanding">
-            <thead><tr><th>Nama</th><th>Kontingen</th><th>Sekolah</th><th>Berat Badan</th><th>Tinggi Badan</th><th>Umur</th><th>Kategori</th><th>Jenis Kelamin</th><th>Kelas</th><th>Nomor Pool</th><th>Rentang Berat Badan</th><th>Pembayaran</th><th>Keterangan</th><th>NIK</th><th>No KK</th><th class="text-end no-export">Aksi</th></tr></thead>
+            <thead><tr><th class="text-center">No</th><th>Nama</th><th>Kontingen</th><th>Sekolah</th><th>Berat Badan</th><th>Tinggi Badan</th><th>Umur</th><th>Kategori</th><th>Jenis Kelamin</th><th>Kelas</th><th>Nomor Pool</th><th>Rentang Berat Badan</th><th>Pembayaran</th><th>Keterangan</th><th>NIK</th><th>No KK</th><th class="text-end no-export">Aksi</th></tr></thead>
             <tbody>
-                <?php foreach (($rows ?? []) as $row) : ?>
+                <?php foreach (($rows ?? []) as $index => $row) : ?>
                     <tr>
+                        <td class="text-center fw-semibold"><?= esc((string) ($index + 1)) ?></td>
                         <td class="fw-semibold text-capitalize"><?= esc($row->nama_pendaftar) ?></td>
                         <td class="text-uppercase"><?= esc($row->nama_kontingen) ?></td>
                         <td><?= esc((string) ($row->nama_sekolah ?: '-')) ?></td>
@@ -181,17 +185,29 @@ $printHeaderHtml = view('shared_components/print/export_header', [
             filename: <?= json_encode($exportFilename) ?>,
             orientation: 'landscape',
             preset: 'wide-report',
+            themedExport: true,
+            excelUppercase: false,
             printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+            watermark: {
+                logo: <?= json_encode($brandLogoUrl) ?>,
+                text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+            },
             excel: {
-                columnWidths: { A: 22, B: 22, C: 20, D: 12, E: 12, F: 10, G: 18, H: 14, I: 10, J: 10, K: 18, L: 18, M: 20, N: 18, O: 18 },
-                numericTextColumns: [13, 14]
+                columnWidths: { A: 6, B: 22, C: 22, D: 20, E: 12, F: 12, G: 10, H: 18, I: 14, J: 10, K: 10, L: 18, M: 18, N: 20, O: 18, P: 18 },
+                numericTextColumns: [14, 15]
             },
             printCustomize: function(win) {
-                $(win.document.head).append('<style>table tr td:nth-child(4), table tr td:nth-child(5), table tr td:nth-child(6), table tr td:nth-child(10), table tr td:nth-child(11){text-align:right!important;}</style>');
+                window.dpsMedalTallyPrintCustomize(win, {
+                    watermark: {
+                        logo: <?= json_encode($brandLogoUrl) ?>,
+                        text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+                    }
+                });
+                $(win.document.head).append('<style>table.medal-data-table tr td:nth-child(5), table.medal-data-table tr td:nth-child(6), table.medal-data-table tr td:nth-child(7), table.medal-data-table tr td:nth-child(11), table.medal-data-table tr td:nth-child(12){text-align:right!important;}</style>');
             },
             dataTable: {
                 columnDefs: [
-                    { targets: [3, 4, 5, 9, 10], className: 'text-end' },
+                    { targets: [4, 5, 6, 10, 11], className: 'text-end' },
                     { targets: -1, orderable: false, width: '10%' }
                 ]
             }

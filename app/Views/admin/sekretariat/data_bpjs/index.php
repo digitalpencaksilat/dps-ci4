@@ -13,6 +13,16 @@ $formatTanggal = static function (?string $date): string {
         return $date;
     }
 };
+$eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
+$exportTitle = 'DATA BPJS PESERTA';
+$exportFilename = 'Data BPJS - ' . $eventName;
+$brandName = (string) (get_setting('brand_name') ?? 'Digital Pencak Silat');
+$brandAbbr = strtolower((string) (get_setting('brand_abbreviation') ?? 'dps'));
+$brandLogoUrl = base_url('assets/images/brand/' . $brandAbbr . '/logo.png');
+$printHeaderHtml = view('shared_components/print/medal_export_header', [
+    'title' => $exportTitle,
+    'subtitle' => $eventName,
+]);
 ?>
 
 <section class="admin-card">
@@ -28,7 +38,7 @@ $formatTanggal = static function (?string $date): string {
     <div class="admin-table-wrap">
         <div class="admin-table-note"><i class="fas fa-arrows-left-right-to-line"></i><span>Geser tabel untuk melihat NIK, nomor KK, dan nomor penanggung jawab secara utuh.</span></div>
         <div class="table-shell admin-table-scroller">
-            <table class="table admin-table admin-datatable-export align-middle mb-0" data-export-config='{"excel":{"numericTextColumns":[6,7,8]}}'>
+            <table class="table admin-table align-middle mb-0" id="tabelDataBpjs">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -65,4 +75,27 @@ $formatTanggal = static function (?string $date): string {
         <div class="text-center muted-copy py-4">Belum ada data pendaftar untuk ditampilkan pada laporan BPJS.</div>
     <?php endif; ?>
 </section>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    $(document).ready(function() {
+        window.initAdminExportTable('#tabelDataBpjs', {
+            title: <?= json_encode($exportTitle) ?>,
+            filename: <?= json_encode($exportFilename) ?>,
+            orientation: 'landscape',
+            preset: 'wide-report',
+            themedExport: true,
+            excelUppercase: false,
+            printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+            watermark: {
+                logo: <?= json_encode($brandLogoUrl) ?>,
+                text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+            },
+            excel: {
+                numericTextColumns: [6, 7, 8]
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>

@@ -151,6 +151,9 @@
             'table.medal-data-table tbody td{border:0.5pt solid #e3c9cb!important;padding:7px 8px!important;vertical-align:middle!important;white-space:nowrap!important;}' +
             'table.medal-data-table tbody tr:nth-child(even){background-color:#fff5f5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
             'table.medal-data-table tbody tr:nth-child(odd){background-color:#ffffff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+            '.badge-print{-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff!important;padding:5px 10px!important;' +
+            'border-radius:6px!important;font-size:10px!important;font-weight:700!important;display:inline-block!important;' +
+            'min-width:78px!important;text-align:center!important;text-transform:uppercase!important;letter-spacing:0.5px!important;white-space:nowrap!important;}' +
             '.medal-print-watermark{margin-top:14px;margin-right:8mm;text-align:right;font-family:\'Poppins\',Arial,sans-serif;font-size:9pt;color:#777777;page-break-inside:avoid;}' +
             '.medal-print-watermark img{height:20px;width:auto;vertical-align:middle;margin-right:5px;}' +
             '.medal-print-watermark span{vertical-align:middle;white-space:nowrap;}' +
@@ -167,6 +170,19 @@
         var bodyFont = colCount > 12 ? '8px' : (colCount > 9 ? '9px' : '10px');
         var cellPad = colCount > 12 ? '4px 5px' : '7px 8px';
         $table.find('th, td').css({ 'font-size': bodyFont, 'padding': cellPad });
+
+        // Optional medal badges — match by cell text so it survives hidden
+        // columns (no fixed column index). Renders colored .badge-print like
+        // the tanding/seni medal pages.
+        if (opts.medalBadges) {
+            var medalColors = { EMAS: '#d4a017', PERAK: '#8c9094', PERUNGGU: '#b06a2c' };
+            $table.find('tbody tr td').each(function () {
+                var raw = $(this).text().trim().toUpperCase();
+                if (medalColors[raw]) {
+                    $(this).html('<span class="badge-print" style="background-color:' + medalColors[raw] + '!important;">' + raw + '</span>').css('text-align', 'center');
+                }
+            });
+        }
 
         // Watermark (bottom-right) — appears once after the content (last page).
         if (opts.watermark && (opts.watermark.logo || opts.watermark.text)) {
@@ -186,7 +202,11 @@
     // Bold centered title row, grey bordered header, bordered body, centered
     // medal column, and forced uppercase — matching the legacy CI3 export.
     // medalColLetter is the worksheet column of the Medali field (e.g. 'G').
-    window.dpsMedalExcelCustomize = function (xlsx, medalColLetter) {
+    // opts: { uppercase: true|false } — default true (legacy parity). Set false
+    // for atlet/peserta data where forced uppercase on names/NIK is undesirable.
+    window.dpsMedalExcelCustomize = function (xlsx, medalColLetter, opts) {
+        opts = opts || {};
+        var forceUppercase = opts.uppercase !== false;
         var sheet = xlsx.xl.worksheets['sheet1.xml'];
         var styles = xlsx.xl['styles.xml'];
 
@@ -220,15 +240,17 @@
             $('row:gt(1) c[r^="' + medalColLetter + '"]', sheet).attr('s', styleBodyCenterIdx);
         }
 
-        // Force uppercase on all text cells
-        $('row c', sheet).each(function () {
-            $(this).find('v, t').each(function () {
-                var text = $(this).text();
-                if (isNaN(text)) {
-                    $(this).text(text.toUpperCase());
-                }
+        // Force uppercase on all text cells (legacy parity, optional)
+        if (forceUppercase) {
+            $('row c', sheet).each(function () {
+                $(this).find('v, t').each(function () {
+                    var text = $(this).text();
+                    if (isNaN(text)) {
+                        $(this).text(text.toUpperCase());
+                    }
+                });
             });
-        });
+        }
     };
 
     // --- Main export helper ---
@@ -240,17 +262,19 @@
         // Medal-tally convenience flag (used by data-export-config JSON, which
         // cannot carry function references). Wires the themed print + excel
         // customizers so akumulasi/per-kategori/sekolah pages export consistently.
-        if (config.medalTally) {
-            var tallyWatermark = config.watermark || null;
+        if (config.medalTally || config.themedExport) {
+            var themedWatermark = config.watermark || null;
+            var themedUppercase = config.excelUppercase !== false;
+            var themedMedalBadges = config.medalBadges === true;
             if (typeof config.printCustomize !== 'function') {
                 config.printCustomize = function (win) {
-                    window.dpsMedalTallyPrintCustomize(win, { watermark: tallyWatermark });
+                    window.dpsMedalTallyPrintCustomize(win, { watermark: themedWatermark, medalBadges: themedMedalBadges });
                 };
             }
             config.excel = config.excel || {};
             if (typeof config.excel.customize !== 'function') {
                 config.excel.customize = function (xlsx) {
-                    window.dpsMedalExcelCustomize(xlsx);
+                    window.dpsMedalExcelCustomize(xlsx, null, { uppercase: themedUppercase });
                 };
             }
         }
@@ -286,6 +310,10 @@
                         columns: exportColumns,
                         format: {
                             body: function (data, row, column, node) {
+                                // Optional caller hook (e.g. image cell -> text)
+                                if (typeof config.exportFormatBody === 'function') {
+                                    data = config.exportFormatBody(data, row, column, node);
+                                }
                                 // Force numeric-text columns (NIK, KK, etc.) as text
                                 if (numTextCols.indexOf(column) !== -1) {
                                     var stripped = data ? String(data).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() : '';
@@ -339,7 +367,14 @@
                     orientation: orientation,
                     className: 'btn btn-info btn-sm',
                     text: '<i class="fas fa-print me-1"></i> Cetak',
-                    exportOptions: { columns: exportColumns },
+                    exportOptions: {
+                        columns: exportColumns,
+                        format: (typeof config.exportFormatBody === 'function') ? {
+                            body: function (data, row, column, node) {
+                                return config.exportFormatBody(data, row, column, node);
+                            }
+                        } : undefined
+                    },
                     customize: function (win) {
                         var $body = $(win.document.body);
                         var $head = $(win.document.head);

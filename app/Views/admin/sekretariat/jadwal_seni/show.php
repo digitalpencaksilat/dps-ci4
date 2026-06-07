@@ -1,6 +1,19 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
+<?php
+$eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
+$arenaName = (string) ($jadwal->nama_gelanggang ?? '-');
+$exportTitle = 'ARTISTIC POOL - ARENA ' . strtoupper($arenaName);
+$exportFilename = 'Artistic Pool Arena ' . $arenaName . ' - ' . $eventName;
+$brandName = (string) (get_setting('brand_name') ?? 'Digital Pencak Silat');
+$brandAbbr = strtolower((string) (get_setting('brand_abbreviation') ?? 'dps'));
+$brandLogoUrl = base_url('assets/images/brand/' . $brandAbbr . '/logo.png');
+$printHeaderHtml = view('shared_components/print/medal_export_header', [
+    'title' => $exportTitle,
+    'subtitle' => $eventName,
+]);
+?>
 <div class="row">
     <div class="col-12 px-0 px-md-2">
         <div class="admin-card mb-3">
@@ -130,4 +143,39 @@
         'modalSuffix' => 'Battle',
     ]) ?>
 <?php endif; ?>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    $(document).ready(function () {
+        if (!$('#tabelDetailJadwalseni').length) return;
+
+        window.initAdminExportTable('#tabelDetailJadwalseni', {
+            title: <?= json_encode($exportTitle) ?>,
+            filename: <?= json_encode($exportFilename) ?>,
+            orientation: 'landscape',
+            preset: 'wide-report',
+            themedExport: true,
+            medalBadges: true,
+            excelUppercase: false,
+            exportColumns: ':visible:not(.no-export)',
+            colvis: { columns: '.exportable' },
+            printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+            watermark: {
+                logo: <?= json_encode($brandLogoUrl) ?>,
+                text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+            },
+            // Strip medal/status badges to plain text for Excel & print
+            exportFormatBody: function (data) {
+                if (typeof data !== 'string') return data;
+                if (data.indexOf('<') === -1) return data;
+                return data.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+            },
+            dataTable: {
+                responsive: false,
+                order: [[1, 'asc']]
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>

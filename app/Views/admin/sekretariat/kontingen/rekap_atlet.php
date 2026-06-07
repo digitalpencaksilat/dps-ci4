@@ -1,6 +1,18 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
+<?php
+$eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
+$exportTitle = 'REKAP ATLET KONTINGEN';
+$exportFilename = 'Rekap Atlet Kontingen - ' . $eventName;
+$brandName = (string) (get_setting('brand_name') ?? 'Digital Pencak Silat');
+$brandAbbr = strtolower((string) (get_setting('brand_abbreviation') ?? 'dps'));
+$brandLogoUrl = base_url('assets/images/brand/' . $brandAbbr . '/logo.png');
+$printHeaderHtml = view('shared_components/print/medal_export_header', [
+    'title' => $exportTitle,
+    'subtitle' => $eventName,
+]);
+?>
 <section class="admin-card">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
         <div>
@@ -21,9 +33,10 @@
     <?php else : ?>
         <div class="admin-table-wrap">
             <div class="table-shell admin-table-scroller">
-                <table class="table admin-table admin-datatable-export align-middle mb-0">
+                <table class="table admin-table align-middle mb-0" id="tabelRekapAtlet">
                     <thead>
                         <tr>
+                            <th class="text-center">No</th>
                             <th>Nama</th>
                             <th>Provinsi</th>
                             <th class="text-end">Tanding</th>
@@ -38,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($kontingenRows as $row) : ?>
+                        <?php foreach ($kontingenRows as $kontingenIndex => $row) : ?>
                             <?php
                             $jumlahTanding = (int) ($row->jumlah_peserta_tanding ?? 0);
                             $jumlahTunggal = (int) ($row->jumlah_kelompok_peserta_seni_tunggal ?? 0);
@@ -49,6 +62,7 @@
                             $totalIdCard = $jumlahTanding + $jumlahTunggal + ($jumlahGanda * 2) + ($jumlahBeregu * 3) + $jumlahSoloKreatif;
                             ?>
                             <tr>
+                                <td class="text-center fw-semibold"><?= esc((string) ($kontingenIndex + 1)) ?></td>
                                 <td class="text-uppercase">
                                     <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-uppercase text-danger"><?= esc($row->nama_kontingen ?: '-') ?></a>
                                 </td>
@@ -92,4 +106,33 @@
         </div>
     <?php endif; ?>
 </section>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    $(document).ready(function() {
+        window.initAdminExportTable('#tabelRekapAtlet', {
+            title: <?= json_encode($exportTitle) ?>,
+            filename: <?= json_encode($exportFilename) ?>,
+            orientation: 'landscape',
+            preset: 'wide-report',
+            themedExport: true,
+            excelUppercase: false,
+            printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+            watermark: {
+                logo: <?= json_encode($brandLogoUrl) ?>,
+                text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+            },
+            printCustomize: function(win) {
+                window.dpsMedalTallyPrintCustomize(win, {
+                    watermark: {
+                        logo: <?= json_encode($brandLogoUrl) ?>,
+                        text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+                    }
+                });
+                $(win.document.head).append('<style>table.medal-data-table tr td:nth-child(4), table.medal-data-table tr td:nth-child(5), table.medal-data-table tr td:nth-child(6), table.medal-data-table tr td:nth-child(7), table.medal-data-table tr td:nth-child(8), table.medal-data-table tr td:nth-child(9), table.medal-data-table tr td:nth-child(10), table.medal-data-table tr td:nth-child(11){text-align:right!important;}</style>');
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>

@@ -14,6 +14,16 @@ $formatTanggal = static function (?string $date): string {
     }
 };
 $formatGender = static fn (?string $gender): string => $gender !== null && $gender !== '' ? ucwords($gender) : '-';
+$eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
+$exportTitle = 'DATA ATLET';
+$exportFilename = 'Data Atlet - ' . $eventName;
+$brandName = (string) (get_setting('brand_name') ?? 'Digital Pencak Silat');
+$brandAbbr = strtolower((string) (get_setting('brand_abbreviation') ?? 'dps'));
+$brandLogoUrl = base_url('assets/images/brand/' . $brandAbbr . '/logo.png');
+$printHeaderHtml = view('shared_components/print/medal_export_header', [
+    'title' => $exportTitle,
+    'subtitle' => $eventName,
+]);
 ?>
 
 <section class="admin-card">
@@ -25,11 +35,12 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
         </div>
     </div>
     <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-        <table class="table admin-table admin-datatable-export align-middle mb-0" data-export-config='{"excel":{"numericTextColumns":[9,10]}}'>
-            <thead><tr><th>Nama</th><th>Kontingen</th><th>Jenis Kelamin</th><th>Tanggal Lahir</th><th>Umur</th><th>Berat Badan</th><th>Tinggi Badan</th><th>Sekolah</th><th>Provinsi</th><th>NIK</th><th>No KK</th><th>Jenis Pendaftaran</th></tr></thead>
+        <table class="table admin-table align-middle mb-0" id="tabelDataAtlet">
+            <thead><tr><th class="text-center">No</th><th>Nama</th><th>Kontingen</th><th>Jenis Kelamin</th><th>Tanggal Lahir</th><th>Umur</th><th>Berat Badan</th><th>Tinggi Badan</th><th>Sekolah</th><th>Provinsi</th><th>NIK</th><th>No KK</th><th>Jenis Pendaftaran</th></tr></thead>
             <tbody>
-                <?php foreach (($rows ?? []) as $row) : ?>
+                <?php foreach (($rows ?? []) as $index => $row) : ?>
                     <tr>
+                        <td class="text-center fw-semibold"><?= esc((string) ($index + 1)) ?></td>
                         <td class="fw-semibold text-capitalize"><?= esc($row->nama_pendaftar) ?></td>
                         <td class="text-uppercase"><?= esc((string) ($row->nama_kontingen ?? '-')) ?></td>
                         <td><?= esc($formatGender($row->jenis_kelamin ?? null)) ?></td>
@@ -48,4 +59,27 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
         </table>
     </div></div>
 </section>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    $(document).ready(function() {
+        window.initAdminExportTable('#tabelDataAtlet', {
+            title: <?= json_encode($exportTitle) ?>,
+            filename: <?= json_encode($exportFilename) ?>,
+            orientation: 'landscape',
+            preset: 'wide-report',
+            themedExport: true,
+            excelUppercase: false,
+            printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+            watermark: {
+                logo: <?= json_encode($brandLogoUrl) ?>,
+                text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+            },
+            excel: {
+                numericTextColumns: [10, 11]
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>

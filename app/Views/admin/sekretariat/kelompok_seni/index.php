@@ -13,6 +13,16 @@ $paymentBadge = static function (?string $status): string {
     return '<span class="badge text-bg-danger">Belum Lunas</span>';
 };
 $formatGender = static fn (?string $gender): string => $gender !== null && $gender !== '' ? ucwords($gender) : '-';
+$eventName = get_setting('event_name') ?: ($eventName ?? 'Digital Pencak Silat');
+$exportTitle = 'DAFTAR PESERTA SENI';
+$exportFilename = 'Daftar Peserta Seni - ' . $eventName;
+$brandName = (string) (get_setting('brand_name') ?? 'Digital Pencak Silat');
+$brandAbbr = strtolower((string) (get_setting('brand_abbreviation') ?? 'dps'));
+$brandLogoUrl = base_url('assets/images/brand/' . $brandAbbr . '/logo.png');
+$printHeaderHtml = view('shared_components/print/medal_export_header', [
+    'title' => $exportTitle,
+    'subtitle' => $eventName,
+]);
 ?>
 <section class="admin-card">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
@@ -24,11 +34,12 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
         <button type="button" class="btn btn-admin-brand rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createKelompokSeniModal">Tambah Kelompok</button>
     </div>
     <div class="admin-table-wrap"><div class="table-shell admin-table-scroller">
-        <table class="table admin-table admin-datatable-export align-middle mb-0">
-            <thead><tr><th>Nama</th><th>Kontingen</th><th>Sekolah</th><th>Kategori Usia</th><th>Jenis Kelamin</th><th>Jenis Seni</th><th>Jurus</th><th>Nomor Pool</th><th>Nomor Undi</th><th>Pembayaran</th><th class="text-end no-export">Aksi</th></tr></thead>
+        <table class="table admin-table align-middle mb-0" id="tabelPesertaSeni">
+            <thead><tr><th class="text-center">No</th><th>Nama</th><th>Kontingen</th><th>Sekolah</th><th>Kategori Usia</th><th>Jenis Kelamin</th><th>Jenis Seni</th><th>Jurus</th><th>Nomor Pool</th><th>Nomor Undi</th><th>Pembayaran</th><th class="text-end no-export">Aksi</th></tr></thead>
             <tbody>
-                <?php foreach (($rows ?? []) as $row) : ?>
+                <?php foreach (($rows ?? []) as $index => $row) : ?>
                     <tr>
+                        <td class="text-center fw-semibold"><?= esc((string) ($index + 1)) ?></td>
                         <td><a href="<?= base_url('admin/sekretariat/kelompok-seni/' . $row->id_kelompok_peserta_seni) ?>" class="fw-semibold text-danger text-decoration-none text-capitalize"><?= $row->anggota_kelompok_peserta_seni ?: '-' ?></a></td>
                         <td class="text-uppercase"><?= esc($row->nama_kontingen) ?></td>
                         <td><?= $row->nama_sekolah ?: '-' ?></td>
@@ -170,6 +181,22 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
 
 <?= $this->section('scripts') ?>
 <script>
+    $(document).ready(function() {
+        window.initAdminExportTable('#tabelPesertaSeni', {
+            title: <?= json_encode($exportTitle) ?>,
+            filename: <?= json_encode($exportFilename) ?>,
+            orientation: 'landscape',
+            preset: 'wide-report',
+            themedExport: true,
+            excelUppercase: false,
+            printHeaderHtml: <?= json_encode($printHeaderHtml) ?>,
+            watermark: {
+                logo: <?= json_encode($brandLogoUrl) ?>,
+                text: 'Powered by <strong>' + <?= json_encode($brandName) ?> + '</strong> &copy; ' + new Date().getFullYear()
+            }
+        });
+    });
+
     document.querySelectorAll('.js-edit-kelompok-seni').forEach(btn => {
         btn.addEventListener('click', async function(e) {
             e.preventDefault();

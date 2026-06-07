@@ -38,7 +38,6 @@ class Filters extends BaseFilters
         'kontingenauth' => \App\Filters\KontingenAuthFilter::class,
         'maintenance'      => \App\Filters\MaintenanceFilter::class,
         'adminrole'        => \App\Filters\AdminRoleFilter::class,
-        'developmentgate'  => \App\Filters\DevelopmentGateFilter::class,
     ];
 
     /**

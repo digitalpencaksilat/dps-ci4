@@ -218,26 +218,75 @@
         };
 
         var fonts = styles.getElementsByTagName('fonts')[0];
-        $(fonts).append('<font><sz val="14"/><name val="Calibri"/><b/><color rgb="000000"/></font>');
+        // Title font — bold, larger, brand red
+        $(fonts).append('<font><sz val="15"/><name val="Calibri"/><b/><color rgb="FFC60000"/></font>');
+        var fontTitleIdx = fonts.childNodes.length - 1;
+        // Header font — bold white (on red fill)
+        $(fonts).append('<font><sz val="12"/><name val="Calibri"/><b/><color rgb="FFFFFFFF"/></font>');
         var fontHdrIdx = fonts.childNodes.length - 1;
-        $(fonts).append('<font><sz val="12"/><name val="Calibri"/><color rgb="000000"/></font>');
+        // Body font — regular black
+        $(fonts).append('<font><sz val="11"/><name val="Calibri"/><color rgb="FF000000"/></font>');
         var fontBdyIdx = fonts.childNodes.length - 1;
 
         var fills = styles.getElementsByTagName('fills')[0];
-        $(fills).append('<fill><patternFill patternType="solid"><fgColor rgb="D3D3D3"/><bgColor indexed="64"/></patternFill></fill>');
-        var fillGreyIdx = fills.childNodes.length - 1;
+        // Brand red header fill
+        $(fills).append('<fill><patternFill patternType="solid"><fgColor rgb="FFC60000"/><bgColor indexed="64"/></patternFill></fill>');
+        var fillRedIdx = fills.childNodes.length - 1;
+        // Soft red zebra fill for body rows
+        $(fills).append('<fill><patternFill patternType="solid"><fgColor rgb="FFFFF5F5"/><bgColor indexed="64"/></patternFill></fill>');
+        var fillZebraIdx = fills.childNodes.length - 1;
 
-        var styleTitleIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontHdrIdx + '" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>');
-        var styleHeaderIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontHdrIdx + '" fillId="' + fillGreyIdx + '" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>');
-        var styleBodyIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontBdyIdx + '" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf>');
-        var styleBodyCenterIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontBdyIdx + '" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>');
+        // Title row: brand-red bold, centered, no border, no wrap
+        var styleTitleIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontTitleIdx + '" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="0"/></xf>');
+        // Header row: white bold on red fill, centered, bordered, no wrap
+        var styleHeaderIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontHdrIdx + '" fillId="' + fillRedIdx + '" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="0"/></xf>');
+        // Body default: bordered, left, vertical center, NO wrap
+        var styleBodyIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontBdyIdx + '" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="0"/></xf>');
+        // Body centered (e.g. medal column): bordered, centered, NO wrap
+        var styleBodyCenterIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontBdyIdx + '" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="0"/></xf>');
+        // Zebra body (even rows): soft red fill, bordered, left, NO wrap
+        var styleBodyZebraIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontBdyIdx + '" fillId="' + fillZebraIdx + '" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="0"/></xf>');
+        var styleBodyZebraCenterIdx = addStyle(styles, '<xf numFmtId="0" fontId="' + fontBdyIdx + '" fillId="' + fillZebraIdx + '" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="0"/></xf>');
 
         $('row:eq(0) c', sheet).attr('s', styleTitleIdx);  // Title row
         $('row:eq(1) c', sheet).attr('s', styleHeaderIdx);  // Header row
         $('row:gt(1) c', sheet).attr('s', styleBodyIdx);    // Body default
 
+        // Zebra striping — every other data row gets the soft-red fill
+        $('row:gt(1)', sheet).each(function (rowIdx) {
+            if (rowIdx % 2 === 1) {
+                $('c', this).attr('s', styleBodyZebraIdx);
+            }
+        });
+
         if (medalColLetter) {
-            $('row:gt(1) c[r^="' + medalColLetter + '"]', sheet).attr('s', styleBodyCenterIdx);
+            // Medal-colored cells: gold/silver/bronze fill + white bold font.
+            $(fonts).append('<font><sz val="11"/><name val="Calibri"/><b/><color rgb="FFFFFFFF"/></font>');
+            var fontMedalIdx = fonts.childNodes.length - 1;
+            $(fills).append('<fill><patternFill patternType="solid"><fgColor rgb="FFD4A017"/><bgColor indexed="64"/></patternFill></fill>');
+            var fillEmasIdx = fills.childNodes.length - 1;
+            $(fills).append('<fill><patternFill patternType="solid"><fgColor rgb="FF8C9094"/><bgColor indexed="64"/></patternFill></fill>');
+            var fillPerakIdx = fills.childNodes.length - 1;
+            $(fills).append('<fill><patternFill patternType="solid"><fgColor rgb="FFB06A2C"/><bgColor indexed="64"/></patternFill></fill>');
+            var fillPerungguIdx = fills.childNodes.length - 1;
+
+            var medalStyle = function (fillId) {
+                return addStyle(styles, '<xf numFmtId="0" fontId="' + fontMedalIdx + '" fillId="' + fillId + '" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="0"/></xf>');
+            };
+            var medalStyles = {
+                EMAS: medalStyle(fillEmasIdx),
+                PERAK: medalStyle(fillPerakIdx),
+                PERUNGGU: medalStyle(fillPerungguIdx)
+            };
+
+            $('row:gt(1) c[r^="' + medalColLetter + '"]', sheet).each(function (rowIdx) {
+                var raw = $(this).text().trim().toUpperCase();
+                if (medalStyles[raw]) {
+                    $(this).attr('s', medalStyles[raw]);
+                } else {
+                    $(this).attr('s', rowIdx % 2 === 1 ? styleBodyZebraCenterIdx : styleBodyCenterIdx);
+                }
+            });
         }
 
         // Force uppercase on all text cells (legacy parity, optional)
@@ -264,17 +313,23 @@
         // customizers so akumulasi/per-kategori/sekolah pages export consistently.
         if (config.medalTally || config.themedExport) {
             var themedWatermark = config.watermark || null;
-            var themedUppercase = config.excelUppercase !== false;
             var themedMedalBadges = config.medalBadges === true;
             if (typeof config.printCustomize !== 'function') {
                 config.printCustomize = function (win) {
                     window.dpsMedalTallyPrintCustomize(win, { watermark: themedWatermark, medalBadges: themedMedalBadges });
                 };
             }
+        }
+
+        // Themed Excel is the DEFAULT for every admin/sekretariat table: brand-red
+        // header, no wrap-text, zebra striping, and ALL content uppercase. Pages that
+        // supply their own config.excel.customize (e.g. medal tally with colored medal
+        // column) win. Opt out of the theme entirely with config.plainExcel = true.
+        if (config.plainExcel !== true) {
             config.excel = config.excel || {};
             if (typeof config.excel.customize !== 'function') {
                 config.excel.customize = function (xlsx) {
-                    window.dpsMedalExcelCustomize(xlsx, null, { uppercase: themedUppercase });
+                    window.dpsMedalExcelCustomize(xlsx, config.excel.medalColLetter || null, { uppercase: true });
                 };
             }
         }
@@ -313,6 +368,17 @@
                                 // Optional caller hook (e.g. image cell -> text)
                                 if (typeof config.exportFormatBody === 'function') {
                                     data = config.exportFormatBody(data, row, column, node);
+                                }
+                                // Strip HTML tags + CI4 debug-view comments universally.
+                                // (A custom format.body disables DataTables' default
+                                // HTML stripping, so we must do it here.)
+                                if (typeof data === 'string' && data.indexOf('<') !== -1) {
+                                    data = data
+                                        .replace(/<!--[\s\S]*?-->/g, '')
+                                        .replace(/<[^>]*>/g, '')
+                                        .replace(/&nbsp;/g, ' ')
+                                        .replace(/\s+/g, ' ')
+                                        .trim();
                                 }
                                 // Force numeric-text columns (NIK, KK, etc.) as text
                                 if (numTextCols.indexOf(column) !== -1) {

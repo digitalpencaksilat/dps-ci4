@@ -210,7 +210,7 @@ class SekretariatKategoriSeniService
     private function poolBaseQuery()
     {
         return db_connect()->table('kompetisi_seni ks')
-            ->select('ks.*, ks.keterangan AS keterangan_kompetisi_seni, sks.nama_seni, sks.jenis_seni, sks.jumlah_peserta, sks.sistem_penampilan, kl.jenis_perlombaan, kl.kuota_peserta, kl.peraturan_pertandingan, ku.nama_kategori_usia, ku.jenis_kelamin')
+            ->select('ks.*, ks.keterangan AS keterangan_kompetisi_seni, sks.nama_seni, sks.jenis_seni, sks.jumlah_peserta, sks.sistem_penampilan, sks.juara_tiga_bersama, kl.jenis_perlombaan, kl.kuota_peserta, kl.peraturan_pertandingan, ku.nama_kategori_usia, ku.jenis_kelamin')
             ->select('(SELECT COUNT(*) FROM kelompok_peserta_seni kps WHERE kps.id_kompetisi_seni = ks.id_kompetisi_seni) AS jumlah_kelompok_peserta_seni', false)
             ->select('(SELECT COUNT(*) FROM kelompok_peserta_seni kps JOIN pembayaran pb ON pb.id_pembayaran = kps.id_pembayaran WHERE kps.id_kompetisi_seni = ks.id_kompetisi_seni AND pb.status_pembayaran = "lunas") AS jumlah_kelompok_peserta_seni_lunas', false)
             ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = ks.id_sub_kategori_seni')

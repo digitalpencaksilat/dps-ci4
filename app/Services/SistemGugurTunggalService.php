@@ -127,6 +127,225 @@ class SistemGugurTunggalService
         return ['jumlah_kelompok' => count($kelompok), 'jumlah_battle' => count($generated['data_battle_seni']), 'bagan' => $generated['bagan']];
     }
 
+    /**
+     * Manual shuffle bagan tanding (parity CI3 Kompetisi_tanding_model::buat_bagan_manual).
+     *
+     * Operator menentukan slot tiap peserta lewat array urutan_slot[] => id_peserta_tanding[].
+     * Selalu memakai standar Persilat (sama seperti legacy).
+     *
+     * @param array<int,int> $urutanSlot         daftar slot (0-based) sesuai urutan input
+     * @param array<int,int> $idPesertaTanding   daftar id_peserta_tanding sejajar dengan $urutanSlot
+     */
+    public function buatBaganManualTanding(int $idKompetisiTanding, array $urutanSlot, array $idPesertaTanding): array
+    {
+        if (count($urutanSlot) !== count($idPesertaTanding)) {
+            throw new \RuntimeException('Data slot dan peserta tidak sinkron.');
+        }
+
+        if (count($urutanSlot) !== count(array_unique($urutanSlot))) {
+            throw new \RuntimeException('Terdapat slot yang sama, silakan periksa kembali penempatan peserta.');
+        }
+
+        // Gabungkan slot -> id_peserta_tanding lalu urutkan berdasarkan slot (parity ksort legacy).
+        $merged = [];
+        foreach ($urutanSlot as $index => $slot) {
+            $merged[(int) $slot] = (int) $idPesertaTanding[$index];
+        }
+        ksort($merged);
+
+        $idTerurut = array_values($merged);
+        if (count($idTerurut) < 2) {
+            throw new \RuntimeException('Minimal 2 peserta diperlukan untuk membuat bagan tanding.');
+        }
+
+        $pesertaIndex = $this->getPesertaTandingById($idKompetisiTanding);
+        $peserta = [];
+        foreach ($idTerurut as $idPeserta) {
+            if (! isset($pesertaIndex[$idPeserta])) {
+                throw new \RuntimeException('Peserta tidak ditemukan pada kategori ini: #' . $idPeserta);
+            }
+            $peserta[] = $pesertaIndex[$idPeserta];
+        }
+
+        $db = db_connect();
+        $db->transStart();
+
+        try {
+            $this->assertNoScheduledRows('pertandingan', 'id_pertandingan', 'detail_jadwal_tanding', $idKompetisiTanding, 'id_kompetisi_tanding');
+
+            // Manual selalu standar Persilat (parity legacy: $random_seed = TRUE).
+            $generated = $this->generateBracketDanDataPertandinganTanding($peserta, 1, true);
+
+            $db->table('pertandingan')->where('id_kompetisi_tanding', $idKompetisiTanding)->delete();
+            foreach ($generated['data_pertandingan'] as $match) {
+                $db->table('pertandingan')->insert($match + [
+                    'id_kompetisi_tanding' => $idKompetisiTanding,
+                    'keterangan' => '',
+                ]);
+            }
+
+            foreach ($this->flattenTeams($generated['bagan']['teams'], 'id_peserta_tanding') as $slot => $idPeserta) {
+                $db->table('peserta_tanding')->where('id_peserta_tanding', $idPeserta)->update(['nomor_bagan' => $slot]);
+            }
+
+            $db->table('kompetisi_tanding')->where('id_kompetisi_tanding', $idKompetisiTanding)->update([
+                'bagan_pertandingan' => json_encode($generated['bagan']),
+            ]);
+
+            $db->transComplete();
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            throw $e;
+        }
+
+        if (! $db->transStatus()) {
+            throw new \RuntimeException('Gagal menyimpan bagan manual tanding.');
+        }
+
+        return ['jumlah_peserta' => count($peserta), 'jumlah_pertandingan' => count($generated['data_pertandingan']), 'bagan' => $generated['bagan']];
+    }
+
+    /**
+     * Sinkronisasi nama atlet & kontingen pada bagan_pertandingan dengan kondisi DB terkini.
+     * Parity CI3 Sistem_gugur_tunggal_model::sinkronkan_bagan_tanding (tanpa mutasi struktur slot/hasil).
+     */
+    public function sinkronkanBaganTanding(int $idKompetisiTanding): bool
+    {
+        $db = db_connect();
+        $kompetisi = $db->table('kompetisi_tanding')->where('id_kompetisi_tanding', $idKompetisiTanding)->get()->getRowArray();
+        if ($kompetisi === null) {
+            throw new \RuntimeException('Kompetisi tanding tidak ditemukan.');
+        }
+
+        $bagan = json_decode((string) ($kompetisi['bagan_pertandingan'] ?? ''), true);
+        if (! is_array($bagan) || ! isset($bagan['teams']) || ! is_array($bagan['teams'])) {
+            throw new \RuntimeException('Bagan belum tersedia, lakukan drawing terlebih dahulu.');
+        }
+
+        $pesertaIndex = $this->getPesertaTandingById($idKompetisiTanding);
+        $changed = false;
+
+        foreach ($bagan['teams'] as $keyMatch => $team) {
+            if (! is_array($team)) {
+                continue;
+            }
+            foreach ($team as $keyCorner => $corner) {
+                if (! is_array($corner) || ! isset($corner['id_peserta_tanding'])) {
+                    continue;
+                }
+                $idPeserta = (int) $corner['id_peserta_tanding'];
+                if (! isset($pesertaIndex[$idPeserta])) {
+                    continue;
+                }
+                $peserta = $pesertaIndex[$idPeserta];
+                $corner['id_pendaftar'] = $peserta['id_pendaftar'] !== null ? (int) $peserta['id_pendaftar'] : null;
+                $corner['id_kontingen'] = $peserta['id_kontingen'] !== null ? (int) $peserta['id_kontingen'] : null;
+                $corner['nama_pendaftar'] = (string) $peserta['nama_pendaftar'];
+                $corner['nama_kontingen'] = (string) $peserta['nama_kontingen'];
+                $corner['negara'] = (string) $peserta['negara'];
+                $corner['url_bendera'] = $this->flagUrl((string) $peserta['negara']);
+                $bagan['teams'][$keyMatch][$keyCorner] = $corner;
+                $changed = true;
+            }
+        }
+
+        $db->table('kompetisi_tanding')->where('id_kompetisi_tanding', $idKompetisiTanding)->update([
+            'bagan_pertandingan' => json_encode($bagan),
+        ]);
+
+        return $changed;
+    }
+
+    /**
+     * Sinkronisasi nama anggota & kontingen pada bagan_battle_seni dengan kondisi DB terkini.
+     * Parity CI3 Sistem_gugur_tunggal_model::sinkronkan_bagan_battle_seni.
+     */
+    public function sinkronkanBaganBattleSeni(int $idKompetisiSeni): bool
+    {
+        $db = db_connect();
+        $kompetisi = $db->table('kompetisi_seni')->where('id_kompetisi_seni', $idKompetisiSeni)->get()->getRowArray();
+        if ($kompetisi === null) {
+            throw new \RuntimeException('Kompetisi seni tidak ditemukan.');
+        }
+
+        $bagan = json_decode((string) ($kompetisi['bagan_battle_seni'] ?? ''), true);
+        if (! is_array($bagan) || ! isset($bagan['teams']) || ! is_array($bagan['teams'])) {
+            throw new \RuntimeException('Bagan battle belum tersedia, lakukan drawing terlebih dahulu.');
+        }
+
+        $kelompokIndex = $this->getKelompokSeniById($idKompetisiSeni);
+        $changed = false;
+
+        foreach ($bagan['teams'] as $keyMatch => $team) {
+            if (! is_array($team)) {
+                continue;
+            }
+            foreach ($team as $keyCorner => $corner) {
+                if (! is_array($corner) || ! isset($corner['id_kelompok_peserta_seni'])) {
+                    continue;
+                }
+                $idKelompok = (int) $corner['id_kelompok_peserta_seni'];
+                if (! isset($kelompokIndex[$idKelompok])) {
+                    continue;
+                }
+                $kelompok = $kelompokIndex[$idKelompok];
+                $corner['id_kontingen'] = $kelompok['id_kontingen'] !== null ? (int) $kelompok['id_kontingen'] : null;
+                $corner['anggota_kelompok_peserta_seni'] = (string) $kelompok['anggota_kelompok_peserta_seni'];
+                $corner['nama_kontingen'] = (string) $kelompok['nama_kontingen'];
+                $corner['negara'] = (string) $kelompok['negara'];
+                $corner['url_bendera'] = $this->flagUrl((string) $kelompok['negara']);
+                $bagan['teams'][$keyMatch][$keyCorner] = $corner;
+                $changed = true;
+            }
+        }
+
+        $db->table('kompetisi_seni')->where('id_kompetisi_seni', $idKompetisiSeni)->update([
+            'bagan_battle_seni' => json_encode($bagan),
+        ]);
+
+        return $changed;
+    }
+
+    /**
+     * @return array<int,array<string,mixed>> indexed by id_peserta_tanding
+     */
+    private function getPesertaTandingById(int $idKompetisiTanding): array
+    {
+        $rows = db_connect()->table('peserta_tanding pt')
+            ->select('pt.id_peserta_tanding, pt.nomor_bagan, p.id_pendaftar, p.nama_pendaftar, p.id_kontingen, k.nama_kontingen, k.negara')
+            ->join('pendaftar p', 'p.id_pendaftar = pt.id_pendaftar')
+            ->join('kontingen k', 'k.id_kontingen = p.id_kontingen', 'left')
+            ->where('pt.id_kompetisi_tanding', $idKompetisiTanding)
+            ->get()->getResultArray();
+
+        $index = [];
+        foreach ($rows as $row) {
+            $index[(int) $row['id_peserta_tanding']] = $row;
+        }
+
+        return $index;
+    }
+
+    /**
+     * @return array<int,array<string,mixed>> indexed by id_kelompok_peserta_seni
+     */
+    private function getKelompokSeniById(int $idKompetisiSeni): array
+    {
+        $rows = db_connect()->table('kelompok_peserta_seni kps')
+            ->select('kps.id_kelompok_peserta_seni, kps.id_kontingen, k.nama_kontingen, k.negara')
+            ->select('(SELECT GROUP_CONCAT(p.nama_pendaftar SEPARATOR ", ") FROM peserta_seni ps JOIN pendaftar p ON p.id_pendaftar = ps.id_pendaftar WHERE ps.id_kelompok_peserta_seni = kps.id_kelompok_peserta_seni) AS anggota_kelompok_peserta_seni', false)
+            ->join('kontingen k', 'k.id_kontingen = kps.id_kontingen', 'left')
+            ->where('kps.id_kompetisi_seni', $idKompetisiSeni)
+            ->get()->getResultArray();
+
+        $index = [];
+        foreach ($rows as $row) {
+            $index[(int) $row['id_kelompok_peserta_seni']] = $row;
+        }
+
+        return $index;
+    }
+
     public function generateBaganTandingDariJadwal(int $idKompetisiTanding): array
     {
         $db = db_connect();

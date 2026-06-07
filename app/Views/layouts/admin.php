@@ -112,6 +112,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                     <?php
                         $isDrawingMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_tanding'
                             || ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_seni';
+                        $isDrawingPrestasiMenu = in_array(($activeMenu ?? ''), ['drawing_prestasi_tanding', 'drawing_prestasi_seni_battle', 'drawing_prestasi_seni_pool'], true);
                         $isGenerateBaganMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_generate_bagan_tanding'
                             || ($activeMenu ?? '') === 'pembuatan_jadwal_generate_bagan_seni_battle';
                         $isPenjadwalanOtomatisMenu = ($activeMenu ?? '') === 'pembuatan_jadwal_penjadwalan_otomatis_tanding'
@@ -146,6 +147,20 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             <div class="admin-submenu-inner">
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-tanding') ?>">Drawing Tanding</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pembuatan_jadwal_drawing_seni' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-seni') ?>">Drawing Seni</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a class="admin-nav-link <?= $isDrawingPrestasiMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#superDrawingPrestasiSubmenu" role="button" aria-expanded="<?= $isDrawingPrestasiMenu ? 'true' : 'false' ?>" aria-controls="superDrawingPrestasiSubmenu">
+                            <span class="label-block"><i class="fas fa-trophy"></i><span>Drawing Prestasi</span></span>
+                            <i class="fas fa-chevron-right chevron"></i>
+                        </a>
+                        <div class="admin-submenu collapse <?= $isDrawingPrestasiMenu ? 'show' : '' ?>" id="superDrawingPrestasiSubmenu">
+                            <div class="admin-submenu-inner">
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'drawing_prestasi_tanding' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-prestasi/tanding') ?>">Tanding</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'drawing_prestasi_seni_battle' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-prestasi/seni-battle') ?>">Seni Battle</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'drawing_prestasi_seni_pool' ? 'active' : '' ?>" href="<?= base_url('admin/super/drawing-prestasi/seni-pool') ?>">Seni Pool</a>
                             </div>
                         </div>
                     </div>

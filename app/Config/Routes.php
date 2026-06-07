@@ -186,6 +186,19 @@ $routes->group('admin/super', ['filter' => 'adminrole:super_admin'], static func
     $routes->post('drawing-seni/distribusikan-kelompok', 'Admin\\Super\\PembuatanJadwalController::distribusikanKelompokPesertaSeni');
     $routes->post('drawing-seni/acak-bagan-battle', 'Admin\\Super\\PembuatanJadwalController::acakBaganBattleSeniBulk');
     $routes->post('drawing-seni/beri-nomor-undi', 'Admin\\Super\\PembuatanJadwalController::beriNomorUndiSeniBulk');
+
+    // Drawing Prestasi terkonsolidasi (parity CI3 sekretariat drawing_*_prestasi, dipindah ke super)
+    $routes->get('drawing-prestasi/tanding', 'Admin\\Super\\DrawingPrestasiController::tanding');
+    $routes->post('drawing-prestasi/tanding/(:num)/acak-bagan', 'Admin\\Super\\DrawingPrestasiController::acakBaganTanding/$1');
+    $routes->post('drawing-prestasi/tanding/(:num)/sinkronkan-bagan', 'Admin\\Super\\DrawingPrestasiController::sinkronkanBaganTanding/$1');
+    $routes->get('drawing-prestasi/tanding/(:num)/acak-manual', 'Admin\\Super\\DrawingPrestasiController::halamanAcakBaganManualTanding/$1');
+    $routes->post('drawing-prestasi/tanding/(:num)/acak-manual', 'Admin\\Super\\DrawingPrestasiController::buatBaganManualTanding/$1');
+    $routes->get('drawing-prestasi/seni-battle', 'Admin\\Super\\DrawingPrestasiController::seniBattle');
+    $routes->post('drawing-prestasi/seni-battle/(:num)/acak-bagan', 'Admin\\Super\\DrawingPrestasiController::acakBaganBattleSeni/$1');
+    $routes->post('drawing-prestasi/seni-battle/(:num)/sinkronkan-bagan', 'Admin\\Super\\DrawingPrestasiController::sinkronkanBaganBattleSeni/$1');
+    $routes->get('drawing-prestasi/seni-pool', 'Admin\\Super\\DrawingPrestasiController::seniPool');
+    $routes->post('drawing-prestasi/seni-pool/(:num)/beri-nomor-undi', 'Admin\\Super\\DrawingPrestasiController::beriNomorUndi/$1');
+
     $routes->get('generate-bagan-tanding-dari-jadwal', 'Admin\\Super\\PembuatanJadwalController::generateBaganTandingDariJadwal');
     $routes->post('generate-bagan-tanding-dari-jadwal', 'Admin\\Super\\PembuatanJadwalController::prosesGenerateBaganTandingDariJadwal');
     $routes->get('generate-bagan-seni-battle-dari-jadwal', 'Admin\\Super\\PembuatanJadwalController::generateBaganSeniBattleDariJadwal');
@@ -347,6 +360,7 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('pool-seni/(:num)/bagan.pdf', 'Admin\\Sekretariat\\PoolSeniController::printBagan/$1');
     $routes->post('pool-seni/(:num)/update', 'Admin\\Sekretariat\\PoolSeniController::update/$1');
     $routes->post('pool-seni/(:num)/acak-bagan-battle', 'Admin\\Sekretariat\\PoolSeniController::acakBaganBattle/$1');
+    $routes->post('pool-seni/(:num)/update-bagan-battle', 'Admin\\Sekretariat\\PoolSeniController::updateBaganBattle/$1');
     $routes->post('pool-seni/(:num)/beri-nomor-undi', 'Admin\\Sekretariat\\PoolSeniController::beriNomorUndi/$1');
     $routes->get('sistem-pool-seni', 'Admin\\Sekretariat\\SistemPoolSeniController::index');
     $routes->post('sistem-pool-seni/(:num)/update', 'Admin\\Sekretariat\\SistemPoolSeniController::update/$1');
@@ -421,43 +435,6 @@ $routes->group('admin/printer', ['filter' => 'adminrole:printer'], static functi
 $routes->group('utilities', ['filter' => 'adminrole:super_admin'], static function ($routes): void {
     $routes->get('db-sync', 'Utilities\\DbSyncController::index');
 });
-
-$routes->group('development', ['filter' => 'developmentgate'], static function ($routes): void {
-    $routes->get('/', 'Development\DashboardController::index');
-
-    // System Health
-    $routes->get('system-health', 'Development\SystemHealthController::index');
-
-    // Log Viewer
-    $routes->get('log-viewer', 'Development\LogViewerController::index');
-    $routes->get('log-viewer/clear', 'Development\LogViewerController::clear');
-    $routes->get('log-viewer/(:any)', 'Development\LogViewerController::index/$1');
-
-    // Admin Utility
-    $routes->get('admin-utility', 'Development\AdminUtilityController::index');
-    $routes->post('admin-utility/update-password', 'Development\AdminUtilityController::updatePassword');
-
-    // Database Manager
-    $routes->get('database-manager', 'Development\DatabaseManagerController::index');
-    $routes->get('database-manager/export', 'Development\DatabaseManagerController::export');
-    $routes->post('database-manager/import', 'Development\DatabaseManagerController::import');
-    $routes->post('database-manager/switch', 'Development\DatabaseManagerController::switchDatabase');
-    $routes->post('database-manager/empty-tables', 'Development\DatabaseManagerController::emptyTables');
-    $routes->post('database-manager/drop-tables', 'Development\DatabaseManagerController::dropTables');
-
-    // Database Setup
-    $routes->get('database-setup', 'Development\DatabaseSetupController::index');
-    $routes->post('database-setup/process', 'Development\DatabaseSetupController::process');
-
-    // Purger
-    $routes->get('purger', 'Development\PurgerController::index');
-    $routes->get('purger/clean/(:segment)', 'Development\PurgerController::clean/$1');
-
-    // Data Pusher
-    $routes->get('data-pusher', 'Development\DataPusherController::index');
-    $routes->post('data-pusher/push', 'Development\DataPusherController::push');
-});
-
 
 /*
  * --------------------------------------------------------------------

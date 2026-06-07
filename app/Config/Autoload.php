@@ -88,5 +88,5 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = ['url', 'ci3_compat'];
+    public $helpers = ['url', 'ci3_compat', 'ui'];
 }

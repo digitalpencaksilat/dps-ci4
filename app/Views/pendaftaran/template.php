@@ -62,7 +62,13 @@
             position: relative;
             min-height: 100vh;
             padding: 7.5rem 0 4rem;
-            background: url('<?= base_url('assets/images/landing/landing-hero-bg.jpg') ?>') center center / cover no-repeat;
+            background-color: #1a1a1a;
+            background-image: url('<?= base_url('assets/images/landing/landing-hero-bg.jpg') ?>');
+            background-image: -webkit-image-set(url('<?= base_url('assets/images/landing/landing-hero-bg.webp') ?>') type('image/webp'), url('<?= base_url('assets/images/landing/landing-hero-bg.jpg') ?>') type('image/jpeg'));
+            background-image: image-set(url('<?= base_url('assets/images/landing/landing-hero-bg.webp') ?>') type('image/webp'), url('<?= base_url('assets/images/landing/landing-hero-bg.jpg') ?>') type('image/jpeg'));
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
             overflow: hidden;
         }
 
@@ -381,6 +387,12 @@
             min-height: 370px;
             border-radius: 24px;
             box-shadow: 0 16px 36px rgba(26,26,26,0.10);
+        }
+
+        .category-card-modern picture {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
         .category-img-modern {

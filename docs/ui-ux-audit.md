@@ -169,6 +169,21 @@ Urutan eksekusi disarankan: **P1-1 → P1-2** (cepat, terlihat), lalu **P2-1 →
 
 ## 6. Riwayat perbaikan terkait
 
+- 2026-06-07 — **P2-1 (selesai)**: gambar landing dioptimasi menyeluruh.
+  Ditambahkan `loading="lazy"` + `decoding="async"` pada gambar di bawah lipatan
+  ([`home.php`](../app/Views/pendaftaran/pages/home.php) kartu kategori), serta
+  `fetchpriority="high"` + `decoding="async"` pada poster hero (LCP) dan `decoding="async"`
+  pada logo topnav. Gambar `public/assets/images/landing/*` yang sangat oversized (kategori
+  4512×3008, hero 2816×1536) di-resize + recompress in-place (kategori → 1280px, hero → 1920px,
+  kualitas JPEG 82): total **4.6 MB → 1.3 MB (~72% lebih kecil)**, reversible via git.
+  Ditambahkan varian **WebP** (`cwebp` q80, total **420 KB**) + helper
+  [`webp_picture()`](../app/Helpers/ui_helper.php) (di-autoload via `Config/Autoload.php`) yang
+  meng-emit `<picture>` dengan sumber WebP + fallback gambar asli, dan **degrade aman** ke `<img>`
+  biasa jika varian WebP tidak ada (aman untuk gambar upload dinamis). Background hero memakai
+  `image-set()` WebP dengan fallback JPEG (+`-webkit-` prefix). Sisa opsional: `srcset` multi-lebar
+  benar-benar responsif, dan optimasi gambar berat di komponen yang belum aktif
+  (`pendaftaran/img/live-medali.png`, `alur-background.jpg` — saat ini hanya direferensikan di
+  kode backup/dead, tidak berdampak live).
 - 2026-06-07 — **P1-1 (selesai sebagian besar)**: dibuat partial header bersama
   [`shared_components/admin/page_header.php`](../app/Views/shared_components/admin/page_header.php)
   (param `eyebrow`/`title`/`subtitle`/`icon`/`actions`/`titleTag`/`titleSize`). Halaman

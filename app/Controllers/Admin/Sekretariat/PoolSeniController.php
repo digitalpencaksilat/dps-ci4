@@ -65,6 +65,23 @@ class PoolSeniController extends BaseController
         }
     }
 
+    public function updateBaganBattle(int $id)
+    {
+        $service = new SekretariatKategoriSeniService();
+        $row = $service->getPool($id);
+
+        $response = $this->response->setHeader('X-CSRF-TOKEN', csrf_hash());
+
+        if ($row === null) {
+            return $response->setJSON(['status' => false]);
+        }
+
+        (new \App\Models\KompetisiSeniModel())
+            ->update($id, ['bagan_battle_seni' => (string) $this->request->getPost('bagan_battle_seni')]);
+
+        return $response->setJSON(['status' => true]);
+    }
+
     public function printBagan(int $id): string
     {
         $row = (new SekretariatKategoriSeniService())->getPool($id);

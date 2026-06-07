@@ -5,7 +5,7 @@
             <div class="col-lg-5 text-center reveal">
                 <div class="hero-poster-shell mx-auto shadow-lg">
                     <?php if ($poster = get_setting('poster', 'pendaftaran/gambar_dan_juknis')) : ?>
-                        <img src="<?= esc($poster) ?>" alt="Poster Event" class="img-fluid hero-poster-image">
+                        <img src="<?= esc($poster) ?>" alt="Poster Event" class="img-fluid hero-poster-image" decoding="async" fetchpriority="high">
                     <?php else : ?>
                         <div class="poster-fallback-landing">
                             <i class="fa-solid fa-trophy"></i>
@@ -132,7 +132,12 @@ $cardCount = count($activeCards);
             <?php foreach ($activeCards as $card) : ?>
                 <div class="<?= $colClass ?> reveal">
                     <div class="category-card-modern">
-                        <img src="<?= base_url($card['image']) ?>" alt="<?= esc($card['label']) ?>" class="category-img-modern">
+                        <?= webp_picture($card['image'], [
+                            'alt'      => $card['label'],
+                            'class'    => 'category-img-modern',
+                            'loading'  => 'lazy',
+                            'decoding' => 'async',
+                        ]) ?>
                         <div class="category-overlay-modern">
                             <i class="<?= esc($card['icon']) ?>"></i>
                             <h4><?= esc($card['label']) ?></h4>

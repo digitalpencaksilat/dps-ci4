@@ -357,7 +357,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                             </div>
                         </div>
                     </div>
-                    <?php $isToolsMenu = in_array(($activeMenu ?? ''), ['pengadaan_medali', 'nomor_sertifikat', 'pencetakan_id_card'], true); ?>
+                    <?php $isToolsMenu = in_array(($activeMenu ?? ''), ['pengadaan_medali', 'nomor_sertifikat', 'pencetakan_id_card', 'pencetakan_bagan'], true); ?>
                     <div>
                         <a class="admin-nav-link <?= $isToolsMenu ? 'active' : '' ?>" data-bs-toggle="collapse" href="#adminToolsSubmenu" role="button" aria-expanded="<?= $isToolsMenu ? 'true' : 'false' ?>" aria-controls="adminToolsSubmenu">
                             <span class="label-block"><i class="fas fa-screwdriver-wrench"></i><span>Tools</span></span>
@@ -366,6 +366,7 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                         <div class="admin-submenu collapse <?= $isToolsMenu ? 'show' : '' ?>" id="adminToolsSubmenu">
                             <div class="admin-submenu-inner">
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pencetakan_id_card' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/id-card') ?>">Cetak ID Card</a>
+                                <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pencetakan_bagan' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pencetakan-bagan') ?>">Pencetakan Bagan</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'pengadaan_medali' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/pengadaan-medali') ?>">Pengadaan Medali</a>
                                 <a class="admin-submenu-link <?= ($activeMenu ?? '') === 'nomor_sertifikat' ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/nomor-sertifikat') ?>">Nomor Sertifikat</a>
                             </div>

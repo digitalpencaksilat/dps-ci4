@@ -377,6 +377,10 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('perolehan-medali/seni', 'Admin\\Sekretariat\\MedalTallyController::seni');
     $routes->get('nomor-sertifikat', 'Admin\\Sekretariat\\NomorSertifikatController::index');
     $routes->get('pengadaan-medali', 'Admin\\Sekretariat\\PengadaanMedaliController::index');
+    $routes->get('pencetakan-bagan', 'Admin\\Sekretariat\\PencetakanBaganController::index');
+    $routes->get('pencetakan-bagan/cetak-semua/(:segment)', 'Admin\\Sekretariat\\PencetakanBaganController::cetakSemua/$1');
+    $routes->get('pencetakan-bagan/cetak-kategori/(:num)', 'Admin\\Sekretariat\\PencetakanBaganController::cetakKategori/$1');
+    $routes->get('pencetakan-bagan/cetak-kategori/(:num)/(:segment)', 'Admin\\Sekretariat\\PencetakanBaganController::cetakKategori/$1/$2');
     $routes->get('jadwal-tanding', 'Admin\\Sekretariat\\JadwalTandingController::index');
     $routes->get('jadwal-tanding/(:num)/download', 'Admin\\Sekretariat\\JadwalTandingController::download/$1');
     $routes->get('jadwal-tanding/(:num)', 'Admin\\Sekretariat\\JadwalTandingController::show/$1');

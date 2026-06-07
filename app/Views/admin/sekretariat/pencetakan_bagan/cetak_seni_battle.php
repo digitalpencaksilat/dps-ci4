@@ -33,13 +33,19 @@ $fmtKategori = static function ($usia, $jk): string {
     <link rel="stylesheet" href="<?= base_url('assets/bracket-pertandingan/bracket.css') ?>">
     <script src="<?= online_asset('jquery_3_js') ?>"></script>
     <script src="<?= base_url('assets/bracket-pertandingan/jquery.bracket.min.js') ?>"></script>
+    <script src="<?= base_url('assets/bracket-pertandingan/bracketPrintEnhancer.js') ?>"></script>
     <style>
+        @page { size: A4 landscape; margin: 10mm; }
         body { font-family: 'Poppins', Arial, sans-serif; }
         .bagan { page-break-after: always; }
         .cover { page-break-after: always; }
         .watermark { position: fixed; bottom: 12px; right: 18px; font-size: 9pt; color:#777; display:flex; align-items:center; gap:8px; z-index:9999; }
         .watermark img { height: 20px; width:auto; opacity:.85; }
-        @media print { .watermark { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .medal-print-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+        @media print {
+            .watermark { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .medal-print-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .bracket-round-label { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
@@ -91,7 +97,11 @@ $fmtKategori = static function ($usia, $jk): string {
 
     <script>
         window.addEventListener('load', function () {
-            setTimeout(function () { window.print(); }, 1200);
+            // Beri waktu bracket selesai render, lalu jalankan enhancer sebelum dialog cetak muncul.
+            setTimeout(function () {
+                BracketPrintEnhancer.enhanceForPrint();
+                window.print();
+            }, 1200);
         });
     </script>
 </body>

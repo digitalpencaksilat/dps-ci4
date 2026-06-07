@@ -45,7 +45,7 @@ $fmtKategori = static function ($usia, $jk): string {
 <body>
     <div class="watermark">
         <img src="<?= esc($brandLogoUrl) ?>" alt="Logo" onerror="this.style.display='none'">
-        <span>Dipersembahkan oleh <strong><?= esc($brandName ?? 'Digital Pencak Silat') ?></strong> &copy; <?= date('Y') ?></span>
+        <span>Powered by <strong><?= esc($brandName ?? 'Digital Pencak Silat') ?></strong> &copy; <?= date('Y') ?></span>
     </div>
     <div class="container-fluid">
         <?php if ($groups === []) : ?>

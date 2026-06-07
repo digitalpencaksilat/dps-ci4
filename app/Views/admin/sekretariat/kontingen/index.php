@@ -42,7 +42,7 @@
                             }
                             ?>
                             <tr>
-                                <td>
+                                <td class="text-uppercase">
                                     <a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-uppercase text-danger"><?= esc($row->nama_kontingen ?: '-') ?></a>
                                 </td>
                                 <td><?= esc((string) ($row->email_kontingen ?? '-')) ?></td>
@@ -57,7 +57,7 @@
                                     <?php endif; ?>
                                 </td>
                                 <td><?= esc(format_tanggal_indo($row->tanggal_daftar ?? null)) ?></td>
-                                <td class="text-end">
+                                <td class="text-end text-uppercase">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             Aksi

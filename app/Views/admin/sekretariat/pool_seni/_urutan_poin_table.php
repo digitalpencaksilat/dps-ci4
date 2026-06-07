@@ -23,7 +23,7 @@
                             <span class="muted-copy d-block"><i><?= $row->status_penampilan === 'sudah_tampil' ? esc((string) ($row->waktu_tampil ?? '-')) : 'Belum Tampil' ?></i></span>
                         </td>
                         <td class="small">
-                            <span class="d-block"><?= esc($row->nama_kontingen ?? '-') ?></span>
+                            <span class="d-block text-uppercase"><?= esc($row->nama_kontingen ?? '-') ?></span>
                             <span class="muted-copy d-block">Gelanggang <?= esc($row->nama_gelanggang ?? '-') ?>, Partai <?= esc((string) ($row->nomor_partai ?? '-')) ?></span>
                         </td>
                         <td class="text-center"><?= esc($row->nama_kategori_usia ?? '-') ?></td>

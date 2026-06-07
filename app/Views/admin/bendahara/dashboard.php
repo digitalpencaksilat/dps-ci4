@@ -130,7 +130,7 @@
                             <?php foreach (array_slice($waitingTransactions, 0, 5) as $trx) : ?>
                                 <tr>
                                     <td>#<?= esc((string) $trx->id_pembayaran) ?></td>
-                                    <td>
+                                    <td class="text-uppercase">
                                         <div class="fw-semibold"><?= esc($trx->nama_kontingen ?: '-') ?></div>
                                         <div class="small muted-copy"><?= esc($trx->nama_pimpinan_kontingen ?: '-') ?></div>
                                     </td>

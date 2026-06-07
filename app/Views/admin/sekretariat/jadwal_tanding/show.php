@@ -88,7 +88,7 @@
                                             <?= esc($partai->label ?? '') ?>
                                             <?= ($partai->jenis_perlombaan ?? '') === 'pemasalan' ? ' Pool ' . esc((string) ($partai->nomor_pool ?? '')) : '' ?>
                                         </td>
-                                        <td class="align-middle text-capitalize text-center">
+                                        <td class="align-middle text-center text-uppercase">
                                             <?php if (empty($partai->nama_atlet_biru)): ?>
                                                 <?php if (!empty($partai->calon_atlet_biru)): ?>
                                                     <span class="d-block text-capitalize px-2 text-center fst-italic small">
@@ -109,7 +109,7 @@
                                             <span class="text-muted">-</span>
                                             <span class="badge <?= (int) ($partai->skor_merah ?? 0) > (int) ($partai->skor_biru ?? 0) ? 'bg-corner-red' : 'bg-dark' ?>"><?= esc((string) ($partai->skor_merah ?? 0)) ?></span>
                                         </td>
-                                        <td class="align-middle text-capitalize text-center">
+                                        <td class="align-middle text-center text-uppercase">
                                             <?php if (empty($partai->nama_atlet_merah)): ?>
                                                 <?php if (!empty($partai->calon_atlet_merah)): ?>
                                                     <span class="d-block text-capitalize px-2 text-center fst-italic small">

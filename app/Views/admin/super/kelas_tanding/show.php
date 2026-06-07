@@ -60,7 +60,7 @@
                     <?php foreach (($pesertaRows ?? []) as $peserta) : ?>
                         <tr>
                             <td class="fw-semibold text-capitalize"><?= esc($peserta->nama_pendaftar ?? '-') ?></td>
-                            <td><?= esc($peserta->nama_kontingen ?? '-') ?></td>
+                            <td class="text-uppercase"><?= esc($peserta->nama_kontingen ?? '-') ?></td>
                             <td class="text-end"><?= esc((string) ($peserta->berat_badan ?? '-')) ?> Kg</td>
                             <td class="text-end"><?= esc((string) ($peserta->tinggi_badan ?? '-')) ?> Cm</td>
                             <td><?= esc(($peserta->nama_kategori_usia ?? '-') . ' ' . ($peserta->jenis_kelamin ?? '')) ?></td>

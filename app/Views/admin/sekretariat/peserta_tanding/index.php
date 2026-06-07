@@ -37,7 +37,7 @@ $printHeaderHtml = view('shared_components/print/export_header', [
                 <?php foreach (($rows ?? []) as $row) : ?>
                     <tr>
                         <td class="fw-semibold text-capitalize"><?= esc($row->nama_pendaftar) ?></td>
-                        <td class="text-capitalize"><?= esc($row->nama_kontingen) ?></td>
+                        <td class="text-uppercase"><?= esc($row->nama_kontingen) ?></td>
                         <td><?= esc((string) ($row->nama_sekolah ?: '-')) ?></td>
                         <td class="text-end"><?= esc((string) ($row->berat_badan ?? '-')) ?></td>
                         <td class="text-end"><?= esc((string) ($row->tinggi_badan ?? '-')) ?></td>

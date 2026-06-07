@@ -33,7 +33,7 @@
                     <p class="muted-copy">Bagan battle belum tersedia. Drawing belum dilakukan.</p>
                 <?php endif; ?>
                 <h4 class="h5 my-3">Daftar Battle</h4>
-                <div class="table-responsive"><table class="table admin-table admin-datatable-export align-middle mb-0"><thead><tr><th>Babak</th><th>No</th><th>Merah</th><th>Biru</th><th>Partai</th><th>Gelanggang</th><th class="text-end no-export">Aksi</th></tr></thead><tbody><?php foreach (($battleRows ?? []) as $battle) : ?><tr><td><?= esc($battle->babak ?? '-') ?></td><td><?= esc((string) ($battle->nomor_battle ?? '-')) ?></td><td><?= esc(($battle->anggota_kelompok_peserta_seni_merah ?? '-') . ' / ' . ($battle->nama_kontingen_merah ?? '-')) ?></td><td><?= esc(($battle->anggota_kelompok_peserta_seni_biru ?? '-') . ' / ' . ($battle->nama_kontingen_biru ?? '-')) ?></td><td><?= esc((string) ($battle->nomor_partai ?? '-')) ?></td><td><?= esc($battle->nama_gelanggang ?? '-') ?></td><td class="text-end"><a class="btn btn-sm btn-outline-danger rounded-pill" href="<?= base_url('admin/sekretariat/battle-seni/' . $battle->id_battle_seni) ?>">Detail</a></td></tr><?php endforeach; ?></tbody></table></div>
+                <div class="table-responsive"><table class="table admin-table admin-datatable-export align-middle mb-0"><thead><tr><th>Babak</th><th>No</th><th>Merah</th><th>Biru</th><th>Partai</th><th>Gelanggang</th><th class="text-end no-export">Aksi</th></tr></thead><tbody><?php foreach (($battleRows ?? []) as $battle) : ?><tr><td><?= esc($battle->babak ?? '-') ?></td><td><?= esc((string) ($battle->nomor_battle ?? '-')) ?></td><td><?= esc($battle->anggota_kelompok_peserta_seni_merah ?? '-') ?> / <span class="text-uppercase"><?= esc($battle->nama_kontingen_merah ?? '-') ?></span></td><td><?= esc($battle->anggota_kelompok_peserta_seni_biru ?? '-') ?> / <span class="text-uppercase"><?= esc($battle->nama_kontingen_biru ?? '-') ?></span></td><td><?= esc((string) ($battle->nomor_partai ?? '-')) ?></td><td><?= esc($battle->nama_gelanggang ?? '-') ?></td><td class="text-end"><a class="btn btn-sm btn-outline-danger rounded-pill" href="<?= base_url('admin/sekretariat/battle-seni/' . $battle->id_battle_seni) ?>">Detail</a></td></tr><?php endforeach; ?></tbody></table></div>
             </div>
         <?php else : ?>
             <div class="tab-pane fade show active" id="penampilanSeni">
@@ -44,7 +44,7 @@
             </div>
         <?php endif; ?>
         <div class="tab-pane fade" id="kelompokSeni">
-            <div class="table-responsive"><table class="table admin-table admin-datatable-export align-middle mb-0"><thead><tr><th>No Undi</th><th>Kontingen</th><th>Anggota</th></tr></thead><tbody><?php foreach (($kelompok ?? []) as $item) : ?><tr><td><?= esc((string) ($item->nomor_undi ?? '-')) ?></td><td><?= esc($item->nama_kontingen ?? '-') ?></td><td><?= esc($item->anggota_kelompok_peserta_seni ?? '-') ?></td></tr><?php endforeach; ?></tbody></table></div>
+            <div class="table-responsive"><table class="table admin-table admin-datatable-export align-middle mb-0"><thead><tr><th>No Undi</th><th>Kontingen</th><th>Anggota</th></tr></thead><tbody><?php foreach (($kelompok ?? []) as $item) : ?><tr><td><?= esc((string) ($item->nomor_undi ?? '-')) ?></td><td class="text-uppercase"><?= esc($item->nama_kontingen ?? '-') ?></td><td><?= esc($item->anggota_kelompok_peserta_seni ?? '-') ?></td></tr><?php endforeach; ?></tbody></table></div>
         </div>
     </div>
 </section>

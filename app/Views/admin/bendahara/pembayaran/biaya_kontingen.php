@@ -33,7 +33,7 @@
                     <tbody>
                         <?php foreach ($rows as $row) : ?>
                             <tr>
-                                <td>
+                                <td class="text-uppercase">
                                     <div class="fw-semibold"><?= esc($row->nama_kontingen ?: '-') ?></div>
                                     <div class="small muted-copy"><?= esc($row->nama_pimpinan_kontingen ?: '-') ?></div>
                                 </td>

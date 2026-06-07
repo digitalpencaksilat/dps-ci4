@@ -182,7 +182,7 @@ $activeTab = in_array($activeTab, ['pendaftar', 'tanding', 'seni', 'official'], 
                         <?php foreach (($detail['official'] ?? []) as $row) : ?>
                             <tr>
                                 <td class="fw-semibold text-capitalize"><?= esc((string) ($row->nama_official ?? '-')) ?></td>
-                                <td><?= esc((string) ($row->nama_kontingen ?? $kontingen->nama_kontingen ?? '-')) ?></td>
+                                <td class="text-uppercase"><?= esc((string) ($row->nama_kontingen ?? $kontingen->nama_kontingen ?? '-')) ?></td>
                                 <td><?= esc((string) ($row->nomor_telepon ?? '-')) ?></td>
                             </tr>
                         <?php endforeach; ?>

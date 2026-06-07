@@ -30,7 +30,7 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
                 <?php foreach (($rows ?? []) as $row) : ?>
                     <tr>
                         <td><a href="<?= base_url('admin/sekretariat/kelompok-seni/' . $row->id_kelompok_peserta_seni) ?>" class="fw-semibold text-danger text-decoration-none text-capitalize"><?= $row->anggota_kelompok_peserta_seni ?: '-' ?></a></td>
-                        <td class="text-capitalize"><?= esc($row->nama_kontingen) ?></td>
+                        <td class="text-uppercase"><?= esc($row->nama_kontingen) ?></td>
                         <td><?= $row->nama_sekolah ?: '-' ?></td>
                         <td><?= esc((string) ($row->nama_kategori_usia ?? '-')) ?></td>
                         <td><?= esc($formatGender($row->jenis_kelamin ?? null)) ?></td>

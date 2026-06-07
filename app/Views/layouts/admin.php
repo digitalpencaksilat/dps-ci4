@@ -337,8 +337,8 @@ $adminPanel = $adminPanels[$adminRole] ?? $adminPanels['bendahara'];
                                 <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'sekolah') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/sekolah') ?>">Berdasarkan Sekolah</a>
                                 <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'akumulasi-eksklusif') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/akumulasi-eksklusif') ?>">Akumulasi Eksklusif</a>
                                 <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'kategori-usia-eksklusif') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/kategori-usia-eksklusif') ?>">Kategori Eksklusif</a>
-                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'tanding') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/tanding') ?>">Raw Tanding</a>
-                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'seni') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/seni') ?>">Raw Seni</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'tanding') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/tanding') ?>">Perolehan Tanding</a>
+                                <a class="admin-submenu-link <?= str_ends_with($medalSlug, 'seni') ? 'active' : '' ?>" href="<?= base_url('admin/sekretariat/perolehan-medali/seni') ?>">Perolehan Seni</a>
                             </div>
                         </div>
                     </div>

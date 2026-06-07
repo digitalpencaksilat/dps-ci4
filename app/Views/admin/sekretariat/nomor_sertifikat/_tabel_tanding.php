@@ -18,7 +18,7 @@
                 <?php foreach (($rows ?? []) as $row) : ?>
                     <tr>
                         <td class="fw-semibold text-capitalize"><?= esc($row->nama_pendaftar ?? '-') ?></td>
-                        <td class="text-capitalize"><?= esc($row->nama_kontingen ?? '-') ?></td>
+                        <td class="text-uppercase"><?= esc($row->nama_kontingen ?? '-') ?></td>
                         <td><?= esc($row->provinsi ?? '-') ?></td>
                         <td><?= esc($row->nama_sekolah ?? '-') ?></td>
                         <td class="text-center text-capitalize"><?= esc(trim(($row->nama_kategori_usia ?? '-') . ' ' . ($row->jenis_kelamin ?? ''))) ?></td>

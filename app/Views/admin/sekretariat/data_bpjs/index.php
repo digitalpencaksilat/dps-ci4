@@ -47,7 +47,7 @@ $formatTanggal = static function (?string $date): string {
                         <tr>
                             <td class="text-center fw-semibold"><?= esc((string) ($index + 1)) ?></td>
                             <td class="fw-semibold text-capitalize"><?= esc($row->nama_pendaftar ?? '-') ?></td>
-                            <td class="text-capitalize"><?= esc($row->nama_kontingen ?? '-') ?></td>
+                            <td class="text-uppercase"><?= esc($row->nama_kontingen ?? '-') ?></td>
                             <td class="text-center text-capitalize"><?= esc($row->jenis_kelamin ?? '-') ?></td>
                             <td class="text-center"><?= esc($formatTanggal($row->tanggal_lahir ?? null)) ?></td>
                             <td class="text-center"><?= esc((string) ($row->umur_pendaftar ?? '-')) ?></td>

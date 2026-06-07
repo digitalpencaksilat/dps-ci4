@@ -55,7 +55,7 @@
             <tbody>
                 <?php foreach (($kontingenRows ?? []) as $row) : ?>
                     <tr>
-                        <td><a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-danger"><?= esc($row->nama_kontingen) ?></a></td>
+                        <td class="text-uppercase"><a href="<?= base_url('admin/sekretariat/kontingen/' . $row->id_kontingen) ?>" class="fw-semibold text-decoration-none text-danger"><?= esc($row->nama_kontingen) ?></a></td>
                         <td><?= esc((string) ((int) ($row->jumlah_pendaftar ?? 0))) ?></td>
                         <td><?= esc((string) ((int) ($row->jumlah_peserta_tanding ?? 0))) ?></td>
                         <td><?= esc((string) ((int) ($row->jumlah_kelompok_peserta_seni ?? 0))) ?></td>

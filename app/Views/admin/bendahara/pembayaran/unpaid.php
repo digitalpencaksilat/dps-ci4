@@ -34,7 +34,7 @@
                             <?php foreach (($overview['tanding'] ?? []) as $row) : ?>
                                 <?php $nominal = (string) ($row->jenis_kontingen ?? '') === 'luar_negeri' ? (int) ($row->biaya_pendaftaran_ln ?? 0) : (int) ($row->biaya_pendaftaran_dn ?? 0); ?>
                                 <tr>
-                                    <td><?= esc($row->nama_kontingen ?: '-') ?></td>
+                                    <td class="text-uppercase"><?= esc($row->nama_kontingen ?: '-') ?></td>
                                     <td><?= esc($row->nama_pendaftar ?: '-') ?></td>
                                     <td><?= esc(trim(($row->nama_kategori_usia ?? '-') . ' / ' . ($row->jenis_kelamin ?? '-'))) ?></td>
                                     <td><?= esc($row->label ?: '-') ?></td>
@@ -68,7 +68,7 @@
                             <?php foreach (($overview['seni'] ?? []) as $row) : ?>
                                 <?php $nominal = (string) ($row->jenis_kontingen ?? '') === 'luar_negeri' ? (int) ($row->biaya_pendaftaran_ln ?? 0) : (int) ($row->biaya_pendaftaran_dn ?? 0); ?>
                                 <tr>
-                                    <td><?= esc($row->nama_kontingen ?: '-') ?></td>
+                                    <td class="text-uppercase"><?= esc($row->nama_kontingen ?: '-') ?></td>
                                     <td><?= esc(trim(($row->jenis_seni ?? '-') . ' / ' . ($row->nama_seni ?? '-'))) ?></td>
                                     <td><?= esc(trim(($row->nama_kategori_usia ?? '-') . ' / ' . ($row->jenis_kelamin ?? '-'))) ?></td>
                                     <td><?= esc($row->anggota_kelompok_peserta_seni ?: '-') ?></td>

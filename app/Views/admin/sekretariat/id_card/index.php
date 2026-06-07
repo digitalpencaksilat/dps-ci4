@@ -80,7 +80,7 @@
                 <tbody>
                     <?php foreach (($kontingenRows ?? []) as $row) : ?>
                         <tr>
-                            <td class="fw-semibold"><?= esc($row->nama_kontingen ?? '-') ?></td>
+                            <td class="fw-semibold text-uppercase"><?= esc($row->nama_kontingen ?? '-') ?></td>
                             <td class="text-end"><?= esc((string) ($row->jml_tanding ?? 0)) ?></td>
                             <td class="text-end"><?= esc((string) ($row->jml_seni ?? 0)) ?></td>
                             <td class="text-end fw-bold"><?= esc((string) ((int) ($row->jml_tanding ?? 0) + (int) ($row->jml_seni ?? 0))) ?></td>

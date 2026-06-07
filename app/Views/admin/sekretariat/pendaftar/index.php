@@ -31,7 +31,7 @@ $formatGender = static fn (?string $gender): string => $gender !== null && $gend
                 <?php foreach (($rows ?? []) as $row) : ?>
                     <tr>
                         <td class="fw-semibold text-capitalize"><?= esc($row->nama_pendaftar) ?></td>
-                        <td class="text-capitalize"><?= esc((string) ($row->nama_kontingen ?? '-')) ?></td>
+                        <td class="text-uppercase"><?= esc((string) ($row->nama_kontingen ?? '-')) ?></td>
                         <td><?= esc($formatGender($row->jenis_kelamin ?? null)) ?></td>
                         <td><?= esc($formatTanggal($row->tanggal_lahir ?? null)) ?></td>
                         <td class="text-end"><?= esc((string) ($row->umur_pendaftar ?? '-')) ?></td>

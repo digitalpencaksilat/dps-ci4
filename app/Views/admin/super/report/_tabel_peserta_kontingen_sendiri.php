@@ -17,7 +17,7 @@
                 <?php foreach ($rows as $row) : ?>
                     <tr>
                         <td class="fw-semibold"><?= esc((string) ($row->nama_pendaftar ?? '-')) ?></td>
-                        <td><?= esc((string) ($row->nama_kontingen ?? '-')) ?></td>
+                        <td class="text-uppercase"><?= esc((string) ($row->nama_kontingen ?? '-')) ?></td>
                         <td><?= esc(trim((string) ($row->nama_kategori_usia ?? '') . ' ' . ($row->jenis_kelamin ?? ''))) ?></td>
                         <td><?= esc((string) ($row->label ?? '-')) ?></td>
                         <td class="text-end"><?= esc((string) ($row->jumlah_peserta_tanding_kontingen_sama ?? 0)) ?></td>

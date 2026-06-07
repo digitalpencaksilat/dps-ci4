@@ -36,7 +36,7 @@
                     <tbody>
                         <?php foreach ($kontingenRows as $row) : ?>
                             <tr>
-                                <td>
+                                <td class="text-uppercase">
                                     <div class="fw-semibold"><?= esc($row->nama_kontingen ?: '-') ?></div>
                                     <div class="small muted-copy">#<?= esc((string) $row->id_kontingen) ?></div>
                                 </td>

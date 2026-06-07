@@ -34,7 +34,7 @@
                         <?php foreach ($rows as $row) : ?>
                             <tr>
                                 <td><?= esc(trim(($row->jenis_seni ?? '-') . ' / ' . ($row->nama_seni ?? '-'))) ?></td>
-                                <td><?= esc($row->nama_kontingen ?: '-') ?></td>
+                                <td class="text-uppercase"><?= esc($row->nama_kontingen ?: '-') ?></td>
                                 <td><?= esc(trim(($row->nama_kategori_usia ?? '-') . ' / ' . ($row->jenis_kelamin ?? '-'))) ?></td>
                                 <td><?= esc($row->anggota_kelompok_peserta_seni ?: '-') ?></td>
                                 <td>

@@ -29,7 +29,7 @@
                                     <td>
                                         <span class="fw-semibold text-capitalize"><?= esc($pendaftar->nama_pendaftar) ?></span>
                                     </td>
-                                    <td><?= esc($pendaftar->nama_kontingen) ?></td>
+                                    <td class="text-uppercase"><?= esc($pendaftar->nama_kontingen) ?></td>
                                     <td class="text-center">
                                         <?php if (!empty($pendaftar->foto)): ?>
                                             <img src="<?= base_url('uploads/peserta/foto/' . $pendaftar->foto) ?>"

@@ -106,7 +106,7 @@ $poolLabel = ($row->jenis_perlombaan ?? '') === 'pemasalan' ? ' Pool ' . ($row->
                         <?php foreach (($peserta ?? []) as $item) : ?>
                             <tr>
                                 <td><?= esc($item->nama_pendaftar ?? '-') ?></td>
-                                <td><?= esc($item->nama_kontingen ?? '-') ?></td>
+                                <td class="text-uppercase"><?= esc($item->nama_kontingen ?? '-') ?></td>
                                 <td class="text-end no-export">
                                     <div class="dropdown d-inline-block">
                                         <button class="btn btn-sm btn-danger rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">

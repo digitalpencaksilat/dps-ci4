@@ -1,6 +1,6 @@
 <?php $tableId = $tableId ?? 'medalTallyTable'; ?>
 <div class="table-responsive">
-    <table id="<?= esc($tableId) ?>" class="table admin-table admin-datatable align-middle mb-0">
+    <table id="<?= esc($tableId) ?>" class="table admin-table align-middle mb-0">
         <thead>
             <tr>
                 <th>Rank</th>

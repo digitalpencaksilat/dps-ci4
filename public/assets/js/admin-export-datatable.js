@@ -131,6 +131,57 @@
         }
     };
 
+    // --- Shared print customizer for medal TALLY tables (akumulasi, per kategori usia, sekolah) ---
+    // Numeric medal-count tables that already carry a Rank column — no badges, no
+    // auto numbering. Same DPS theme (white header, red underline, Oswald/Poppins).
+    // opts: { watermark: { logo: '<url>', text: '...' } }
+    window.dpsMedalTallyPrintCustomize = function (win, opts) {
+        opts = opts || {};
+        var $win = $(win.document);
+        $win.find('head').append(
+            '<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">' +
+            '<style>' +
+            'body{font-family:\'Poppins\',Arial,sans-serif!important;font-size:11px;color:#212529;}' +
+            'table.medal-print-header{width:100%!important;margin:0 0 16px 0!important;border:none!important;border-bottom:3px solid #c60000!important;background:#ffffff!important;box-shadow:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+            'table.medal-print-header td{border:none!important;padding:8px 10px!important;background:#ffffff!important;}' +
+            'table.dataTable, table.medal-data-table{border-collapse:collapse!important;width:100%!important;table-layout:auto!important;margin-top:8px;}' +
+            'table.medal-data-table thead th{font-family:\'Oswald\',\'Poppins\',Arial,sans-serif!important;text-align:center!important;vertical-align:middle!important;' +
+            'background-color:#c60000!important;color:#ffffff!important;border:0.5pt solid #c60000!important;font-weight:600;padding:9px 6px!important;' +
+            'text-transform:uppercase;white-space:nowrap!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+            'table.medal-data-table tbody td{border:0.5pt solid #e3c9cb!important;padding:7px 8px!important;vertical-align:middle!important;white-space:nowrap!important;}' +
+            'table.medal-data-table tbody tr:nth-child(even){background-color:#fff5f5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+            'table.medal-data-table tbody tr:nth-child(odd){background-color:#ffffff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+            '.medal-print-watermark{margin-top:14px;margin-right:8mm;text-align:right;font-family:\'Poppins\',Arial,sans-serif;font-size:9pt;color:#777777;page-break-inside:avoid;}' +
+            '.medal-print-watermark img{height:20px;width:auto;vertical-align:middle;margin-right:5px;}' +
+            '.medal-print-watermark span{vertical-align:middle;white-space:nowrap;}' +
+            '</style>'
+        );
+
+        var $table = $win.find('body table').not('.medal-print-header').first();
+        $table.addClass('medal-data-table');
+        $win.find('body').find('h1').remove();
+        $table.find('thead th').css('text-align', 'center');
+
+        // Auto-shrink font so wide tables fit one page width (no wraptext)
+        var colCount = $table.find('thead th').length;
+        var bodyFont = colCount > 12 ? '8px' : (colCount > 9 ? '9px' : '10px');
+        var cellPad = colCount > 12 ? '4px 5px' : '7px 8px';
+        $table.find('th, td').css({ 'font-size': bodyFont, 'padding': cellPad });
+
+        // Watermark (bottom-right) — appears once after the content (last page).
+        if (opts.watermark && (opts.watermark.logo || opts.watermark.text)) {
+            var wmHtml = '<div class="medal-print-watermark">';
+            if (opts.watermark.logo) {
+                wmHtml += '<img src="' + opts.watermark.logo + '" alt="Logo">';
+            }
+            if (opts.watermark.text) {
+                wmHtml += '<span>' + opts.watermark.text + '</span>';
+            }
+            wmHtml += '</div>';
+            $win.find('body').append(wmHtml);
+        }
+    };
+
     // --- Shared Excel customizer for medal tables (tanding & seni) ---
     // Bold centered title row, grey bordered header, bordered body, centered
     // medal column, and forced uppercase — matching the legacy CI3 export.
@@ -185,6 +236,24 @@
         config = config || {};
 
         if (!$(selector).length || !$.fn.DataTable) return null;
+
+        // Medal-tally convenience flag (used by data-export-config JSON, which
+        // cannot carry function references). Wires the themed print + excel
+        // customizers so akumulasi/per-kategori/sekolah pages export consistently.
+        if (config.medalTally) {
+            var tallyWatermark = config.watermark || null;
+            if (typeof config.printCustomize !== 'function') {
+                config.printCustomize = function (win) {
+                    window.dpsMedalTallyPrintCustomize(win, { watermark: tallyWatermark });
+                };
+            }
+            config.excel = config.excel || {};
+            if (typeof config.excel.customize !== 'function') {
+                config.excel.customize = function (xlsx) {
+                    window.dpsMedalExcelCustomize(xlsx);
+                };
+            }
+        }
 
         var preset = presets[config.preset] || presets['simple-list'];
         var title = config.title || document.title || 'Data Export';

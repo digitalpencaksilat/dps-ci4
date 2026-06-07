@@ -15,6 +15,13 @@ foreach (($dataKompetisiSeni ?? []) as $row) {
     $groups[$key]['rows'][] = $row;
 }
 $brandLogoUrl = base_url('assets/images/brand/' . ($brandAbbr ?? 'dps') . '/logo.png');
+
+// Format "Usia Dini 2 - Putra".
+$fmtKategori = static function ($usia, $jk): string {
+    $u = ucwords(strtolower(trim((string) $usia)));
+    $j = ucwords(strtolower(trim((string) $jk)));
+    return trim($u . ($j !== '' ? ' - ' . $j : ''));
+};
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -27,10 +34,6 @@ $brandLogoUrl = base_url('assets/images/brand/' . ($brandAbbr ?? 'dps') . '/logo
         body { font-family: 'Poppins', Arial, sans-serif; }
         .bagan { page-break-after: always; }
         .cover { page-break-after: always; }
-        .bracket-header { border-radius: 10px; overflow: hidden; }
-        .bracket-header .head-logo { background:#fff; display:flex; align-items:center; justify-content:center; }
-        .bracket-header .head-logo img { max-height:64px; max-width:90%; object-fit:contain; }
-        .bracket-header .head-title { background:#111827; color:#fff; }
         .tabel-pool { width:100%; border-collapse:collapse; background:#fff; }
         .tabel-pool thead tr { background:#212529; color:#fff; }
         .tabel-pool thead th { padding:10px 14px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
@@ -70,30 +73,24 @@ $brandLogoUrl = base_url('assets/images/brand/' . ($brandAbbr ?? 'dps') . '/logo
                     <div class="col-3 mb-5 text-center"><img src="<?= esc((string) $logoEvent) ?>" alt="Logo Event" class="img-fluid"></div>
                 <?php endif; ?>
                 <div class="col-10 mt-5 text-center">
-                    <h5 class="h1">Artistic Pool Result</h5>
-                    <h1 class="fw-bolder display-2"><?= esc(($meta->nama_kategori_usia ?? '-') . ' ' . ucwords((string) ($meta->jenis_kelamin ?? ''))) ?></h1>
+                    <h5 class="h1">Hasil Seni Pool</h5>
+                    <h1 class="fw-bolder display-2"><?= esc($fmtKategori($meta->nama_kategori_usia ?? '-', $meta->jenis_kelamin ?? '')) ?></h1>
                     <p class="h4 text-muted"><?= esc(strtoupper((string) ($eventName ?? ''))) ?></p>
                 </div>
             </div>
 
-            <?php foreach ($group['rows'] as $kompetisi) : $rows = $penampilanPerKompetisi[(int) $kompetisi->id_kompetisi_seni] ?? []; ?>
+            <?php foreach ($group['rows'] as $kompetisi) : $rows = $penampilanPerKompetisi[(int) $kompetisi->id_kompetisi_seni] ?? [];
+                $detailSeni = trim(ucwords(strtolower((string) ($kompetisi->jenis_seni ?? ''))) . ' ' . (string) ($kompetisi->nama_seni ?? ''));
+                $headerTitle = $fmtKategori($kompetisi->nama_kategori_usia ?? '', $kompetisi->jenis_kelamin ?? '')
+                    . ($detailSeni !== '' ? ' - ' . $detailSeni : '')
+                    . ' - Pool ' . (string) ($kompetisi->nomor_pool ?? '');
+            ?>
                 <div class="row bagan w-100 m-0">
                     <div class="col-12 px-0">
-                        <div class="row mb-4 justify-content-center bracket-header mx-0 shadow-sm">
-                            <div class="col-1 head-logo py-2">
-                                <?php if (! empty($logoEvent)) : ?><img src="<?= esc((string) $logoEvent) ?>" alt="Event"><?php endif; ?>
-                            </div>
-                            <div class="col-10 head-title py-3 text-center">
-                                <p class="h6 mb-1"><?= esc($eventName ?? '') ?> &mdash; Artistic Performance Results</p>
-                                <p class="h3 m-0 fw-bolder">
-                                    <?= esc(strtoupper(($kompetisi->nama_kategori_usia ?? '') . ' ' . ($kompetisi->jenis_kelamin ?? '') . ' ' . ($kompetisi->jenis_seni ?? '') . ' ' . ($kompetisi->nama_seni ?? ''))) ?>
-                                    &mdash; POOL <?= esc(strtoupper((string) ($kompetisi->nomor_pool ?? ''))) ?>
-                                </p>
-                            </div>
-                            <div class="col-1 head-logo py-2">
-                                <?php if (! empty($logoHost)) : ?><img src="<?= esc((string) $logoHost) ?>" alt="Host"><?php endif; ?>
-                            </div>
-                        </div>
+                        <?= view('shared_components/print/medal_export_header', [
+                            'title'    => strtoupper($headerTitle),
+                            'subtitle' => $eventName ?? '',
+                        ]) ?>
 
                         <div class="px-5 py-2">
                             <div class="card shadow-sm border-0">

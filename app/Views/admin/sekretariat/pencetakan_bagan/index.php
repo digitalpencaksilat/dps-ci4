@@ -29,8 +29,8 @@
             <div class="d-flex align-items-center gap-3 mb-3">
                 <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:46px;height:46px;background:#fdecec;color:#c60000;"><i class="fas fa-hand-fist"></i></span>
                 <div>
-                    <h4 class="h6 mb-0">Seluruh Kategori Seni Battle</h4>
-                    <p class="muted-copy small mb-0">Bagan battle seni.</p>
+                    <h4 class="h6 mb-0">Seluruh Kategori Seni Tanding</h4>
+                    <p class="muted-copy small mb-0">Bagan seni tanding (battle).</p>
                 </div>
             </div>
             <a target="_blank" href="<?= base_url('admin/sekretariat/pencetakan-bagan/cetak-semua/seni') ?>" class="btn btn-admin-brand rounded-pill mt-auto"><i class="fas fa-print me-2"></i>Cetak Bagan</a>
@@ -72,14 +72,14 @@
                     <?php $no = 1; foreach (($dataKategoriLomba ?? []) as $kategori) : ?>
                         <tr>
                             <td class="text-center"><?= esc((string) $no++) ?></td>
-                            <td><?= esc(($kategori->nama_kategori_usia ?? '-') . ' - ' . ucwords((string) ($kategori->jenis_kelamin ?? ''))) ?></td>
+                            <td><?= esc(trim(ucwords(strtolower((string) ($kategori->nama_kategori_usia ?? '-'))) . ' - ' . ucwords(strtolower((string) ($kategori->jenis_kelamin ?? ''))), ' -')) ?></td>
                             <td class="text-capitalize"><?= esc((string) ($kategori->nama_kategori_lomba ?? '-')) ?></td>
                             <td class="text-capitalize"><?= esc((string) ($kategori->jenis_perlombaan ?? '-')) ?></td>
                             <td><?= esc((string) ($kategori->peraturan_pertandingan ?? '-')) ?></td>
                             <td class="text-end">
                                 <?php if (($kategori->nama_kategori_lomba ?? '') === 'seni') : ?>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="<?= base_url('admin/sekretariat/pencetakan-bagan/cetak-kategori/' . $kategori->id_kategori_lomba . '/battle') ?>" target="_blank" class="btn btn-outline-danger rounded-pill px-3 <?= (int) ($kategori->jumlah_bagan_seni_battle ?? 0) === 0 ? 'disabled' : '' ?>"><i class="fas fa-print me-1"></i>Battle</a>
+                                        <a href="<?= base_url('admin/sekretariat/pencetakan-bagan/cetak-kategori/' . $kategori->id_kategori_lomba . '/battle') ?>" target="_blank" class="btn btn-outline-danger rounded-pill px-3 <?= (int) ($kategori->jumlah_bagan_seni_battle ?? 0) === 0 ? 'disabled' : '' ?>"><i class="fas fa-print me-1"></i>Tanding</a>
                                         <a href="<?= base_url('admin/sekretariat/pencetakan-bagan/cetak-kategori/' . $kategori->id_kategori_lomba . '/pool') ?>" target="_blank" class="btn btn-outline-danger rounded-pill px-3 ms-1 <?= (int) ($kategori->jumlah_pool_seni ?? 0) === 0 ? 'disabled' : '' ?>"><i class="fas fa-print me-1"></i>Pool</a>
                                     </div>
                                 <?php else : ?>

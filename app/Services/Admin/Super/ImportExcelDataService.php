@@ -334,7 +334,7 @@ class ImportExcelDataService
         }
         $this->db->table('kelompok_peserta_seni')->insert(['id_kontingen' => $kontingenMap[$kontingen] ?? null, 'id_kompetisi_seni' => $idKompetisi]);
         $idKelompok = (int) $this->db->insertID();
-        $this->db->table('penampilan_seni')->insert(['id_kelompok_peserta_seni' => $idKelompok]);
+        $this->db->table('penampilan_seni')->insert(['id_kelompok_peserta_seni' => $idKelompok, 'catatan_nilai_sama' => '']);
         return $idKelompok;
     }
 

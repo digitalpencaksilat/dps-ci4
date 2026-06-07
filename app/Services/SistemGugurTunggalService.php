@@ -87,6 +87,7 @@ class SistemGugurTunggalService
                 $db->table('penampilan_seni')->insert([
                     'id_kelompok_peserta_seni' => $row['id_kelompok_peserta_seni'],
                     'status_penampilan' => 'belum_tampil',
+                    'catatan_nilai_sama' => '',
                 ]);
                 $penampilanIds[(int) $row['id_kelompok_peserta_seni']] = (int) $db->insertID();
             }
@@ -97,7 +98,7 @@ class SistemGugurTunggalService
                     'id_kompetisi_seni' => $idKompetisiSeni,
                     'id_penampilan_seni_merah' => $this->mapPenampilanId($battle['id_kelompok_peserta_seni_merah'], $penampilanIds),
                     'id_penampilan_seni_biru' => $this->mapPenampilanId($battle['id_kelompok_peserta_seni_biru'], $penampilanIds),
-                    'id_pemenang' => $this->mapPenampilanId($winner, $penampilanIds),
+                    'id_penampilan_seni_pemenang' => $this->mapPenampilanId($winner, $penampilanIds),
                     'babak' => $battle['babak'],
                     'nomor_battle' => $battle['nomor_battle'],
                     'nomor_battle_selanjutnya' => $battle['nomor_battle_selanjutnya'],
@@ -849,7 +850,7 @@ class SistemGugurTunggalService
     private function getBattleExisting(int $idKompetisiSeni): array
     {
         return db_connect()->table('battle_seni bs')
-            ->select('bs.id_battle_seni, bs.nomor_battle, bs.nomor_battle_selanjutnya, bs.id_penampilan_seni_merah, bs.id_penampilan_seni_biru, bs.id_pemenang, bs.babak, bs.jenis_kemenangan')
+            ->select('bs.id_battle_seni, bs.nomor_battle, bs.nomor_battle_selanjutnya, bs.id_penampilan_seni_merah, bs.id_penampilan_seni_biru, bs.id_penampilan_seni_pemenang AS id_pemenang, bs.babak, bs.jenis_kemenangan')
             ->select('psm.id_kelompok_peserta_seni AS merah_id_kelompok, kpsm.id_kontingen AS merah_id_kontingen, km.nama_kontingen AS merah_nama_kontingen, km.negara AS merah_negara')
             ->select('(SELECT GROUP_CONCAT(p.nama_pendaftar SEPARATOR ", ") FROM peserta_seni ps JOIN pendaftar p ON p.id_pendaftar = ps.id_pendaftar WHERE ps.id_kelompok_peserta_seni = psm.id_kelompok_peserta_seni) AS merah_anggota', false)
             ->select('psb.id_kelompok_peserta_seni AS biru_id_kelompok, kpsb.id_kontingen AS biru_id_kontingen, kb.nama_kontingen AS biru_nama_kontingen, kb.negara AS biru_negara')

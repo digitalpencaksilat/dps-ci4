@@ -496,6 +496,7 @@ class ImportJadwalSeniBattleCommitService
         $db->table('penampilan_seni')->insert([
             'id_kelompok_peserta_seni' => $idKelompokPesertaSeni,
             'status_penampilan' => 'belum_tampil',
+            'catatan_nilai_sama' => '',
         ]);
 
         return (int) $db->insertID();

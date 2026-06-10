@@ -38,6 +38,13 @@
                                     <option value="block" <?= ($value ?? '') === 'block' ? 'selected' : '' ?>>block</option>
                                     <option value="none" <?= ($value ?? '') === 'none' ? 'selected' : '' ?>>none</option>
                                 </select>
+                            <?php elseif (str_contains($key, 'font_color')) : ?>
+                                <div class="input-group input-group-sm">
+                                    <input type="color" class="form-control form-control-color" id="field_<?= esc($key) ?>_picker" value="<?= esc(substr((string) ($value ?? '#0a0909'), 0, 7)) ?>" oninput="document.getElementById('field_<?= esc($key) ?>').value = this.value + document.getElementById('field_<?= esc($key) ?>_alpha').value">
+                                    <input type="text" class="form-control form-control-sm" id="field_<?= esc($key) ?>" name="<?= esc($key) ?>" value="<?= esc((string) ($value ?? '')) ?>" placeholder="#rrggbb atau #rrggbbaa">
+                                    <input type="text" class="form-control form-control-sm" id="field_<?= esc($key) ?>_alpha" value="<?= esc(strlen((string) ($value ?? '')) > 7 ? substr((string) ($value ?? ''), 7) : '') ?>" placeholder="alpha" style="max-width:60px" oninput="document.getElementById('field_<?= esc($key) ?>').value = document.getElementById('field_<?= esc($key) ?>_picker').value + this.value">
+                                </div>
+                                <div class="form-text">Format: #rrggbb atau #rrggbbaa (dengan alpha/opacity)</div>
                             <?php elseif (str_contains($key, 'text_transform')) : ?>
                                 <select class="form-select form-select-sm" id="field_<?= esc($key) ?>" name="<?= esc($key) ?>">
                                     <option value="none" <?= ($value ?? '') === 'none' ? 'selected' : '' ?>>none</option>

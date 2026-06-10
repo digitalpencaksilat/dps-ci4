@@ -16,7 +16,7 @@
         width: <?= esc($layout['nama_atlet']['athlete_name_container_width'] ?? '100%') ?>;
         position: absolute;
         font-size: <?= esc($layout['nama_atlet']['athlete_name_font_size'] ?? '13px') ?>;
-        color: #0a0909e2;
+        color: <?= esc($layout['nama_atlet']['athlete_name_font_color'] ?? '#0a0909e2') ?>;
         margin: 0;
         inset: <?= esc($layout['nama_atlet']['athlete_name_position'] ?? '10.8cm 0 0 1.2cm') ?>;
         text-align: <?= esc($layout['nama_atlet']['athlete_name_text_align'] ?? 'left') ?>;
@@ -36,7 +36,7 @@
         inset: <?= esc($layout['nama_kontingen']['contingent_name_position'] ?? '11.7cm 0 0 1.2cm') ?>;
         text-overflow: clip;
         margin: 0;
-        color: #0a0909e2;
+        color: <?= esc($layout['nama_kontingen']['contingent_name_font_color'] ?? '#0a0909e2') ?>;
         text-transform: <?= esc($layout['nama_kontingen']['contingent_name_text_transform'] ?? 'uppercase') ?>;
         font-weight: <?= esc($layout['nama_kontingen']['contingent_name_font_weight'] ?? 'bold') ?>;
         text-align: <?= esc($layout['nama_kontingen']['contingent_name_text_align'] ?? 'left') ?>;
@@ -58,6 +58,7 @@
         position: absolute;
         border-collapse: collapse;
         font-weight: <?= esc($layout['pertandingan']['match_category_font_weight'] ?? 'bolder') ?>;
+        color: <?= esc($layout['pertandingan']['match_category_font_color'] ?? '#0a0909e2') ?>;
         text-align: center;
         text-overflow: clip;
         white-space: <?= esc($layout['pertandingan']['match_category_white_space'] ?? 'nowrap') ?>;
@@ -72,6 +73,7 @@
         border-collapse: collapse;
         inset: <?= esc($layout['pertandingan']['matches_table_position'] ?? '7.75cm 10% 0 10%') ?>;
         font-size: <?= esc($layout['pertandingan']['matches_table_font_size'] ?? '12px') ?>;
+        color: <?= esc($layout['pertandingan']['matches_table_font_color'] ?? '#0a0909e2') ?>;
         text-align: <?= esc($layout['pertandingan']['matches_table_position_text_align'] ?? 'left') ?>;
         font-weight: <?= esc($layout['pertandingan']['matches_table_font_weight'] ?? 'bold') ?>;
     }

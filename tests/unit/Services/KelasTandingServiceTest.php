@@ -19,6 +19,15 @@ class KelasTandingServiceTest extends CIUnitTestCase
         $db = db_connect();
         $forge = \Config\Database::forge();
 
+        $forge->dropTable('pertandingan', true);
+        $forge->dropTable('peserta_tanding', true);
+        $forge->dropTable('pendaftar', true);
+        $forge->dropTable('kontingen', true);
+        $forge->dropTable('kompetisi_tanding', true);
+        $forge->dropTable('kelas_tanding', true);
+        $forge->dropTable('kategori_lomba', true);
+        $forge->dropTable('kategori_usia', true);
+
         if (! $db->tableExists('kategori_usia')) {
             $forge->addField([
                 'id_kategori_usia' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],

@@ -85,9 +85,11 @@
 
     var cards = document.querySelectorAll('.kartu-id-export');
     var total = cards.length;
+    var CHUNK_SIZE = total > 50 ? 50 : total;
     var processed = 0;
     var failed = [];
     var zip = new JSZip();
+    var chunkIndex = 1;
 
     function notifyParent(payload) {
         try {
@@ -202,8 +204,24 @@
                         type: 'id-card-progress',
                         processed: processed,
                         total: total,
-                        failed: failed.length
+                        failed: failed.length,
+                        current: filename
                     });
+                    if (CHUNK_SIZE > 0 && processed > 0 && processed % CHUNK_SIZE === 0 && idx < total - 1) {
+                        flushZip(false).then(function () {
+                            hideProcessedCards(idx);
+                            return pauseBetweenChunks();
+                        }).then(function () {
+                            processCard(idx + 1);
+                        }).catch(function (err) {
+                            notifyParent({
+                                type: 'id-card-error',
+                                message: 'Gagal membuat file ZIP chunk: ' + (err && err.message ? err.message : err)
+                            });
+                        });
+                        return;
+                    }
+
                     processCard(idx + 1);
                 });
             })
@@ -216,9 +234,57 @@
                     type: 'id-card-progress',
                     processed: processed,
                     total: total,
-                    failed: failed.length
+                    failed: failed.length,
+                    current: filename
                 });
                 processCard(idx + 1);
+            });
+    }
+
+    function chunkName() {
+        var stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        var totalChunks = CHUNK_SIZE > 0 ? Math.ceil(total / CHUNK_SIZE) : 1;
+        if (totalChunks <= 1) {
+            return 'id-card-batch-' + stamp + '.zip';
+        }
+
+        return 'id-card-batch-' + stamp + '-part-' + String(chunkIndex).padStart(2, '0') + '-of-' + String(totalChunks).padStart(2, '0') + '.zip';
+    }
+
+    function hideProcessedCards(lastIdx) {
+        for (var i = 0; i <= lastIdx; i++) {
+            if (cards[i]) {
+                cards[i].remove();
+            }
+        }
+    }
+
+    function pauseBetweenChunks() {
+        return new Promise(function (resolve) {
+            setTimeout(resolve, 800);
+        });
+    }
+
+    function flushZip(isFinal) {
+        return zip.generateAsync({ type: 'blob' })
+            .then(function (blob) {
+                try {
+                    saveAs(blob, chunkName());
+                } catch (e) {
+                    if (window.console) { console.error('saveAs gagal:', e); }
+                }
+
+                zip = new JSZip();
+                chunkIndex++;
+
+                notifyParent({
+                    type: isFinal ? 'id-card-complete' : 'id-card-chunk',
+                    processed: processed,
+                    failed: failed,
+                    total: total,
+                    chunk_size: CHUNK_SIZE,
+                    chunk_index: chunkIndex - 1
+                });
             });
     }
 
@@ -231,21 +297,7 @@
             return;
         }
 
-        zip.generateAsync({ type: 'blob' })
-            .then(function (blob) {
-                var stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-                try {
-                    saveAs(blob, 'id-card-batch-' + stamp + '.zip');
-                } catch (e) {
-                    if (window.console) { console.error('saveAs gagal:', e); }
-                }
-                notifyParent({
-                    type: 'id-card-complete',
-                    processed: processed,
-                    failed: failed,
-                    total: total
-                });
-            })
+        flushZip(true)
             .catch(function (err) {
                 if (window.console) { console.error('generateAsync gagal:', err); }
                 notifyParent({
@@ -255,10 +307,26 @@
             });
     }
 
-    // Mulai proses setelah barcode dirender. Beri sedikit delay supaya layout
-    // benar-benar selesai sebelum html2canvas menangkap.
+    function waitForAssets() {
+        var fontReady = document.fonts && document.fonts.ready ? document.fonts.ready.catch(function () {}) : Promise.resolve();
+        var imageReady = Promise.all(Array.prototype.map.call(document.images || [], function (img) {
+            if (img.complete) {
+                return Promise.resolve();
+            }
+            if (img.decode) {
+                return img.decode().catch(function () {});
+            }
+            return new Promise(function (resolve) {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        }));
+
+        return Promise.all([fontReady, imageReady]);
+    }
+
+    // Mulai proses setelah font, image, dan barcode siap supaya retry lebih sedikit.
     window.addEventListener('load', function () {
-        renderBarcodes();
         notifyParent({ type: 'id-card-start', total: total });
         if (total === 0) {
             notifyParent({
@@ -267,7 +335,13 @@
             });
             return;
         }
-        setTimeout(function () { processCard(0); }, 400);
+
+        waitForAssets()
+            .then(function () {
+                renderBarcodes();
+                return new Promise(function (resolve) { setTimeout(resolve, 200); });
+            })
+            .then(function () { processCard(0); });
     });
 })();
 </script>

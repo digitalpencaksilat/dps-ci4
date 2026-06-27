@@ -93,6 +93,7 @@ php_errors.log
 # Composer
 #-------------------------
 vendor/
+node_modules/
 
 #-------------------------
 # IDE / Development Files

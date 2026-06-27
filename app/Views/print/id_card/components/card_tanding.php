@@ -5,16 +5,15 @@
  * @var string      $background_url
  */
 $bg = (string) ($background_url ?? '');
+$photoUrl = service('idCardPhoto')->photoUrl($peserta->foto ?? null);
 ?>
 <div class="kartu-peserta">
     <?php if ($bg !== '') : ?>
         <img class="kartu-bg" src="<?= esc($bg) ?>" alt="" aria-hidden="true">
     <?php endif; ?>
     <div class="atlet-img">
-        <?php
-        $fotoPath = ! empty($peserta->foto) ? (FCPATH . 'uploads/peserta/foto/' . $peserta->foto) : '';
-        if ($fotoPath !== '' && is_file($fotoPath)) : ?>
-            <img class="img-fluid" src="<?= base_url('uploads/peserta/foto/') . esc($peserta->foto) ?>" alt="Foto" onerror="this.style.display='none'">
+        <?php if ($photoUrl !== '') : ?>
+            <img class="img-fluid" src="<?= esc($photoUrl) ?>" alt="Foto" onerror="this.style.display='none'">
         <?php endif; ?>
     </div>
 

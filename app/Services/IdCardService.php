@@ -332,6 +332,181 @@ class IdCardService
     }
 
     /**
+     * @param list<int> $ids
+     * @return array<int, object> keyed by id_peserta_tanding
+     */
+    public function getCardDataTandingByIds(array $ids): array
+    {
+        $ids = $this->normalizeIds($ids);
+        if ($ids === []) {
+            return [];
+        }
+
+        $rows = db_connect()
+            ->table('peserta_tanding pt')
+            ->select([
+                'pt.id_peserta_tanding',
+                'p.nama_pendaftar',
+                'p.foto',
+                'k.nama_kontingen',
+                'ku.nama_kategori_usia',
+                'ku.jenis_kelamin',
+                'kt.label',
+                'kl.nama_kategori_lomba',
+                'pt.id_kompetisi_tanding',
+            ])
+            ->join('pendaftar p', 'p.id_pendaftar = pt.id_pendaftar')
+            ->join('kontingen k', 'k.id_kontingen = p.id_kontingen')
+            ->join('kompetisi_tanding kom', 'kom.id_kompetisi_tanding = pt.id_kompetisi_tanding')
+            ->join('kelas_tanding kt', 'kt.id_kelas_tanding = kom.id_kelas_tanding')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = kt.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
+            ->whereIn('pt.id_peserta_tanding', $ids)
+            ->get()
+            ->getResult();
+
+        return $this->keyRowsBy($rows, 'id_peserta_tanding');
+    }
+
+    /**
+     * @param list<int> $ids
+     * @return array<int, object> keyed by id_peserta_seni
+     */
+    public function getCardDataSeniByIds(array $ids): array
+    {
+        $ids = $this->normalizeIds($ids);
+        if ($ids === []) {
+            return [];
+        }
+
+        $rows = db_connect()
+            ->table('peserta_seni ps')
+            ->select([
+                'ps.id_peserta_seni',
+                'ps.id_kelompok_peserta_seni',
+                'p.nama_pendaftar',
+                'p.foto',
+                'k.nama_kontingen',
+                'ku.nama_kategori_usia',
+                'ku.jenis_kelamin',
+                'sks.nama_seni',
+                'sks.jenis_seni',
+                'sks.sistem_penampilan',
+                'kps.id_kompetisi_seni',
+            ])
+            ->join('pendaftar p', 'p.id_pendaftar = ps.id_pendaftar')
+            ->join('kontingen k', 'k.id_kontingen = p.id_kontingen')
+            ->join('kelompok_peserta_seni kps', 'kps.id_kelompok_peserta_seni = ps.id_kelompok_peserta_seni')
+            ->join('kompetisi_seni kom', 'kom.id_kompetisi_seni = kps.id_kompetisi_seni')
+            ->join('sub_kategori_seni sks', 'sks.id_sub_kategori_seni = kom.id_sub_kategori_seni')
+            ->join('kategori_lomba kl', 'kl.id_kategori_lomba = sks.id_kategori_lomba')
+            ->join('kategori_usia ku', 'ku.id_kategori_usia = kl.id_kategori_usia')
+            ->whereIn('ps.id_peserta_seni', $ids)
+            ->get()
+            ->getResult();
+
+        return $this->keyRowsBy($rows, 'id_peserta_seni');
+    }
+
+    /**
+     * @param list<int> $ids
+     * @return array<int, list<object>> keyed by id_kompetisi_tanding
+     */
+    public function getPertandinganDataByKompetisiIds(array $ids): array
+    {
+        $ids = $this->normalizeIds($ids);
+        if ($ids === []) {
+            return [];
+        }
+
+        $rows = db_connect()
+            ->table('pertandingan')
+            ->select('pertandingan.*, djt.nomor_partai, g.nama_gelanggang', false)
+            ->join('detail_jadwal_tanding djt', 'djt.id_pertandingan = pertandingan.id_pertandingan', 'left')
+            ->join('jadwal_tanding jt', 'jt.id_jadwal_tanding = djt.id_jadwal_tanding', 'left')
+            ->join('gelanggang g', 'g.id_gelanggang = jt.id_gelanggang', 'left')
+            ->whereIn('pertandingan.id_kompetisi_tanding', $ids)
+            ->orderBy('pertandingan.id_kompetisi_tanding', 'ASC')
+            ->orderBy('pertandingan.nomor_pertandingan', 'ASC')
+            ->get()
+            ->getResult();
+
+        return $this->groupRowsBy($rows, 'id_kompetisi_tanding');
+    }
+
+    /**
+     * @param list<int> $ids
+     * @return array<int, list<object>> keyed by id_kompetisi_seni
+     */
+    public function getPenampilanSeniDataByKompetisiIds(array $ids): array
+    {
+        $ids = $this->normalizeIds($ids);
+        if ($ids === []) {
+            return [];
+        }
+
+        $rows = db_connect()
+            ->table('detail_jadwal_seni djs')
+            ->select(
+                'djs.id_detail_jadwal_seni, djs.nomor_partai, '
+                . 'g.nama_gelanggang, '
+                . 'ps.babak AS babak_pool, '
+                . 'ps.id_kelompok_peserta_seni, '
+                . 'kps.id_kompetisi_seni',
+                false
+            )
+            ->join('penampilan_seni ps', 'ps.id_penampilan_seni = djs.id_penampilan_seni')
+            ->join('kelompok_peserta_seni kps', 'kps.id_kelompok_peserta_seni = ps.id_kelompok_peserta_seni')
+            ->join('jadwal_seni js', 'js.id_jadwal_seni = djs.id_jadwal_seni')
+            ->join('gelanggang g', 'g.id_gelanggang = js.id_gelanggang', 'left')
+            ->whereIn('kps.id_kompetisi_seni', $ids)
+            ->orderBy('kps.id_kompetisi_seni', 'ASC')
+            ->orderBy('djs.nomor_partai', 'ASC')
+            ->get()
+            ->getResult();
+
+        return $this->groupRowsBy($rows, 'id_kompetisi_seni');
+    }
+
+    /**
+     * @param list<int> $ids
+     * @return array<int, list<object>> keyed by id_kompetisi_seni_battle
+     */
+    public function getBattleSeniDataByKompetisiIds(array $ids): array
+    {
+        $ids = $this->normalizeIds($ids);
+        if ($ids === []) {
+            return [];
+        }
+
+        $select = 'bs.id_battle_seni, '
+            . 'bs.id_kompetisi_seni AS id_kompetisi_seni_battle, '
+            . 'bs.nomor_battle, '
+            . 'bs.nomor_battle_selanjutnya, '
+            . 'bs.babak AS babak_battle, '
+            . 'bs.id_penampilan_seni_merah, '
+            . 'bs.id_penampilan_seni_biru, '
+            . '(SELECT id_kelompok_peserta_seni FROM penampilan_seni WHERE id_penampilan_seni = bs.id_penampilan_seni_merah) AS id_kelompok_peserta_seni_merah, '
+            . '(SELECT id_kelompok_peserta_seni FROM penampilan_seni WHERE id_penampilan_seni = bs.id_penampilan_seni_biru) AS id_kelompok_peserta_seni_biru, '
+            . 'djs.nomor_partai, '
+            . 'g.nama_gelanggang';
+
+        $rows = db_connect()
+            ->table('battle_seni bs')
+            ->select($select, false)
+            ->join('detail_jadwal_seni djs', 'djs.id_battle_seni = bs.id_battle_seni', 'left')
+            ->join('jadwal_seni js', 'js.id_jadwal_seni = djs.id_jadwal_seni', 'left')
+            ->join('gelanggang g', 'g.id_gelanggang = js.id_gelanggang', 'left')
+            ->whereIn('bs.id_kompetisi_seni', $ids)
+            ->orderBy('bs.id_kompetisi_seni', 'ASC')
+            ->orderBy('bs.nomor_battle', 'ASC')
+            ->get()
+            ->getResult();
+
+        return $this->groupRowsBy($rows, 'id_kompetisi_seni_battle');
+    }
+
+    /**
      * Get all tanding peserta IDs for a kontingen.
      *
      * @return list<int>
@@ -351,6 +526,29 @@ class IdCardService
     }
 
     /**
+     * @param list<int> $ids
+     * @return list<int>
+     */
+    public function getPesertaTandingIdsByKontingenIds(array $ids): array
+    {
+        $ids = $this->normalizeIds($ids);
+        if ($ids === []) {
+            return [];
+        }
+
+        $rows = db_connect()
+            ->table('peserta_tanding pt')
+            ->select('pt.id_peserta_tanding')
+            ->join('pendaftar p', 'p.id_pendaftar = pt.id_pendaftar')
+            ->whereIn('p.id_kontingen', $ids)
+            ->orderBy('pt.id_peserta_tanding', 'ASC')
+            ->get()
+            ->getResult();
+
+        return array_map(static fn ($r): int => (int) $r->id_peserta_tanding, $rows);
+    }
+
+    /**
      * Get all seni peserta IDs for a kontingen.
      *
      * @return list<int>
@@ -362,6 +560,29 @@ class IdCardService
             ->select('ps.id_peserta_seni')
             ->join('pendaftar p', 'p.id_pendaftar = ps.id_pendaftar')
             ->where('p.id_kontingen', $idKontingen)
+            ->orderBy('ps.id_peserta_seni', 'ASC')
+            ->get()
+            ->getResult();
+
+        return array_map(static fn ($r): int => (int) $r->id_peserta_seni, $rows);
+    }
+
+    /**
+     * @param list<int> $ids
+     * @return list<int>
+     */
+    public function getPesertaSeniIdsByKontingenIds(array $ids): array
+    {
+        $ids = $this->normalizeIds($ids);
+        if ($ids === []) {
+            return [];
+        }
+
+        $rows = db_connect()
+            ->table('peserta_seni ps')
+            ->select('ps.id_peserta_seni')
+            ->join('pendaftar p', 'p.id_pendaftar = ps.id_pendaftar')
+            ->whereIn('p.id_kontingen', $ids)
             ->orderBy('ps.id_peserta_seni', 'ASC')
             ->get()
             ->getResult();
@@ -488,5 +709,49 @@ class IdCardService
         $mtime = @filemtime(FCPATH . 'uploads/kartu-peserta/atlet.png') ?: time();
 
         return base_url('uploads/kartu-peserta/atlet.png') . '?v=' . $mtime;
+    }
+
+    /**
+     * @param list<int> $ids
+     * @return list<int>
+     */
+    private function normalizeIds(array $ids): array
+    {
+        return array_values(array_unique(array_filter(array_map(
+            static fn ($id): int => (int) $id,
+            $ids
+        ))));
+    }
+
+    /**
+     * @param list<object> $rows
+     * @return array<int, object>
+     */
+    private function keyRowsBy(array $rows, string $field): array
+    {
+        $keyed = [];
+        foreach ($rows as $row) {
+            $keyed[(int) ($row->{$field} ?? 0)] = $row;
+        }
+
+        return $keyed;
+    }
+
+    /**
+     * @param list<object> $rows
+     * @return array<int, list<object>>
+     */
+    private function groupRowsBy(array $rows, string $field): array
+    {
+        $grouped = [];
+        foreach ($rows as $row) {
+            $key = (int) ($row->{$field} ?? 0);
+            if (! isset($grouped[$key])) {
+                $grouped[$key] = [];
+            }
+            $grouped[$key][] = $row;
+        }
+
+        return $grouped;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Services\IdCardPhotoService;
 use CodeIgniter\Config\BaseService;
 
 /**
@@ -19,6 +20,15 @@ use CodeIgniter\Config\BaseService;
  */
 class Services extends BaseService
 {
+    public static function idCardPhoto(bool $getShared = true): IdCardPhotoService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('idCardPhoto');
+        }
+
+        return new IdCardPhotoService();
+    }
+
     /*
      * public static function example($getShared = true)
      * {

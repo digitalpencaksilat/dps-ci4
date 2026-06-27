@@ -140,6 +140,8 @@ class IdCardController extends BaseController
         );
 
         // Render preview using the print template
+        service('idCardPhoto')->prewarm([$pesertaTanding->foto ?? null]);
+
         return view('print/id_card/template', [
             'main_view'      => 'print/id_card/pages/preview',
             'paper_size'     => 'A6 portrait',
@@ -192,6 +194,8 @@ class IdCardController extends BaseController
             $barcodeValue = IdCardService::barcodeValueSeni((int) $peserta->id_peserta_seni);
             $filename = $this->buildCardFilename($peserta->nama_kontingen ?? '', 'Seni', (int) $peserta->id_peserta_seni);
         }
+
+        service('idCardPhoto')->prewarm([$peserta->foto ?? null]);
 
         return view('print/id_card/template', [
             'main_view'        => $mainView,
@@ -333,44 +337,50 @@ class IdCardController extends BaseController
             (array) $this->request->getPost('id_peserta_seni')
         ))));
 
-        // Ekspansi: id_kontingen → semua peserta tanding & seni di kontingen tsb
+        // Ekspansi: id_kontingen → semua peserta tanding & seni di kontingen tsb.
+        // Bulk query supaya batch banyak kontingen tidak memicu N+1 query.
         if ($kontingenIds !== []) {
-            foreach ($kontingenIds as $idKontingen) {
-                $tandingIds = array_merge(
-                    $tandingIds,
-                    $this->idCardService->getPesertaTandingIdsByKontingen($idKontingen)
-                );
-                $seniIds = array_merge(
-                    $seniIds,
-                    $this->idCardService->getPesertaSeniIdsByKontingen($idKontingen)
-                );
-            }
-            $tandingIds = array_values(array_unique($tandingIds));
-            $seniIds = array_values(array_unique($seniIds));
+            $tandingIds = array_values(array_unique(array_merge(
+                $tandingIds,
+                $this->idCardService->getPesertaTandingIdsByKontingenIds($kontingenIds)
+            )));
+            $seniIds = array_values(array_unique(array_merge(
+                $seniIds,
+                $this->idCardService->getPesertaSeniIdsByKontingenIds($kontingenIds)
+            )));
         }
 
         if ($tandingIds === [] && $seniIds === []) {
             return 'Tidak ada peserta yang dipilih.';
         }
 
-        $scale = (int) ($this->request->getPost('scale') ?? 4);
-        if ($scale < 2 || $scale > 10) {
-            $scale = 4;
+        $scale = (int) ($this->request->getPost('scale') ?? 3);
+        if (! in_array($scale, [2, 3, 4, 6], true)) {
+            $scale = 3;
         }
 
         $cards = [];
         $layout = $this->idCardService->getLayoutConfig();
         $backgroundUrl = $this->idCardService->backgroundUrl();
 
+        $pesertaTandingById = $this->idCardService->getCardDataTandingByIds($tandingIds);
+        $kompetisiTandingIds = array_map(
+            static fn ($peserta): int => (int) ($peserta->id_kompetisi_tanding ?? 0),
+            array_values($pesertaTandingById)
+        );
+        $pertandinganByKompetisi = $this->idCardService->getPertandinganDataByKompetisiIds($kompetisiTandingIds);
+
         foreach ($tandingIds as $idTanding) {
-            $peserta = $this->idCardService->getCardDataTanding($idTanding);
+            $peserta = $pesertaTandingById[$idTanding] ?? null;
             if ($peserta === null) {
                 continue;
             }
+
             $partai = get_partai_pertandingan(
-                $this->idCardService->getPertandinganData((int) $peserta->id_kompetisi_tanding),
+                $pertandinganByKompetisi[(int) $peserta->id_kompetisi_tanding] ?? [],
                 (int) $peserta->id_peserta_tanding
             );
+
             $cards[] = [
                 'type'          => 'tanding',
                 'peserta'       => $peserta,
@@ -384,13 +394,28 @@ class IdCardController extends BaseController
             ];
         }
 
+        $photoFilenames = array_map(
+            static fn ($peserta): ?string => isset($peserta->foto) ? (string) $peserta->foto : null,
+            array_values($pesertaTandingById)
+        );
+
+        $pesertaSeniById = $this->idCardService->getCardDataSeniByIds($seniIds);
+        $kompetisiSeniIds = array_map(
+            static fn ($peserta): int => (int) ($peserta->id_kompetisi_seni ?? 0),
+            array_values($pesertaSeniById)
+        );
+        $penampilanByKompetisi = $this->idCardService->getPenampilanSeniDataByKompetisiIds($kompetisiSeniIds);
+        $battleByKompetisi = $this->idCardService->getBattleSeniDataByKompetisiIds($kompetisiSeniIds);
+
         foreach ($seniIds as $idSeni) {
-            $peserta = $this->idCardService->getCardDataSeni($idSeni);
+            $peserta = $pesertaSeniById[$idSeni] ?? null;
             if ($peserta === null) {
                 continue;
             }
-            $dataPenampilan = $this->idCardService->getPenampilanSeniData((int) $peserta->id_kompetisi_seni);
-            $dataBattle = $this->idCardService->getBattleSeniData((int) $peserta->id_kompetisi_seni);
+
+            $idKompetisiSeni = (int) $peserta->id_kompetisi_seni;
+            $dataPenampilan = $penampilanByKompetisi[$idKompetisiSeni] ?? [];
+            $dataBattle = $battleByKompetisi[$idKompetisiSeni] ?? [];
 
             // Kompute partai untuk mode battle (parity dengan legacy)
             $partaiSeni = (($peserta->sistem_penampilan ?? 'pool') === 'battle')
@@ -412,6 +437,16 @@ class IdCardController extends BaseController
             ];
         }
 
+        $photoFilenames = array_merge(
+            $photoFilenames,
+            array_map(
+                static fn ($peserta): ?string => isset($peserta->foto) ? (string) $peserta->foto : null,
+                array_values($pesertaSeniById)
+            )
+        );
+
+        service('idCardPhoto')->prewarm($photoFilenames);
+
         return view('print/id_card/template', [
             'main_view'      => 'print/id_card/pages/batch',
             'paper_size'     => 'A4 portrait',
@@ -420,6 +455,58 @@ class IdCardController extends BaseController
             'background_url' => $backgroundUrl,
             'scale'          => $scale,
             'is_iframe'      => true,
+        ]);
+    }
+
+    public function prosesCetakBatchLocal(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        $html = $this->prosesCetakBatch();
+        $stamp = date('Ymd_His');
+        $jobId = $stamp . '_' . bin2hex(random_bytes(3));
+        $workDir = WRITEPATH . 'id-card-local/' . $jobId;
+        $htmlPath = $workDir . '/id-card.html';
+        $outDir = WRITEPATH . 'id-card-cli-output/' . $jobId;
+        $progressPath = $outDir . '/progress.json';
+
+        if (! is_dir($workDir)) {
+            mkdir($workDir, 0777, true);
+        }
+        if (! is_dir($outDir)) {
+            mkdir($outDir, 0777, true);
+        }
+
+        file_put_contents($htmlPath, $html);
+
+        $scale = (int) ($this->request->getPost('scale') ?? 3);
+        if (! in_array($scale, [2, 3, 4, 6], true)) {
+            $scale = 3;
+        }
+
+        $relativeHtmlPath = 'writable/id-card-local/' . $jobId . '/id-card.html';
+        $relativeOutDir = 'writable/id-card-cli-output/' . $jobId;
+        $relativeProgressPath = $relativeOutDir . '/progress.json';
+        $command = implode(' ', [
+            'cd', escapeshellarg(rtrim(ROOTPATH, DIRECTORY_SEPARATOR)), '&&',
+            'node', 'tools/id-card-renderer.js',
+            '--input', escapeshellarg($relativeHtmlPath),
+            '--output', escapeshellarg($relativeOutDir),
+            '--scale', escapeshellarg((string) $scale),
+            '--chunk-size', '50',
+            '--progress-file', escapeshellarg($relativeProgressPath),
+        ]);
+
+        return $this->response->setJSON([
+            'status' => true,
+            'message' => 'File HTML ID Card berhasil dibuat.',
+            'job_id' => $jobId,
+            'scale' => $scale,
+            'html_path' => $htmlPath,
+            'relative_html_path' => $relativeHtmlPath,
+            'output_dir' => $outDir,
+            'relative_output_dir' => $relativeOutDir,
+            'progress_file' => $progressPath,
+            'relative_progress_file' => $relativeProgressPath,
+            'command' => $command,
         ]);
     }
 

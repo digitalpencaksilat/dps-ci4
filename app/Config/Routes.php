@@ -405,6 +405,8 @@ $routes->group('admin/sekretariat', ['filter' => 'adminrole:sekretariat'], stati
     $routes->get('id-card/cetak-per-kontingen', 'Admin\Sekretariat\IdCardController::cetakPerKontingen');
     $routes->get('id-card/cetak-per-peserta', 'Admin\Sekretariat\IdCardController::cetakPerPeserta');
     $routes->post('id-card/proses-cetak-batch', 'Admin\Sekretariat\IdCardController::prosesCetakBatch');
+    $routes->post('id-card/proses-cetak-batch-local', 'Admin\Sekretariat\IdCardController::prosesCetakBatchLocal');
+    $routes->get('id-card/proses-cetak-batch-local/status/(:segment)', 'Admin\Sekretariat\IdCardController::statusCetakBatchLocal/$1');
     $routes->get('id-card/cetak/(:segment)/(:num)', 'Admin\Sekretariat\IdCardController::cetakSingle/$1/$2');
     $routes->get('id-card/api/peserta-tanding/(:num)', 'Admin\Sekretariat\IdCardController::apiPesertaTanding/$1');
     $routes->get('id-card/api/peserta-seni/(:num)', 'Admin\Sekretariat\IdCardController::apiPesertaSeni/$1');

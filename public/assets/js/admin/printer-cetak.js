@@ -20,14 +20,17 @@ window.printSertifikat = function (btn) {
 };
 
 // Init DataTable + generate-single handler untuk satu tabel
-window.initPrinterCetakTable = function (selector) {
+window.initPrinterCetakTable = function (selector, options) {
+    options = options || {};
     var $table = jQuery(selector);
-    if (!$table.length) return;
+    if (!$table.length) return null;
 
-    $table.DataTable({
+    var defaults = {
         pageLength: 25,
-        order: [[0, 'asc']],
-        columnDefs: [{ orderable: false, targets: -1 }],
+        order: [[1, 'asc']],
+        columnDefs: [
+            { orderable: false, targets: -1 }
+        ],
         language: {
             search: 'Cari:',
             lengthMenu: 'Tampil _MENU_',
@@ -36,7 +39,11 @@ window.initPrinterCetakTable = function (selector) {
             zeroRecords: 'Data tidak ditemukan',
             paginate: { next: '›', previous: '‹' }
         }
-    });
+    };
+
+    var dt = $table.DataTable(jQuery.extend(true, {}, defaults, options));
+
+    return dt;
 
     // Generate nomor sertifikat untuk satu peserta (AJAX)
     $table.on('click', '.btn-generate-nomor', function () {

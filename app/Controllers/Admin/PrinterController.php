@@ -287,6 +287,192 @@ class PrinterController extends BaseController
     }
 
     // ============================================================
+    //  Cetak Batch (Render Lokal + Browser)
+    // ============================================================
+
+    /**
+     * Halaman pilih peserta untuk cetak batch sertifikat.
+     * Akses dari menu Tools (sekretariat / super_admin).
+     */
+    public function cetakBatchList(): string
+    {
+        $kontingenRows = db_connect()
+            ->table('kontingen')
+            ->select('id_kontingen, nama_kontingen')
+            ->orderBy('nama_kontingen', 'ASC')
+            ->get()
+            ->getResult();
+
+        return view('admin/printer/cetak_batch', $this->viewData([
+            'kontingenRows' => $kontingenRows,
+            'dataTanding'   => $this->service->listPesertaTanding(),
+            'dataSeni'      => $this->service->listPesertaSeni(),
+        ], 'Cetak Batch Sertifikat', 'pencetakan_sertifikat'));
+    }
+
+    /**
+     * Proses batch: membangun data semua sertifikat yang dipilih,
+     * lalu me-render batch HTML view.
+     *
+     * POST keys:
+     *  - id_peserta_tanding[]  : daftar ID tanding
+     *  - id_peserta_seni[]     : daftar ID seni
+     *  - for_local             : jika true, tidak sertakan iframe JS (untuk Playwright)
+     */
+    public function prosesCetakBatch(bool $forLocal = false): string
+    {
+        $tandingIds = array_values(array_unique(array_filter(array_map(
+            'intval',
+            (array) $this->request->getPost('id_peserta_tanding')
+        ))));
+
+        $seniIds = array_values(array_unique(array_filter(array_map(
+            'intval',
+            (array) $this->request->getPost('id_peserta_seni')
+        ))));
+
+        if ($tandingIds === [] && $seniIds === []) {
+            return 'Tidak ada peserta yang dipilih.';
+        }
+
+        $cards = [];
+        $layout = $this->service->getLayoutConfig();
+        $backgroundUrl = $this->service->backgroundUrl();
+        $hideBg = $this->service->hideSertifikatBackground();
+
+        // --- Tanding ---
+        foreach ($tandingIds as $id) {
+            $peserta = $this->service->getPesertaTanding($id);
+            if ($peserta === null) continue;
+
+            $defaultKategori = ($peserta->jenis_medali ?? null)
+                ? $this->service->kategoriJuara($peserta, 'tanding')
+                : $this->service->kategoriPeserta($peserta, 'tanding');
+
+            $cards[] = [
+                'type'       => 'tanding',
+                'peserta'    => $peserta,
+                'nomor'      => (string) ($peserta->nomor_sertifikat ?? ''),
+                'nama'       => strtoupper((string) ($peserta->nama_pendaftar ?? '')),
+                'kategori'   => $defaultKategori,
+                'kontingen'  => strtoupper((string) ($peserta->nama_kontingen ?? '')),
+                'sekolah'    => strtoupper((string) ($peserta->nama_sekolah ?? '')),
+                'qrcode_url' => $this->service->qrcodeUrl('tanding', $id),
+                'filename'   => $this->buildSertifikatFilename(
+                    $peserta->nama_kontingen ?? '',
+                    'Tanding',
+                    $id
+                ),
+            ];
+
+            $this->service->ubahStatusSertifikatTanding($id);
+        }
+
+        // --- Seni ---
+        foreach ($seniIds as $id) {
+            $peserta = $this->service->getPesertaSeni($id);
+            if ($peserta === null) continue;
+
+            $defaultKategori = ($peserta->jenis_medali ?? null)
+                ? $this->service->kategoriJuara($peserta, 'seni')
+                : $this->service->kategoriPeserta($peserta, 'seni');
+
+            $cards[] = [
+                'type'       => 'seni',
+                'peserta'    => $peserta,
+                'nomor'      => (string) ($peserta->nomor_sertifikat ?? ''),
+                'nama'       => strtoupper((string) ($peserta->nama_pendaftar ?? '')),
+                'kategori'   => $defaultKategori,
+                'kontingen'  => strtoupper((string) ($peserta->nama_kontingen ?? '')),
+                'sekolah'    => strtoupper((string) ($peserta->nama_sekolah ?? '')),
+                'qrcode_url' => $this->service->qrcodeUrl('seni', $id),
+                'filename'   => $this->buildSertifikatFilename(
+                    $peserta->nama_kontingen ?? '',
+                    'Seni',
+                    $id
+                ),
+            ];
+
+            $this->service->ubahStatusSertifikatSeni($id);
+        }
+
+        return view('print/sertifikat/template', [
+            'main_view'      => 'print/sertifikat/pages/batch',
+            'paper_size'     => 'A4 landscape',
+            'cards'          => $cards,
+            'layout'         => $layout,
+            'background_url' => $backgroundUrl,
+            'hide_bg'        => $hideBg,
+            'is_iframe'      => ! $forLocal,
+        ]);
+    }
+
+    /**
+     * Batch lokal: tulis HTML ke file, return JSON dengan command untuk
+     * dijalankan via tools/sertifikat-renderer.js.
+     */
+    public function prosesCetakBatchLocal(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        $html = $this->prosesCetakBatch(forLocal: true);
+        $stamp = date('Ymd_His');
+        $jobId = $stamp . '_' . bin2hex(random_bytes(3));
+        $workDir = WRITEPATH . 'sertifikat-local/' . $jobId;
+        $htmlPath = $workDir . '/sertifikat.html';
+        $outDir = WRITEPATH . 'sertifikat-cli-output/' . $jobId;
+        $progressPath = $outDir . '/progress.json';
+
+        if (! is_dir($workDir)) {
+            mkdir($workDir, 0777, true);
+        }
+        if (! is_dir($outDir)) {
+            mkdir($outDir, 0777, true);
+        }
+
+        file_put_contents($htmlPath, $html);
+
+        $relativeHtmlPath = 'writable/sertifikat-local/' . $jobId . '/sertifikat.html';
+        $relativeOutDir = 'writable/sertifikat-cli-output/' . $jobId;
+        $relativeProgressPath = $relativeOutDir . '/progress.json';
+        $command = implode(' ', [
+            'cd', escapeshellarg(rtrim(ROOTPATH, DIRECTORY_SEPARATOR)), '&&',
+            'node', 'tools/sertifikat-renderer.js',
+            '--input', escapeshellarg($relativeHtmlPath),
+            '--output', escapeshellarg($relativeOutDir),
+            '--scale', '2',
+            '--chunk-size', '20',
+            '--progress-file', escapeshellarg($relativeProgressPath),
+        ]);
+
+        return $this->response->setJSON([
+            'status'    => true,
+            'message'   => 'File HTML sertifikat berhasil dibuat.',
+            'job_id'    => $jobId,
+            'scale'     => 2,
+            'html_path' => $htmlPath,
+            'relative_html_path' => $relativeHtmlPath,
+            'output_dir' => $outDir,
+            'relative_output_dir' => $relativeOutDir,
+            'progress_file' => $progressPath,
+            'relative_progress_file' => $relativeProgressPath,
+            'command' => $command,
+        ]);
+    }
+
+    /**
+     * Build safe filename untuk sertifikat PNG.
+     */
+    private function buildSertifikatFilename(string $namaKontingen, string $tipe, int $id): string
+    {
+        $safe = preg_replace('/[^A-Za-z0-9\-]/', '_', $namaKontingen);
+        $safe = trim((string) $safe, '_');
+        if ($safe === '') {
+            $safe = 'Sertifikat';
+        }
+
+        return $safe . '_' . $tipe . '_' . $id;
+    }
+
+    // ============================================================
     //  Helpers
     // ============================================================
 
